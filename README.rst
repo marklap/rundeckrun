@@ -33,7 +33,7 @@ Use
       'group': None,
       'id': 'a6e1e0f7-ad32-4b93-ba2c-9387be06a146',
       'name': 'HelloWorld',
-      'project': 'ALFPoC'}]
+      'project': 'TestProject'}]
     >>> rd.run_job_name('TestProject', 'HelloWorld', argString={'from':'rundeckrun'})
     {'argstring': '-from rundeckrun',
      'date-started': datetime.datetime(2013, 7, 11, 18, 4, 24),
