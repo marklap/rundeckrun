@@ -16,9 +16,9 @@ setup(
     version=VERSION,
     packages=find_packages(),
     description='Rundeck API Python client',
-    long_description='A lightweight wrapper written in Python to interact with the Rundeck API.',
-    url='https://bitbucket.org/marklap/rundeckrun',
-    download_url='https://bitbucket.org/marklap/rundeckrun/downloads/rundeckrun-{0}.zip'.format(VERSION),
+    long_description='A lightweight wrapper written in Python to interact' + \
+        ' with the Rundeck API.',
+    url='https://github.com/marklap/rundeckrun',
     author='rundeckrun@mindmind.com',
     author_email='rundeckrun@mindmind.com',
     maintainer='rundeckrun@mindmind.com',

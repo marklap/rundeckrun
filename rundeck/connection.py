@@ -19,8 +19,12 @@ except ImportError:
 
 from defaults import RUNDECK_API_VERSION
 
-
 class RundeckResponse(object):
+    """ Base class for Rundeck responses """
+    pass
+
+
+class RundeckXmlResponse(RundeckResponse):
 
     def __init__(self, xml):
         """ Parses an XML string into a convenient Python object
@@ -31,7 +35,7 @@ class RundeckResponse(object):
         """
         self.xml = xml
         self.etree = ElementTree.fromstring(xml)
-        self.api_version = self.etree.attrib['apiversion']
+        self.api_version = self.etree.attrib.get('apiversion', None)
         self.message = None
 
         if 'success' in self.etree.attrib:
@@ -59,20 +63,38 @@ class RundeckResponse(object):
             return body_els
 
 
+class RundeckYamlResponse(RundeckResponse):
+
+    def __init__(self, xml):
+        raise NotImplementedError('YAML support not complete')
+
+    @property
+    def body(self):
+        raise NotImplementedError('YAML support not complete')
+
+
+class RundeckJsonResponse(RundeckResponse):
+
+    def __init__(self, xml):
+        raise NotImplementedError('JSON support not complete')
+
+    @property
+    def body(self):
+        raise NotImplementedError('JSON support not complete')
 
 
 class RundeckConnection(object):
 
-    def __init__(self, server, protocol='http', port=None, api_token=None, **kwargs):
+    def __init__(self, server='localhost', protocol='http', port=4440, api_token=None, **kwargs):
         """ Initialize a Rundeck API client connection
 
         :Parameters:
             server : str
-                hostname of the Rundeck server
+                hostname of the Rundeck server (default: localhost)
             protocol : str
                 either http or https (default: 'http')
             port : int
-                Rundeck server port (default: 80)
+                Rundeck server port (default: 4440)
             api_token : str
                 *\*\*Preferred method of authentication* - valid Rundeck user API token
                 (default: None)
@@ -86,14 +108,14 @@ class RundeckConnection(object):
                 Rundeck API version
         """
         self.protocol = protocol
-        self.usr = kwargs.get('usr', None)
-        self.pwd = kwargs.get('pwd', None)
+        self.usr = usr = kwargs.get('usr', None)
+        self.pwd = pwd = kwargs.get('pwd', None)
         self.server = server
         self.api_token = api_token
         self.api_version = kwargs.get('api_version', RUNDECK_API_VERSION)
 
         if (protocol == 'http' and port != 80) or (protocol == 'https' and port != 443):
-            self.server += ':' + port
+            self.server = '{0}:{1}'.format(server, port)
 
         if api_token is None and usr is None and pwd is None:
             raise InvalidAuthentication('Must supply either api_token or usr and pwd')
@@ -135,12 +157,12 @@ class RundeckConnection(object):
                 the XML or YAML payload necessary for some commands
                 (default: None)
 
-        :rtype: RundeckResponse
+        :rtype: RundeckXmlResponse | RundeckYamlResponse
         """
         url = self.make_url(url)
 
         response = self.http.request(method, url, params=params, data=data)
         if response.status_code == requests.codes.ok:
-            return RundeckResponse(response.text)
+            return RundeckXmlResponse(response.text)
         else:
             return response
