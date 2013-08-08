@@ -207,6 +207,12 @@ class Rundeck(object):
                 necessary (default: None)
 
         :Keywords:
+            block : bool
+                if True, waits for a completed execution (default: False)
+            timeout : int | float
+                with block, how many seconds to wait for a completed status (default: 60)
+            interval : int | float
+                with block, how many seconds to sleep between polling cycles (default: 3)
             argString : str | dict
                 argument string to pass to job - if str, will be passed as-is
                 else if dict will be converted to compatible string
@@ -248,6 +254,8 @@ class Rundeck(object):
         :return: a dict object representing a Rundeck Execution
         :rtype: dict
         """
+        block = kwargs.pop('block', False)
+
         if not self.is_job_id(name):
             if isinstance(project, basestring):
                 id = self.get_job_id(project, name)
@@ -261,71 +269,15 @@ class Rundeck(object):
             kwargs['argString'] = ' '.join(['-' + k + ' ' + v for k, v in argString.items()])
 
         resp = self.execute_cmd(GET, 'job/{0}/run'.format(id), params=kwargs)
-        return self.transform_execution(resp)
+        execution = self.transform_execution(resp)
 
+        if not block:
+            return execution
 
-    def run_job_and_block(self, name, project=None, **kwargs):
-        """Executes Rundeck.run_job and waits from a "completed"
-
-        :Parameters:
-            name : str
-                Rundeck Job name (or ID) - if ID is provided project is not
-                necessary
-            project : str
-                Rundeck Project name - if a Job ID is provided this is not
-                necessary (default: None)
-
-        :Keywords:
-            timeout : int | float
-                how many seconds to wait for a completed status (default: 60)
-            interval : int | float
-                how many seconds to sleep between polling cycles (default: 5)
-            argString : str | dict
-                argument string to pass to job - if str, will be passed as-is
-                else if dict will be converted to compatible string
-            loglevel : str
-                one of 'DEBUG','VERBOSE','INFO','WARN','ERROR'
-            asUser : str
-                user to run the job as
-            exclude-precedence : bool
-                set the exclusion precedence (default True)
-            hostname : str
-                hostname inclusion filter
-            tags : str
-                tags inclusion filter
-            os-name : str
-                os-name inclusion filter
-            os-family : str
-                os-family inclusion filter
-            os-arch : str
-                os-arch inclusion filter
-            os-version : str
-                os-version inclusion filter
-            name : str
-                name inclusion filter
-            exlude-hostname : str
-                hostname exclusion filter
-            exlude-tags : str
-                tags exclusion filter
-            exlude-os-name : str
-                os-name exclusion filter
-            exlude-os-family : str
-                os-family exclusion filter
-            exlude-os-arch : str
-                os-arch exclusion filter
-            exlude-os-version : str
-                os-version exclusion filter
-            exlude-name : str
-                name exclusion filter
-
-        :return: a dict object representing a Rundeck Execution
-        :rtype: dict
-        """
         timeout = kwargs.pop('timeout', 60)
-        interval = kwargs.pop('interval', 5)
+        interval = kwargs.pop('interval', 3)
         duration = 0
 
-        execution = self.run_job(name, project, **kwargs)
         exec_id = execution['id']
         start = time.time()
 
@@ -340,6 +292,12 @@ class Rundeck(object):
             duration = time.time() - start
 
         return execution
+
+
+    def run_job_and_block(self, name, project=None, **kwargs):
+        """Executes Rundeck.run_job with the 'block' argument set to True
+        """
+        return self.run_job(name, project, block=True, **kwargs)
 
 
     def transform_execution(self, resp):
