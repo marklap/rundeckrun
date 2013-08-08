@@ -7,6 +7,7 @@ __docformat__ = "restructuredtext en"
 :contact: rundeckrun@mindmind.com
 :copyright: Mark LaPerriere 2013
 """
+import time
 from string import maketrans, ascii_letters, digits
 from datetime import datetime
 from connection import RundeckConnection
@@ -16,13 +17,15 @@ from exceptions import (
     InvalidJobArgument,
     InvalidResponseFormat,
     )
-from defaults import GET, POST
+from defaults import GET, POST, Status
 
 _DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 _JOB_ID_CHARS = ascii_letters + digits
 _JOB_ID_TRANS_TAB = maketrans(_JOB_ID_CHARS, '#' * len(_JOB_ID_CHARS))
 _JOB_ID_TEMPLATE = '########-####-####-####-############'
 _RUNDECK_RESP_FORMATS = ('xml')  # TODO: yaml and json
+_EXECUTION_COMPLETED = (Status.FAILED, Status.SUCCEEDED, Status.ABORTED)
+_EXECUTION_PENDING = (Status.RUNNING,)
 
 class Rundeck(object):
 
@@ -49,6 +52,7 @@ class Rundeck(object):
         """
         self.connection = RundeckConnection(server, protocol=protocol, port=port, api_token=api_token, **kwargs)
 
+
     def execute_cmd(self, method, url, params=None, data=None):
         """ Executes a job via the RundeckConnection
 
@@ -67,6 +71,7 @@ class Rundeck(object):
         """
         return self.connection.execute_cmd(method, url, params, data)
 
+
     def is_job_id(self, id):
         """ Checks if a Job ID "looks" valid - does not check if it exists as a
             job in Rundeck
@@ -81,6 +86,7 @@ class Rundeck(object):
             return id.translate(_JOB_ID_TRANS_TAB) == _JOB_ID_TEMPLATE
 
         return False
+
 
     def get_job_id(self, project, name):
         """ Fetch the ID for a job
@@ -99,6 +105,7 @@ class Rundeck(object):
             return found_jobs[0]['id']
         else:
             raise JobNotFound('Job {0!r} not found in Project {1!r}'.format(name, project))
+
 
     def system_info(self):
         """ Wraps `Rundeck API /system/info <http://rundeck.org/docs/api/index.html#system-info>`_
@@ -120,6 +127,7 @@ class Rundeck(object):
         # TODO: include stats returned in the response
         return system_info
 
+
     def list_projects(self):
         """ Wraps `Rundeck API /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
@@ -128,6 +136,7 @@ class Rundeck(object):
         """
         resp = self.execute_cmd(GET, 'projects')
         return [{p.tag: p.text for p in p_el} for p_el in resp.body.iterfind('project')]
+
 
     def get_project(self, project):
         """ Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
@@ -140,6 +149,7 @@ class Rundeck(object):
         :rtype: dict
         """
         raise NotImplementedError('get_project method not completed')
+
 
     def list_jobs(self, project, **kwargs):
         """ Wraps `Rundeck API /project/[NAME]/jobs <http://rundeck.org/docs/api/index.html#listing-jobs-for-a-project>`_
@@ -184,24 +194,9 @@ class Rundeck(object):
             jobs.append(job)
         return jobs
 
-    def run_job_name(self, project, name, **kwargs):
-        """ Performs lookup of a job name in a project to retrieve it's ID and
-        run the job via Rundeck.run_job
-
-        :Parameters:
-            project : str
-                name of the project the job lives in
-            name : str
-                name of the job
-
-        :return: a dict object representing a Rundeck Execution
-        :rtype: dict
-        """
-        run_job = self.run_job(self.get_job_id(project, name), **kwargs)
-        return run_job
 
     def run_job(self, name, project=None, **kwargs):
-        """ Wraps `Rundeck API /job/[ID]/run <http://rundeck.org/docs/api/index.html#running-a-job>`_
+        """Wraps `Rundeck API /job/[ID]/run <http://rundeck.org/docs/api/index.html#running-a-job>`_
 
         :Parameters:
             name : str
@@ -266,16 +261,136 @@ class Rundeck(object):
             kwargs['argString'] = ' '.join(['-' + k + ' ' + v for k, v in argString.items()])
 
         resp = self.execute_cmd(GET, 'job/{0}/run'.format(id), params=kwargs)
+        return self.transform_execution(resp)
+
+
+    def run_job_and_block(self, name, project=None, **kwargs):
+        """Executes Rundeck.run_job and waits from a "completed"
+
+        :Parameters:
+            name : str
+                Rundeck Job name (or ID) - if ID is provided project is not
+                necessary
+            project : str
+                Rundeck Project name - if a Job ID is provided this is not
+                necessary (default: None)
+
+        :Keywords:
+            timeout : int | float
+                how many seconds to wait for a completed status (default: 60)
+            interval : int | float
+                how many seconds to sleep between polling cycles (default: 5)
+            argString : str | dict
+                argument string to pass to job - if str, will be passed as-is
+                else if dict will be converted to compatible string
+            loglevel : str
+                one of 'DEBUG','VERBOSE','INFO','WARN','ERROR'
+            asUser : str
+                user to run the job as
+            exclude-precedence : bool
+                set the exclusion precedence (default True)
+            hostname : str
+                hostname inclusion filter
+            tags : str
+                tags inclusion filter
+            os-name : str
+                os-name inclusion filter
+            os-family : str
+                os-family inclusion filter
+            os-arch : str
+                os-arch inclusion filter
+            os-version : str
+                os-version inclusion filter
+            name : str
+                name inclusion filter
+            exlude-hostname : str
+                hostname exclusion filter
+            exlude-tags : str
+                tags exclusion filter
+            exlude-os-name : str
+                os-name exclusion filter
+            exlude-os-family : str
+                os-family exclusion filter
+            exlude-os-arch : str
+                os-arch exclusion filter
+            exlude-os-version : str
+                os-version exclusion filter
+            exlude-name : str
+                name exclusion filter
+
+        :return: a dict object representing a Rundeck Execution
+        :rtype: dict
+        """
+        timeout = kwargs.pop('timeout', 60)
+        interval = kwargs.pop('interval', 5)
+        duration = 0
+
+        execution = self.run_job(name, project, **kwargs)
+        exec_id = execution['id']
+        start = time.time()
+
+        while (duration < timeout):
+
+            execution = self.get_execution_info(exec_id)
+
+            if execution['status'] in _EXECUTION_COMPLETED:
+                break
+
+            time.sleep(interval)
+            duration = time.time() - start
+
+        return execution
+
+
+    def transform_execution(self, resp):
+        """Transforms an Execution's RundeckXmlResponse object into a dict
+
+        :Parameters:
+            resp : RundeckXmlResponse
+                A RundeckXmlResponse representing a Rundeck Execution
+
+        :return: a dict object representing a Rundeck Execution
+        :rtype: dict
+        """
         execution = {}
         for execution_el in resp.body.iterfind('execution'):
             execution.update(execution_el.attrib)
+
             date_started = execution_el.find('date-started')
             if date_started is not None:
                 execution['date-started'] = datetime.strptime(date_started.text, _DATETIME_ISOFORMAT)
                 execution_el.remove(date_started)
+
+            date_ended = execution_el.find('date-ended')
+            if date_ended is not None:
+                execution['date-ended'] = datetime.strptime(date_ended.text, _DATETIME_ISOFORMAT)
+                execution_el.remove(date_ended)
+
+            job_el = execution_el.find('job')
+            if job_el is not None:
+                execution['job'] = dict(job_el.attrib)
+                execution['job'].update({c.tag: c.text for c in job_el})
+                execution_el.remove(job_el)
+
             execution.update({e.tag: e.text for e in execution_el})
 
         return execution
+
+
+    def get_execution_info(self, id):
+        """Wraps `Rundeck API /execution/[ID] <http://rundeck.org/docs/api/index.html#getting-execution-info>`_
+
+        :Parameters:
+            id : str
+                Rundeck Job name (or ID) - if ID is provided project is not
+                necessary
+
+        :return: a dict object representing a Rundeck Job execution
+        :rtype: dict
+        """
+        resp = self.execute_cmd(GET, '/execution/{0}'.format(id))
+        return self.transform_execution(resp)
+
 
     def job_definition(self, name, project=None, fmt=None):
         """ Wraps `Rundeck API /job/[ID] <http://rundeck.org/docs/api/index.html#getting-a-job-definition>`_
@@ -289,9 +404,8 @@ class Rundeck(object):
                 necessary (default: None)
             fmt : str
                 one of ('xml','yaml') - if undefined, the Rundeck response will
-                be converted to a Python dict (TODO) otherwise the raw Rundeck
-                returned else the "raw" response from Rundeck in the specified
-                format will be returned
+                be converted to a Python dict (TODO) otherwise the raw response
+                from Rundeck will be returned
 
         :return: a dict object representing a Rundeck Job or a the raw response
             from Rundeck in the requested format
