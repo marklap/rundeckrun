@@ -53,14 +53,19 @@ class RundeckXmlResponse(RundeckResponse):
     def body(self):
         """ Returns the most appropriate portion of the parsed XML response
         """
+        if hasattr(self, '_body'):
+            return self._body
+
         body_els = list(self.etree)
         body_el_count = len(body_els)
         if body_el_count == 0:
-            return None
+            self._body = None
         elif body_el_count == 1:
-            return body_els[0]
+            self._body = body_els[0]
         else:
-            return body_els
+            self._body = body_els
+
+        return self._body
 
 
 class RundeckYamlResponse(RundeckResponse):
