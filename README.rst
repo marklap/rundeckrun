@@ -34,7 +34,7 @@ Use
       'id': 'a6e1e0f7-ad32-4b93-ba2c-9387be06a146',
       'name': 'HelloWorld',
       'project': 'TestProject'}]
-    >>> rd.run_job_name('TestProject', 'HelloWorld', argString={'from':'rundeckrun'})
+    >>> rd.run_job('HelloWorld', 'TestProject', argString={'from':'rundeckrun'})
     {'argstring': '-from rundeckrun',
      'date-started': datetime.datetime(2013, 7, 11, 18, 4, 24),
      'description': 'Plugin[localexec, nodeStep: true]',
@@ -43,6 +43,23 @@ Use
      'job': None,
      'status': 'running',
      'user': 'rundeckrun'}
+    >>> # Use the block arg to wait for the job to complete
+    >>> rd.run_job('HelloWorld', 'TestProject', argString={'from':'rundeck'}, block=True)
+    {'argstring': None,
+     'date-ended': datetime.datetime(2013, 8, 8, 5, 49, 59),
+     'date-started': datetime.datetime(2013, 8, 8, 5, 49, 58),
+     'description': 'Plugin[localexec, nodeStep: true]',
+     'href': 'http://rundeck.server.com/execution/follow/10',
+     'id': '10',
+     'job': {'averageDuration': '368',
+             'description': None,
+             'group': 'RundeckRun/Tests',
+             'id': 'cb973e3a-e682-4b45-9dbe-9e5301a4361e',
+             'name': 'HelloWorld',
+             'project': 'TestProject'},
+     'status': 'succeeded',
+     'user': 'rundeckrun'}
+
 
 
 Documentation
