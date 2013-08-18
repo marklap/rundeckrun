@@ -17,14 +17,11 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 
-from defaults import RUNDECK_API_VERSION
+from .defaults import RUNDECK_API_VERSION
+from .exceptions import InvalidAuthentication
+
 
 class RundeckResponse(object):
-    """ Base class for Rundeck responses """
-    pass
-
-
-class RundeckXmlResponse(RundeckResponse):
 
     def __init__(self, xml):
         """ Parses an XML string into a convenient Python object
@@ -37,6 +34,7 @@ class RundeckXmlResponse(RundeckResponse):
         self.etree = ElementTree.fromstring(xml)
         self.api_version = self.etree.attrib.get('apiversion', None)
         self.message = None
+
 
         if 'success' in self.etree.attrib:
             self.success = True
@@ -53,39 +51,19 @@ class RundeckXmlResponse(RundeckResponse):
     def body(self):
         """ Returns the most appropriate portion of the parsed XML response
         """
-        if hasattr(self, '_body'):
+        try:
             return self._body
+        except AttributeError:
+            body_els = list(self.etree)
+            body_el_count = len(body_els)
+            if body_el_count == 0:
+                self._body = None
+            elif body_el_count == 1:
+                self._body = body_els[0]
+            else:
+                self._body = body_els
 
-        body_els = list(self.etree)
-        body_el_count = len(body_els)
-        if body_el_count == 0:
-            self._body = None
-        elif body_el_count == 1:
-            self._body = body_els[0]
-        else:
-            self._body = body_els
-
-        return self._body
-
-
-class RundeckYamlResponse(RundeckResponse):
-
-    def __init__(self, xml):
-        raise NotImplementedError('YAML support not complete')
-
-    @property
-    def body(self):
-        raise NotImplementedError('YAML support not complete')
-
-
-class RundeckJsonResponse(RundeckResponse):
-
-    def __init__(self, xml):
-        raise NotImplementedError('JSON support not complete')
-
-    @property
-    def body(self):
-        raise NotImplementedError('JSON support not complete')
+            return self._body
 
 
 class RundeckConnection(object):
@@ -168,6 +146,6 @@ class RundeckConnection(object):
 
         response = self.http.request(method, url, params=params, data=data)
         if response.status_code == requests.codes.ok:
-            return RundeckXmlResponse(response.text)
+            return RundeckResponse(response.text)
         else:
             return response
