@@ -1,0 +1,24 @@
+<joblist>
+  <job>
+    <id>f000b66f-30d3-44e6-ae22-8ea4eb2b3311</id>
+    <loglevel>INFO</loglevel>
+    <sequence keepgoing='false' strategy='node-first'>
+      <command>
+        <node-step-plugin type='localexec'>
+          <configuration>
+            <entry key='command' value='echo "Hello World! (from:${option.from})"' />
+          </configuration>
+        </node-step-plugin>
+      </command>
+    </sequence>
+    <description></description>
+    <name>HelloWorld</name>
+    <context>
+      <project>TestProject</project>
+      <options>
+        <option name='from' />
+      </options>
+    </context>
+    <uuid>f000b66f-30d3-44e6-ae22-8ea4eb2b3311</uuid>
+  </job>
+</joblist>
