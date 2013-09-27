@@ -1,7 +1,7 @@
 import os
 import logging
 import unittest
-import rundeck.client import Rundeck
+from rundeck.client import Rundeck
 
 _RUNDECKAPITOKENENVVAR = 'RUNDECKAPITOKEN'
 
