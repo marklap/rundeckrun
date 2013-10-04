@@ -8,6 +8,7 @@ __docformat__ = "restructuredtext en"
 :copyright: Mark LaPerriere 2013
 """
 import time
+import errno
 from string import maketrans, ascii_letters, digits
 from datetime import datetime
 from connection import RundeckConnection
@@ -16,8 +17,9 @@ from exceptions import (
     MissingProjectArgument,
     InvalidJobArgument,
     InvalidResponseFormat,
+    InvalidJobDefinitionFormat,
     )
-from defaults import GET, POST, Status
+from defaults import GET, POST, DELETE, Status, DupeOption, UuidOption, JobDefFormat
 
 _DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 _JOB_ID_CHARS = ascii_letters + digits
@@ -27,6 +29,60 @@ _RUNDECK_RESP_FORMATS = ('xml')  # TODO: yaml and json
 _EXECUTION_COMPLETED = (Status.FAILED, Status.SUCCEEDED, Status.ABORTED)
 _EXECUTION_PENDING = (Status.RUNNING,)
 
+
+def is_job_id(job_id):
+    """ Checks if a Job ID "looks" valid - does not check if it exists as a
+        job in Rundeck
+
+    :Parameters:
+        job_id : str
+            a Rundeck Job ID
+
+    :rtype: bool
+    """
+    if job_id and isinstance(job_id, basestring):
+        return job_id.translate(_JOB_ID_TRANS_TAB) == _JOB_ID_TEMPLATE
+
+    return False
+
+
+def transform_execution(resp):
+    """Transforms an Execution's RundeckResponse object into a dict
+
+    :Parameters:
+        resp : RundeckResponse
+            a RundeckResponse representing a Rundeck Execution
+
+    :return: a dict object representing a Rundeck Execution
+    :rtype: dict
+    """
+    execution = {}
+    for execution_el in resp.body.iterfind('execution'):
+        execution.update(execution_el.attrib)
+
+        date_started = execution_el.find('date-started')
+        if date_started is not None:
+            execution['date-started'] = datetime.strptime(date_started.text, _DATETIME_ISOFORMAT)
+            execution_el.remove(date_started)
+
+        date_ended = execution_el.find('date-ended')
+        if date_ended is not None:
+            execution['date-ended'] = datetime.strptime(date_ended.text, _DATETIME_ISOFORMAT)
+            execution_el.remove(date_ended)
+
+        job_el = execution_el.find('job')
+        if job_el is not None:
+            execution['job'] = dict(job_el.attrib)
+            execution['job'].update({c.tag: c.text for c in job_el})
+            execution_el.remove(job_el)
+
+        execution.update({e.tag: e.text for e in execution_el})
+
+    return execution
+
+
+
+
 class Rundeck(object):
 
     def __init__(self, server='localhost', protocol='http', port=4440, api_token=None, **kwargs):
@@ -35,8 +91,8 @@ class Rundeck(object):
         :Parameters:
             server : str
                 hostname of the Rundeck server (default: localhost)
-            protocol : str
-                either http or https (default: 'http')
+            protocol : str ('http'|'https')
+                (default: 'http')
             port : int
                 Rundeck server port (default: 4440)
             api_token : str
@@ -72,22 +128,6 @@ class Rundeck(object):
         return self.connection.execute_cmd(method, url, params, data)
 
 
-    def is_job_id(self, id):
-        """ Checks if a Job ID "looks" valid - does not check if it exists as a
-            job in Rundeck
-
-        :Parameters:
-            id : str
-                a Rundeck Job ID
-
-        :rtype: bool
-        """
-        if id and isinstance(id, basestring):
-            return id.translate(_JOB_ID_TRANS_TAB) == _JOB_ID_TEMPLATE
-
-        return False
-
-
     def get_job_id(self, project, name):
         """ Fetch the ID for a job
 
@@ -108,7 +148,7 @@ class Rundeck(object):
 
 
     def system_info(self):
-        """ Wraps `Rundeck API /system/info <http://rundeck.org/docs/api/index.html#system-info>`_
+        """ Wraps `Rundeck API GET /system/info <http://rundeck.org/docs/api/index.html#system-info>`_
 
         :return: a dict object representing the Rundeck system information
         :rtype: dict
@@ -129,7 +169,7 @@ class Rundeck(object):
 
 
     def list_projects(self):
-        """ Wraps `Rundeck API /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
+        """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
         :return: a list of Rundeck Project names
         :rtype: list(str, ...)
@@ -152,7 +192,7 @@ class Rundeck(object):
 
 
     def list_jobs(self, project, **kwargs):
-        """ Wraps `Rundeck API /project/[NAME]/jobs <http://rundeck.org/docs/api/index.html#listing-jobs-for-a-project>`_
+        """ Wraps `Rundeck API GET /project/[NAME]/jobs <http://rundeck.org/docs/api/index.html#listing-jobs-for-a-project>`_
 
         :Parameters:
             project : str
@@ -196,7 +236,7 @@ class Rundeck(object):
 
 
     def run_job(self, name, project=None, **kwargs):
-        """Wraps `Rundeck API /job/[ID]/run <http://rundeck.org/docs/api/index.html#running-a-job>`_
+        """Wraps `Rundeck API GET /job/[ID]/run <http://rundeck.org/docs/api/index.html#running-a-job>`_
 
         :Parameters:
             name : str
@@ -216,8 +256,8 @@ class Rundeck(object):
             argString : str | dict
                 argument string to pass to job - if str, will be passed as-is
                 else if dict will be converted to compatible string
-            loglevel : str
-                one of 'DEBUG','VERBOSE','INFO','WARN','ERROR'
+            loglevel : str('DEBUG', 'VERBOSE', 'INFO', 'WARN', 'ERROR')
+                logging level (default: 'INFO')
             asUser : str
                 user to run the job as
             exclude-precedence : bool
@@ -305,7 +345,7 @@ class Rundeck(object):
 
         :Parameters:
             resp : RundeckXmlResponse
-                A RundeckXmlResponse representing a Rundeck Execution
+                a RundeckXmlResponse representing a Rundeck Execution
 
         :return: a dict object representing a Rundeck Execution
         :rtype: dict
@@ -336,7 +376,7 @@ class Rundeck(object):
 
 
     def get_execution_info(self, id):
-        """Wraps `Rundeck API /execution/[ID] <http://rundeck.org/docs/api/index.html#getting-execution-info>`_
+        """Wraps `Rundeck API GET /execution/[ID] <http://rundeck.org/docs/api/index.html#getting-execution-info>`_
 
         :Parameters:
             id : str
@@ -360,10 +400,9 @@ class Rundeck(object):
             project : str
                 Rundeck Project name - if a Job ID is provided this is not
                 necessary (default: None)
-            fmt : str
-                one of ('xml','yaml') - if undefined, the Rundeck response will
-                be converted to a Python dict (TODO) otherwise the raw response
-                from Rundeck will be returned
+            fmt : str('python', 'xml' or 'yaml')
+                if undefined, the Rundeck response will be converted to a Python dict
+                (default: 'python')
 
         :return: a dict object representing a Rundeck Job or a the raw response
             from Rundeck in the requested format
@@ -392,3 +431,124 @@ class Rundeck(object):
 
         # TODO: support converting an xml Job Defintion (http://rundeck.org/docs/manpages/man5/job-v20.html) into a dict
         return resp.xml
+
+
+    def delete_job(self, id):
+        """ Wraps `Rundeck API /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
+        """
+        self.execute_cmd(DELETE, '/job/{0}'.format(id))
+
+
+    def import_job(self, definition, *args, **kwargs):
+        """ Determines the type of argument passed in (file path or string) and calls the
+            appropriate method passing along all extra arguments and keyword arguments
+
+        :Parameters:
+            definition : str
+                the path to a job definition file or a string representing a job definition
+                (automatically treated as job definition string if a newline character is found)
+
+        :Keywords:
+            definition_type : str ('file', 'string', 'auto')
+                force the definition argument to be treated as a file or a string or
+                attempt to determine automatically (default: 'auto')
+
+        :return: a dict object representing a set of Rundeck status messages
+        :rtype: dict
+        """
+
+        if definition_type == 'string' or '\n' in definition.strip():
+            return self.import_job_definition_string(*args, **kwargs)
+        elif definition_type in ('file', 'auto'):
+            return self.import_job_definition_file(definition, *args, **kwargs)
+        else:
+            raise Exception('Could not determine the type of definition')
+
+
+    def import_job_definition_string(self, definition, **kwargs):
+        """ Wraps `Rundeck API /jobs/import <http://rundeck.org/docs/api/index.html#importing-jobs>`_
+
+        :Parameters:
+            file_path : str
+                the path to a job definition file or a string representing a job definition
+                (automatically treated as job definition string if a newline character is found)
+
+        :Keywords:
+            fmt : str ('xml'|'yaml')
+                format of the definition string (default: 'xml')
+            dupeOption : str ('skip'|'create'|'update')
+                a value to indicate the behavior when importing jobs which already exist
+                (default: 'create')
+            project : str
+                specify the project that all job definitions should be imported to otherwise all
+                job definitions must define a project
+            uuidOption : str ('preserve'|'remove')
+                preserve or remove UUIDs in imported jobs - preserve may fail if a UUID already
+                exists
+
+        :return: a dict object representing a set of Rundeck status messages
+        :rtype: dict
+        """
+
+        fmt = kwargs.get('fmt', JobDefFormat.XML)
+        if fmt not in JobDefFormat.values:
+            fmt = JobDefFormat.XML
+
+        dupe_option = kwargs.get('dupeOption', DupeOption.CREATE)
+        if dupe_option not in DupeOption.values:
+            dupe_option = DupeOption.CREATE
+
+        uuid_option = kwargs.get('uuidOption', UuidOption.PRESERVE)
+        if uuid_option not in UuidOption.values:
+            uuid_option = UuidOption.PRESERVE
+
+        # TODO: if this is not None, for API versions <8, maybe we could inject/update the job def
+        #       as a convenience to the end user
+        project = kwargs.get('project', None)
+
+        api_kwargs = {
+            'xmlBatch': definition,
+            'format': fmt,
+            'dupeOption': dupe_option,
+            'uuidOption': uuid_option,
+        }
+        if project is not None:
+            api_kwargs['project'] = project
+
+        resp = self.execute_cmd(POST, '/jobs/import', data=api_kwargs)
+
+
+
+    def import_job_definition_file(self, file_path, *args, **kwargs):
+        """ Convenience method for reading in the contents of a job definition file for import
+
+        :Parameters:
+            file_path : str
+                the path to a readable job definition file
+
+        :Keywords:
+            file_format : str ('xml'|'yaml')
+                if not specified it will be derived from the file extension (default: 'xml')
+
+        :raise IOError: raised if job definition file can not be found or is not readable
+
+        :return: a dict object representing a set of Rundeck status messages
+        :rtype: dict
+        """
+
+        fmt = kwargs.pop('file_format', None)
+        if fmt is None:
+            fmt = JobDefFormat.XML
+            fmt_specified = False
+        else:
+            fmt_specified = True
+
+        definition = open(file_path, 'r').read()
+
+        if not fmt_specified:
+            fmt = os.path.splitext(file_name.strip())[1][1:].lower()
+
+        if fmt not in JobDefFormat.values:
+            raise InvalidJobDefinitionFormat('Invalid Job definition format: {0}'.format(fmt))
+
+        return self.import_job_definition_string(definition, fmt=fmt, **kwargs)
