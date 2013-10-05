@@ -1,4 +1,3 @@
-__docformat__ = "restructuredtext en"
 """
 :summary: Connection object for Rundeck client
 
@@ -9,6 +8,8 @@ __docformat__ = "restructuredtext en"
 
 :requires: requests
 """
+__docformat__ = "restructuredtext en"
+
 import requests
 
 # see if we can speed things up a bit with cElementTree (not required)
@@ -110,8 +111,7 @@ class RundeckConnection(object):
             # TODO: support username/password authentication
             raise NotImplementedError('Username/password authentication is not yet supported')
 
-        self.base_url = '{0}://{1}/api/{2}/'.format(
-            self.protocol, self.server, self.api_version)
+        self.base_url = '{0}://{1}/api'.format(self.protocol, self.server)
 
     def make_url(self, api_url):
         """ Creates a valid Rundeck URL based on the API and the base url of
@@ -124,7 +124,7 @@ class RundeckConnection(object):
         :rtype: str
         :return: full Rundeck API URL
         """
-        return self.base_url + api_url.lstrip('/')
+        return '/'.join([self.base_url, str(self.api_version), api_url.lstrip('/')])
 
     def execute_cmd(self, method, url, params=None, data=None):
         """ Sends the HTTP request to Rundeck

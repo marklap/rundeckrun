@@ -1,4 +1,3 @@
-__docformat__ = "restructuredtext en"
 """
 :summary: Python client for interacting with Rundeck API
 
@@ -7,6 +6,8 @@ __docformat__ = "restructuredtext en"
 :contact: rundeckrun@mindmind.com
 :copyright: Mark LaPerriere 2013
 """
+__docformat__ = "restructuredtext en"
+
 import time
 import errno
 from string import maketrans, ascii_letters, digits

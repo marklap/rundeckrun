@@ -1,4 +1,3 @@
-__docformat__ = "restructuredtext en"
 """
 :summary: Default values
 
@@ -7,6 +6,9 @@ __docformat__ = "restructuredtext en"
 :contact: rundeckrun@mindmind.com
 :copyright: Mark LaPerriere 2013
 """
+__docformat__ = "restructuredtext en"
+
+
 def enum(name, *sequential, **named):
     values = dict(zip(sequential, range(len(sequential))), **named)
     values['values'] = list(values.values())

@@ -8,7 +8,7 @@
 """
 __docformat__ = "restructuredtext en"
 
-import uuid
+from functools import partial
 from string import maketrans, ascii_letters, digits
 from connection import RundeckConnection
 from exceptions import (
@@ -17,7 +17,14 @@ from exceptions import (
     InvalidDupeOption,
     InvalidUuidOption
     )
-from defaults import GET, POST, DELETE, DupeOption, UuidOption, JobDefFormat, Status
+from defaults import (
+    GET,
+    POST,
+    DELETE,
+    DupeOption,
+    UuidOption,
+    JobDefFormat,
+    )
 
 _DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 _JOB_ID_CHARS = ascii_letters + digits
@@ -25,7 +32,20 @@ _JOB_ID_TRANS_TAB = maketrans(_JOB_ID_CHARS, '#' * len(_JOB_ID_CHARS))
 _JOB_ID_TEMPLATE = '########-####-####-####-############'
 
 
+def api_version_check(api_version, required_version):
+    """Raises a NotImplementedError if the api_version of the connection isn't sufficient
+    """
+    if api_version < required_version:
+        raise NotImplementedError('Call requires API version {0} or higher'.format(required_version))
+
+
 class RundeckApi(object):
+    """As close to the Rundeck API as possible
+
+    :IVariables:
+        connection : RundeckConnection
+            a RundeckConnection instance
+    """
 
     def __init__(self, server='localhost', protocol='http', port=4440, api_token=None, **kwargs):
         """ Initialize a Rundeck API instance
@@ -50,6 +70,7 @@ class RundeckApi(object):
         """
         self.connection = RundeckConnection(
             server, protocol=protocol, port=port, api_token=api_token, **kwargs)
+        self.requires_version = partial(api_version_check, self.connection.api_version)
 
 
     def execute_cmd(self, method, url, params=None, data=None):
@@ -126,7 +147,36 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
+        self.requires_version(2)
         return self.execute_cmd(GET, 'project/{0}/jobs'.format(name), params=kwargs)
+
+
+    def project_resources(self, *args, **kwargs):
+        """ Wraps `Rundeck API GET /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """
+        self.requires_version(2)
+        raise NotImplementedError('Method not implemented')
+
+
+    def project_resources_update(self, *args, **kwargs):
+        """ Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """
+        self.requires_version(2)
+        raise NotImplementedError('Method not implemented')
+
+
+    def project_resources_refresh(self, *args, **kwargs):
+        """ Wraps `Rundeck API GET /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
+        """
+        self.requires_version(2)
+        raise NotImplementedError('Method not implemented')
+
+
+    def run_url(self, *args, **kwargs):
+        """ Wraps `Rundeck API POST /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
+        """
+        self.requires_version(4)
+        raise NotImplementedError('Method not implemented')
 
 
     def job_run(self, job_id, **kwargs):
@@ -261,6 +311,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
+        self.requires_version(5)
         params = {'project': project}
         return self.execute_cmd(GET, '/execution/{0}'.format(execution_id), params=params)
 

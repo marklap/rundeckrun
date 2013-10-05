@@ -1,4 +1,3 @@
-__docformat__ = "restructuredtext en"
 """
 :summary: Exceptions
 
@@ -7,6 +6,7 @@ __docformat__ = "restructuredtext en"
 :contact: rundeckrun@mindmind.com
 :copyright: Mark LaPerriere 2013
 """
+__docformat__ = "restructuredtext en"
 
 
 class InvalidAuthentication(Exception):
