@@ -101,6 +101,34 @@ class RundeckApi(object):
         return self.execute_cmd(GET, 'system/info')
 
 
+    def jobs(self, project):
+        """ Wraps `Rundeck API GET /jobs <http://rundeck.org/docs/api/index.html#listing-jobs>`_
+
+        :Parameters:
+            project : str
+                the name of a project
+
+        :Keywords:
+            idlist : str | list(str, ...)
+                specify a comma-separated string or a list of Job IDs to include
+            groupPath : str
+                specify a group or partial group path to include all jobs within that group path
+                or "*" for all groups or "-" to match top level jobs only (default: "*")
+            jobFilter : str
+                specify a job name filter; will match any job name that contains this string
+            jobExactFilter : str
+                specify an exact job name to match
+            groupPathExact : str
+                specify an exact group path to match or "-" to match the top level jobs only
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
+        """
+        # the keyword args jobExactFilter and groupPathExact require API version 2 so we will too
+        self.requires_version(2)
+        return self.execute_cmd(GET, 'jobs')
+
+
     def projects(self):
         """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
