@@ -42,6 +42,12 @@ JobDefFormat = enum(
     YAML='yaml'
     )
 
+ExecutionOutputFormat = enum(
+    'ExecutionOutputFormat',
+    TEXT='text',
+    **dict(zip(JobDefFormat.keys, JobDefFormat.values))
+    )
+
 RUNDECK_API_VERSION = 9
 GET = 'get'
 POST = 'post'

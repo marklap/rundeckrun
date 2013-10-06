@@ -126,7 +126,7 @@ class RundeckConnection(object):
         """
         return '/'.join([self.base_url, str(self.api_version), api_url.lstrip('/')])
 
-    def execute_cmd(self, method, url, params=None, data=None):
+    def execute_cmd(self, method, url, params=None, data=None, parse_response=True):
         """ Sends the HTTP request to Rundeck
 
         :Parameters:
@@ -145,7 +145,7 @@ class RundeckConnection(object):
         url = self.make_url(url)
 
         response = self.http.request(method, url, params=params, data=data)
-        if response.status_code == requests.codes.ok:
+        if parse_response and response.status_code == requests.codes.ok:
             return RundeckResponse(response.text)
         else:
             return response

@@ -24,6 +24,7 @@ from defaults import (
     DupeOption,
     UuidOption,
     JobDefFormat,
+    ExecutionOutputFormat,
     )
 
 _DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -73,7 +74,7 @@ class RundeckApi(object):
         self.requires_version = partial(api_version_check, self.connection.api_version)
 
 
-    def execute_cmd(self, method, url, params=None, data=None):
+    def execute_cmd(self, method, url, params=None, data=None, parse_response=True):
         """ Executes a request to Rundeck via the RundeckConnection
 
         :Parameters:
@@ -89,7 +90,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.connection.execute_cmd(method, url, params, data)
+        return self.connection.execute_cmd(method, url, params, data, parse_response)
 
 
     def system_info(self):
@@ -101,7 +102,7 @@ class RundeckApi(object):
         return self.execute_cmd(GET, 'system/info')
 
 
-    def jobs(self, project):
+    def jobs(self, project, **kwargs):
         """ Wraps `Rundeck API GET /jobs <http://rundeck.org/docs/api/index.html#listing-jobs>`_
 
         :Parameters:
@@ -126,29 +127,13 @@ class RundeckApi(object):
         """
         # the keyword args jobExactFilter and groupPathExact require API version 2 so we will too
         self.requires_version(2)
-        return self.execute_cmd(GET, 'jobs')
 
+        param_keys = ('idlist', 'groupPath', 'jobFilter', 'jobExactFilter', 'groupPathExact')
+        params = {'project': project}
+        params.update(
+            {k: v for k, v in kwargs.items() if k in param_keys})
 
-    def projects(self):
-        """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        return self.execute_cmd(GET, 'projects')
-
-
-    def project(self, name):
-        """ Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
-
-        :Parameters:
-            name : str
-                name of Project
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        return self.execute_cmd(GET, 'project/{0}'.format(name))
+        return self.execute_cmd(GET, 'jobs', params=params)
 
 
     def project_jobs(self, name, **kwargs):
@@ -177,34 +162,6 @@ class RundeckApi(object):
         """
         self.requires_version(2)
         return self.execute_cmd(GET, 'project/{0}/jobs'.format(name), params=kwargs)
-
-
-    def project_resources(self, *args, **kwargs):
-        """ Wraps `Rundeck API GET /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
-        """
-        self.requires_version(2)
-        raise NotImplementedError('Method not implemented')
-
-
-    def project_resources_update(self, *args, **kwargs):
-        """ Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
-        """
-        self.requires_version(2)
-        raise NotImplementedError('Method not implemented')
-
-
-    def project_resources_refresh(self, *args, **kwargs):
-        """ Wraps `Rundeck API GET /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
-        """
-        self.requires_version(2)
-        raise NotImplementedError('Method not implemented')
-
-
-    def run_url(self, *args, **kwargs):
-        """ Wraps `Rundeck API POST /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
-        """
-        self.requires_version(4)
-        raise NotImplementedError('Method not implemented')
 
 
     def job_run(self, job_id, **kwargs):
@@ -261,6 +218,183 @@ class RundeckApi(object):
             kwargs['argString'] = ' '.join(['-' + k + ' ' + v for k, v in argString.items()])
 
         return self.execute_cmd(GET, 'job/{0}/run'.format(job_id), params=kwargs)
+
+
+    def jobs_export(self, project, **kwargs):
+        """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
+
+        :Parameters:
+            name : str
+                name of the project
+
+        :Keywords:
+            fmt : str ('xml'|'yaml')
+                format of the definition string (default: 'xml')
+            idlist : list(str, ...)
+                a list of job ids to return
+            groupPath : str
+                a group path, partial group path or the special top level only
+                char '-'
+            jobFilter: str
+                find job names that include this string
+
+        :return: A Requests response
+        :rtype: requests.models.Response
+        """
+        fmt = kwargs.pop('fmt', JobDefFormat.XML)
+        if fmt not in JobDefFormat.values:
+            raise InvalidJobDefinitionFormat(fmt)
+
+        param_keys = ('idlist', 'groupPath', 'jobFilter')
+        params = {'format': fmt}
+        params.update(
+            {k: v for k, v in kwargs.items() if k in param_keys})
+
+        return self.execute_cmd(GET, 'projects', params=kwargs, parse_response=False)
+
+
+    def jobs_import(self, definition, **kwargs):
+        """ Wraps `Rundeck API POST /jobs/import <http://rundeck.org/docs/api/index.html#importing-jobs>`_
+
+        :Parameters:
+            definition : str
+                a string representing a job definition
+
+        :Keywords:
+            fmt : str ('xml'|'yaml')
+                format of the definition string (default: 'xml')
+            dupeOption : str ('skip'|'create'|'update')
+                a value to indicate the behavior when importing jobs which already exist
+                (default: 'create')
+            project : str
+                specify the project that all job definitions should be imported to otherwise all
+                job definitions must define a project
+            uuidOption : str ('preserve'|'remove')
+                preserve or remove UUIDs in imported jobs - preserve may fail if a UUID already
+                exists
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
+        """
+
+        fmt = kwargs.get('fmt', JobDefFormat.XML)
+        if fmt not in JobDefFormat.values:
+            raise InvalidJobDefinitionFormat(fmt)
+
+        dupe_option = kwargs.get('dupeOption', DupeOption.CREATE)
+        if dupe_option not in DupeOption.values:
+            raise InvalidDupeOption(dupe_option)
+
+        uuid_option = kwargs.get('uuidOption', UuidOption.PRESERVE)
+        if uuid_option not in UuidOption.values:
+            raise InvalidUuidOption(uuid_option)
+
+        project = kwargs.get('project', None)
+
+        api_kwargs = {
+            'xmlBatch': definition,
+            'format': fmt,
+            'dupeOption': dupe_option,
+            'uuidOption': uuid_option,
+        }
+        if project is not None:
+            api_kwargs['project'] = project
+
+        return self.execute_cmd(POST, '/jobs/import', data=api_kwargs)
+
+
+    def job(self, job_id, **kwargs):
+        """ Wraps `Rundeck API GET /job/[ID] <http://rundeck.org/docs/api/index.html#getting-a-job-definition>`_
+
+        :Parameters:
+            job_id : str
+                Rundeck Job ID
+
+        :Keywords:
+            fmt : str
+                the format of the response one of JobDefFormat.values (default: 'xml')
+
+        :return: A Requests response
+        :rtype: requests.models.Response
+        """
+        fmt = kwargs.get('fmt', JobDefFormat.XML)
+        if fmt not in JobDefFormat.values:
+            raise InvalidJobDefinitionFormat(fmt)
+
+        params = {'format': fmt}
+
+        return self.execute_cmd(GET, '/job/{0}'.format(job_id), params=params, parse_response=False)
+
+
+    def delete_job(self, job_id):
+        """ Wraps `Rundeck API DELETE /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
+
+        :Parameters:
+            job_id : str
+                Rundeck Job ID
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
+        """
+        return self.execute_cmd(DELETE, '/job/{0}'.format(job_id))
+
+
+    def jobs_delete(self, idlist):
+        """ Wraps `Rundeck API POST /jobs/delete <http://rundeck.org/docs/api/index.html#importing-jobs>`_
+
+        :Parameters:
+            idlist : str | list(str, ...)
+                a list of job ids or a string of comma seperated job ids to delete
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
+        """
+        if not isinstance(idlist, basestring) and hasattr(idlist, '__iter__'):
+            idlist = ','.join(idlist)
+
+        params = {'idlist': idlist}
+
+        return self.execute_cmd(POST, '/jobs/delete', params=params)
+
+
+    def job_executions(self, job_id, **kwargs):
+        """ Wraps `Rundeck API GET /job/[ID]/executions <http://rundeck.org/docs/api/index.html#getting-executions-for-a-job>`_
+
+        :Parameters:
+            job_id : str
+                a Job ID
+
+        :Keywords:
+            status : str
+                one of Status.values
+            max : int
+                maximum number of results to include in response (default: 20)
+            offset : int
+                offset for result set (default: 0)
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
+        """
+        params = {}
+        param_keys = ('status', 'max', 'offset')
+        params.update(
+            {k: v for k, v in kwargs.items() if k in param_keys})
+
+        return self.execute_cmd(POST, '/job/{0}/executions'.format(job_id), params=params)
+
+
+    def executions_running(self, project):
+        """ Wraps `Rundeck API GET /executions/running <http://rundeck.org/docs/api/index.html#listing-running-executions>`_
+
+        :Parameters:
+            project : str
+                the name of a project
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
+        """
+        params = {'project': project}
+        return self.execute_cmd(GET, '/executions/running', params=params)
 
 
     def execution(self, execution_id):
@@ -341,90 +475,88 @@ class RundeckApi(object):
         """
         self.requires_version(5)
         params = {'project': project}
-        return self.execute_cmd(GET, '/execution/{0}'.format(execution_id), params=params)
+        return self.execute_cmd(GET, '/executions', params=params)
 
 
-    def job(self, job_id, **kwargs):
-        """ Wraps `Rundeck API GET /job/[ID] <http://rundeck.org/docs/api/index.html#getting-a-job-definition>`_
+    def execution_output(self, execution_id, **kwargs):
+        """Wraps `Rundeck API GET /execution/[ID]/output <http://rundeck.org/docs/api/index.html#execution-output>`_
 
         :Parameters:
-            job_id : str
-                Rundeck Job ID
+            execution_id : str
+                Rundeck Job Execution ID
 
         :Keywords:
             fmt : str
-                the format of the response one of JobDefFormat.values (default: 'xml')
+                the format of the response one of ExecutionOutputFormat.values (default: 'text')
+            offset : int
+                byte offset to read from in the file, 0 indicates the beginning
+            lastlines : int
+                number of lines to retrieve from the end of the available output, overrides offset
+            lastmod : int
+                a unix millisecond timestamp; return output data received after this timestamp
+            maxlines : int
+                maximum number of lines to retrieve forward from the specified offset
 
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
+        :return: A Requests response
+        :rtype: requests.models.Response
         """
-        fmt = kwargs.get('fmt', JobDefFormat.XML)
-        if fmt not in JobDefFormat.values:
-            raise InvalidJobDefinitionFormat(fmt)
+        fmt = kwargs.get('fmt', ExecutionOutputFormat.TEXT)
+        if fmt not in ExecutionOutputFormat.values:
+            raise InvalidResponseFormat(fmt)
 
         params = {'format': fmt}
+        param_keys = ('offset', 'lastlines', 'lastmod', 'maxlines')
+        params.update(
+            {k: v for k, v in kwargs.items() if k in param_keys})
 
-        return self.execute_cmd(GET, '/job/{0}'.format(job_id), params=params)
-
-
-    def delete_job(self, job_id):
-        """ Wraps `Rundeck API DELETE /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
-
-        :Parameters:
-            job_id : str
-                Rundeck Job ID
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        return self.execute_cmd(DELETE, '/job/{0}'.format(job_id))
+        return self.execute_cmd(GET, '/execution/{0}/output'.format(execution_id), params=params, parse_response=False)
 
 
-    def jobs_import(self, definition, fmt='xml', **kwargs):
-        """ Wraps `Rundeck API POST /jobs/import <http://rundeck.org/docs/api/index.html#importing-jobs>`_
-
-        :Parameters:
-            definition : str
-                a string representing a job definition
-            fmt : str ('xml'|'yaml')
-                format of the definition string (default: 'xml')
-
-        :Keywords:
-            dupeOption : str ('skip'|'create'|'update')
-                a value to indicate the behavior when importing jobs which already exist
-                (default: 'create')
-            project : str
-                specify the project that all job definitions should be imported to otherwise all
-                job definitions must define a project
-            uuidOption : str ('preserve'|'remove')
-                preserve or remove UUIDs in imported jobs - preserve may fail if a UUID already
-                exists
+    def projects(self):
+        """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
+        return self.execute_cmd(POST, '/projects')
 
-        fmt = kwargs.get('fmt', JobDefFormat.XML)
-        if fmt not in JobDefFormat.values:
-            raise InvalidJobDefinitionFormat(fmt)
 
-        dupe_option = kwargs.get('dupeOption', DupeOption.CREATE)
-        if dupe_option not in DupeOption.values:
-            raise InvalidDupeOption(dupe_option)
+    def project(self, name):
+        """ Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
 
-        uuid_option = kwargs.get('uuidOption', UuidOption.PRESERVE)
-        if uuid_option not in UuidOption.values:
-            raise InvalidUuidOption(uuid_option)
+        :Parameters:
+            name : str
+                name of Project
 
-        project = kwargs.get('project', None)
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
+        """
+        return self.execute_cmd(GET, 'project/{0}'.format(name))
 
-        api_kwargs = {
-            'xmlBatch': definition,
-            'format': fmt,
-            'dupeOption': dupe_option,
-            'uuidOption': uuid_option,
-        }
-        if project is not None:
-            api_kwargs['project'] = project
 
-        return self.execute_cmd(POST, '/jobs/import', data=api_kwargs)
+    def project_resources(self, *args, **kwargs):
+        """ Wraps `Rundeck API GET /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """
+        self.requires_version(2)
+        raise NotImplementedError('Method not implemented')
+
+
+    def project_resources_update(self, *args, **kwargs):
+        """ Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """
+        self.requires_version(2)
+        raise NotImplementedError('Method not implemented')
+
+
+    def project_resources_refresh(self, *args, **kwargs):
+        """ Wraps `Rundeck API GET /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
+        """
+        self.requires_version(2)
+        raise NotImplementedError('Method not implemented')
+
+
+    def run_url(self, *args, **kwargs):
+        """ Wraps `Rundeck API POST /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
+        """
+        self.requires_version(4)
+        raise NotImplementedError('Method not implemented')
