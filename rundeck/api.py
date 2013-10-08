@@ -10,7 +10,7 @@ __docformat__ = "restructuredtext en"
 
 from functools import partial
 from string import maketrans, ascii_letters, digits
-from urllib import urlencode
+import urllib
 
 from connection import RundeckConnection
 from exceptions import (
@@ -186,9 +186,8 @@ class RundeckApi(object):
 
         params = cull_kwargs(
             ('idlist', 'groupPath', 'jobFilter', 'jobExactFilter', 'groupPathExact'), kwargs)
-        params['project'] = project
 
-        return self.execute_cmd(GET, 'project/{0}/jobs'.format(project), params=params, **kwargs)
+        return self.execute_cmd(GET, 'project/{0}/jobs'.format(urllib.quote(project)), params=params, **kwargs)
 
 
     def job_run(self, job_id, **kwargs):
@@ -421,8 +420,6 @@ class RundeckApi(object):
                 name of the project
 
         :Keywords:
-            api_params : DO NOT SUPPLY
-                **see cull_kwargs decorator**
             statusFilter : str
                 one of Status.values
             abortedbyFilter : str
@@ -537,6 +534,24 @@ class RundeckApi(object):
         return self.execute_cmd(GET, '/execution/{0}/output'.format(execution_id), params=params, **kwargs)
 
 
+    def run_command(self, *args, **kwargs):
+        """ Wraps `Rundeck API GET /run/command <http://rundeck.org/docs/api/index.html#running-adhoc-commands>`_
+        """
+        raise NotImplementedError('Method not implemented')
+
+
+    def run_script(self, *args, **kwargs):
+        """ Wraps `Rundeck API GET /run/script <http://rundeck.org/docs/api/index.html#running-adhoc-scripts>`_
+        """
+        raise NotImplementedError('Method not implemented')
+
+
+    def run_url(self, *args, **kwargs):
+        """ Wraps `Rundeck API GET /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
+        """
+        raise NotImplementedError('Method not implemented')
+
+
     def projects(self, **kwargs):
         """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
@@ -546,17 +561,17 @@ class RundeckApi(object):
         return self.execute_cmd(POST, '/projects', **kwargs)
 
 
-    def project(self, name, **kwargs):
+    def project(self, project, **kwargs):
         """ Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
 
         :Parameters:
-            name : str
+            project : str
                 name of Project
 
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(GET, 'project/{0}'.format(name), **kwargs)
+        return self.execute_cmd(GET, 'project/{0}'.format(urllib.quote(project)), **kwargs)
 
 
     def project_resources(self, *args, **kwargs):
@@ -580,8 +595,54 @@ class RundeckApi(object):
         raise NotImplementedError('Method not implemented')
 
 
-    def run_url(self, *args, **kwargs):
-        """ Wraps `Rundeck API POST /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
+    def history(self, project, **kwargs):
+        """ Wraps `Rundeck API GET /history <http://rundeck.org/docs/api/index.html#listing-history>`_
+
+        :Parameters:
+            project : str
+                name of the project
+
+        :Keywords:
+            jobIdFilter : str
+                include event for a job ID
+            reportIdFilter : str
+                include events for an event name
+            userFilter : str
+                include events created by user
+            statFilter : str
+                one of Status.values
+            jobListFilter : str | list
+                one or more full job group/name to include
+            excludeJobListFilter : str | list
+                one or more full job group/name to include
+            recentFilter | str
+                Use a simple text format to filter executions that completed within a period of
+                time; the format is "XY" where 'X' is an integer and 'Y' is one of:
+
+                    * `h`:hour
+                    * `d`:day
+                    * `w`:week
+                    * `m`:month
+                    * `y`:year
+
+                So a value of "2w" would return executions that completed within the last two weeks
+
+            begin : int | str
+                either a unix millisecond timestamp or a W3C dateTime "yyyy-MM-ddTHH:mm:ssZ"
+            end : int | str
+                either a unix millisecond timestamp or a W3C dateTime "yyyy-MM-ddTHH:mm:ssZ"
+            max : int
+                maximum number of results to include in response (default: 20)
+            offset : int
+                offset for result set (default: 0)
+
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
         """
         self.requires_version(4)
-        raise NotImplementedError('Method not implemented')
+        params = cull_kwargs(('jobIdFilter', 'reportIdFilter', 'userFilter', 'statFilter', \
+            'jobListFilter', 'excludeJobListFilter', 'recentFilter', 'begin', 'end', 'max', \
+            'offset'), kwargs)
+        params['project'] = project
+        return self.execute_cmd(GET, 'history', **kwargs)

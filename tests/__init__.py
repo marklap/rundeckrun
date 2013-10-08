@@ -29,7 +29,8 @@ pwd = os.environ.get(_RUNDECK_PWD_VAR, None)
 
 test_job_id = uuid.uuid4()
 test_job_name = 'TestJob'
-test_job_proj = 'TestProject'
+#test_job_proj = 'TestProject'
+test_job_proj = 'monkey+stuff'
 test_job_def_tmpl = """<joblist>
   <job>
     <id>{0}</id>
