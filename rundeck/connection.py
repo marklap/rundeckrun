@@ -11,12 +11,7 @@
 __docformat__ = "restructuredtext en"
 
 import requests
-
-# see if we can speed things up a bit with cElementTree (not required)
-try:
-    import cElementTree as ElementTree
-except ImportError:
-    import xml.etree.ElementTree as ElementTree
+import xmltodict
 
 from .defaults import RUNDECK_API_VERSION
 from .exceptions import InvalidAuthentication
@@ -24,47 +19,50 @@ from .exceptions import InvalidAuthentication
 
 class RundeckResponse(object):
 
-    def __init__(self, xml):
+    def __init__(self, response):
         """ Parses an XML string into a convenient Python object
 
         :Parameters:
-            xml : str
-                an XML string returned by the Rundeck server
+            response : str
+                a response from the Rundeck server
         """
-        self.xml = xml
-        self.etree = ElementTree.fromstring(xml)
-        self.api_version = self.etree.attrib.get('apiversion', None)
-        self.message = None
+        self._response = response
+        self._dict = None
+        self._success = None
+        self._message = None
 
-
-        if 'success' in self.etree.attrib:
-            self.success = True
-            message_el = self.etree.find('success')
-        else:
-            self.success = False
-            message_el = self.etree.find('error')
-
-        if message_el is not None:
-            self.message = message_el.find('message').text
-            self.etree.remove(message_el)
+    def _get_dict(self):
+        if self._dict is None:
+            self._dict = xmltodict.parse(self._response)
+        return self._dict
 
     @property
-    def body(self):
-        """ Returns the most appropriate portion of the parsed XML response
-        """
-        try:
-            return self._body
-        except AttributeError:
-            body_els = list(self.etree)
-            body_el_count = len(body_els)
-            if body_el_count == 0:
-                self._body = None
-            elif body_el_count == 1:
-                self._body = body_els[0]
-            else:
-                self._body = body_els
+    def as_dict(self):
+        return self._get_dict()
 
-            return self._body
+    @property
+    def api_version(self):
+        return self.as_dict['result']['@apiversion']
+
+    @property
+    def success(self):
+        if self._success is not None:
+            return self._success
+
+        self._success = '@success' in self.as_dict['result']
+        return self._success
+
+    @property
+    def message(self):
+        if self._message is not None:
+            return self._message
+
+        if self.success:
+            self._message = self.as_dict['result']['success']['message']
+        else:
+            self._message = self.as_dict['result']['error']['message']
+
+        return self._message
 
 
 class RundeckConnection(object):
@@ -126,7 +124,7 @@ class RundeckConnection(object):
         """
         return '/'.join([self.base_url, str(self.api_version), api_url.lstrip('/')])
 
-    def execute_cmd(self, method, url, params=None, data=None, parse_response=True):
+    def execute_cmd(self, method, url, params=None, data=None, parse_response=True, **kwargs):
         """ Sends the HTTP request to Rundeck
 
         :Parameters:

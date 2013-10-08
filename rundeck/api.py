@@ -10,6 +10,8 @@ __docformat__ = "restructuredtext en"
 
 from functools import partial
 from string import maketrans, ascii_letters, digits
+from urllib import urlencode
+
 from connection import RundeckConnection
 from exceptions import (
     InvalidResponseFormat,
@@ -38,6 +40,22 @@ def api_version_check(api_version, required_version):
     """
     if api_version < required_version:
         raise NotImplementedError('Call requires API version {0} or higher'.format(required_version))
+
+
+def cull_kwargs(api_keys, kwargs):
+    """strips out the api_params from kwargs based on the list of api_keys
+    !! modifies kwargs inline
+
+    :Parameters:
+        api_keys : list | set | tuple
+            an iterable representing the keys of the key value pairs to pull out of kwargs
+        kwargs : dict
+            a dictionary of kwargs
+
+    :return: a dictionary the API params
+    :rtype: dict
+    """
+    return {k: kwargs.pop(k) for k in api_keys if k in kwargs}
 
 
 class RundeckApi(object):
@@ -74,7 +92,7 @@ class RundeckApi(object):
         self.requires_version = partial(api_version_check, self.connection.api_version)
 
 
-    def execute_cmd(self, method, url, params=None, data=None, parse_response=True):
+    def execute_cmd(self, method, url, params=None, data=None, parse_response=True, **kwargs):
         """ Executes a request to Rundeck via the RundeckConnection
 
         :Parameters:
@@ -87,19 +105,23 @@ class RundeckApi(object):
             data : dict
                 dict of POST data
 
+        :Keywords:
+            \*\* : \*
+                all remaining keyword arguments will be passed on to RundeckConnection.execute_cmd
+
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.connection.execute_cmd(method, url, params, data, parse_response)
+        return self.connection.execute_cmd(method, url, params, data, parse_response, **kwargs)
 
 
-    def system_info(self):
+    def system_info(self, **kwargs):
         """ Wraps `Rundeck API GET /system/info <http://rundeck.org/docs/api/index.html#system-info>`_
 
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(GET, 'system/info')
+        return self.execute_cmd(GET, 'system/info', **kwargs)
 
 
     def jobs(self, project, **kwargs):
@@ -126,21 +148,21 @@ class RundeckApi(object):
         :rtype: RundeckResponse
         """
         # the keyword args jobExactFilter and groupPathExact require API version 2 so we will too
+        # (but seriously... are you still using Rundeck API v1?!?!)
         self.requires_version(2)
 
-        param_keys = ('idlist', 'groupPath', 'jobFilter', 'jobExactFilter', 'groupPathExact')
-        params = {'project': project}
-        params.update(
-            {k: v for k, v in kwargs.items() if k in param_keys})
+        params = cull_kwargs(
+            ('idlist', 'groupPath', 'jobFilter', 'jobExactFilter', 'groupPathExact'), kwargs)
+        params['project'] = project
 
-        return self.execute_cmd(GET, 'jobs', params=params)
+        return self.execute_cmd(GET, 'jobs', params=params, **kwargs)
 
 
-    def project_jobs(self, name, **kwargs):
+    def project_jobs(self, project, **kwargs):
         """ Wraps `Rundeck API GET /project/[NAME]/jobs <http://rundeck.org/docs/api/index.html#listing-jobs-for-a-project>`_
 
         :Parameters:
-            name : str
+            project : str
                 name of the project
 
         :Keywords:
@@ -161,7 +183,12 @@ class RundeckApi(object):
         :rtype: RundeckResponse
         """
         self.requires_version(2)
-        return self.execute_cmd(GET, 'project/{0}/jobs'.format(name), params=kwargs)
+
+        params = cull_kwargs(
+            ('idlist', 'groupPath', 'jobFilter', 'jobExactFilter', 'groupPathExact'), kwargs)
+        params['project'] = project
+
+        return self.execute_cmd(GET, 'project/{0}/jobs'.format(project), params=params, **kwargs)
 
 
     def job_run(self, job_id, **kwargs):
@@ -213,11 +240,16 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        argString = kwargs.get('argString', None)
-        if isinstance(argString, dict):
-            kwargs['argString'] = ' '.join(['-' + k + ' ' + v for k, v in argString.items()])
+        params = cull_kwargs(('argString', 'loglevel', 'asUser', 'exclude-precedence', \
+            'hostname', 'tags', 'os-name', 'os-family', 'os-arch', 'os-version', 'name', \
+            'exlude-hostname', 'exlude-tags', 'exlude-os-name', 'exlude-os-family', \
+            'exlude-os-arch', 'exlude-os-version', 'exlude-name'), kwargs)
 
-        return self.execute_cmd(GET, 'job/{0}/run'.format(job_id), params=kwargs)
+        argString = params.get('argString', None)
+        if isinstance(argString, dict):
+            params['argString'] = ' '.join(['-' + k + ' ' + v for k, v in argString.items()])
+
+        return self.execute_cmd(GET, 'job/{0}/run'.format(job_id), params=params, **kwargs)
 
 
     def jobs_export(self, project, **kwargs):
@@ -241,16 +273,11 @@ class RundeckApi(object):
         :return: A Requests response
         :rtype: requests.models.Response
         """
-        fmt = kwargs.pop('fmt', JobDefFormat.XML)
-        if fmt not in JobDefFormat.values:
-            raise InvalidJobDefinitionFormat(fmt)
+        params = cull_kwargs(('fmt', 'idlist', 'groupPath', 'jobFilter'), kwargs)
+        if 'fmt' in params:
+            params['format'] = params.pop('fmt')
 
-        param_keys = ('idlist', 'groupPath', 'jobFilter')
-        params = {'format': fmt}
-        params.update(
-            {k: v for k, v in kwargs.items() if k in param_keys})
-
-        return self.execute_cmd(GET, 'projects', params=kwargs, parse_response=False)
+        return self.execute_cmd(GET, 'projects', params=params, parse_response=False, **kwargs)
 
 
     def jobs_import(self, definition, **kwargs):
@@ -276,31 +303,12 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
+        data = cull_kwargs(('fmt', 'dupeOption', 'project', 'uuidOption'), kwargs)
+        data['xmlBatch'] = definition
+        if 'fmt' in data:
+            data['format'] = data.pop('fmt')
 
-        fmt = kwargs.get('fmt', JobDefFormat.XML)
-        if fmt not in JobDefFormat.values:
-            raise InvalidJobDefinitionFormat(fmt)
-
-        dupe_option = kwargs.get('dupeOption', DupeOption.CREATE)
-        if dupe_option not in DupeOption.values:
-            raise InvalidDupeOption(dupe_option)
-
-        uuid_option = kwargs.get('uuidOption', UuidOption.PRESERVE)
-        if uuid_option not in UuidOption.values:
-            raise InvalidUuidOption(uuid_option)
-
-        project = kwargs.get('project', None)
-
-        api_kwargs = {
-            'xmlBatch': definition,
-            'format': fmt,
-            'dupeOption': dupe_option,
-            'uuidOption': uuid_option,
-        }
-        if project is not None:
-            api_kwargs['project'] = project
-
-        return self.execute_cmd(POST, '/jobs/import', data=api_kwargs)
+        return self.execute_cmd(POST, '/jobs/import', data=data, **kwargs)
 
 
     def job(self, job_id, **kwargs):
@@ -317,16 +325,15 @@ class RundeckApi(object):
         :return: A Requests response
         :rtype: requests.models.Response
         """
-        fmt = kwargs.get('fmt', JobDefFormat.XML)
-        if fmt not in JobDefFormat.values:
-            raise InvalidJobDefinitionFormat(fmt)
+        params = cull_kwargs(('fmt',), kwargs)
 
-        params = {'format': fmt}
+        if 'fmt' in params:
+            params['format'] = params.pop('fmt')
 
-        return self.execute_cmd(GET, '/job/{0}'.format(job_id), params=params, parse_response=False)
+        return self.execute_cmd(GET, '/job/{0}'.format(job_id), params=params, parse_response=False, **kwargs)
 
 
-    def delete_job(self, job_id):
+    def delete_job(self, job_id, **kwargs):
         """ Wraps `Rundeck API DELETE /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
 
         :Parameters:
@@ -336,10 +343,10 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(DELETE, '/job/{0}'.format(job_id))
+        return self.execute_cmd(DELETE, '/job/{0}'.format(job_id), **kwargs)
 
 
-    def jobs_delete(self, idlist):
+    def jobs_delete(self, idlist, **kwargs):
         """ Wraps `Rundeck API POST /jobs/delete <http://rundeck.org/docs/api/index.html#importing-jobs>`_
 
         :Parameters:
@@ -354,7 +361,7 @@ class RundeckApi(object):
 
         params = {'idlist': idlist}
 
-        return self.execute_cmd(POST, '/jobs/delete', params=params)
+        return self.execute_cmd(POST, '/jobs/delete', params=params, **kwargs)
 
 
     def job_executions(self, job_id, **kwargs):
@@ -375,15 +382,11 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        params = {}
-        param_keys = ('status', 'max', 'offset')
-        params.update(
-            {k: v for k, v in kwargs.items() if k in param_keys})
-
-        return self.execute_cmd(POST, '/job/{0}/executions'.format(job_id), params=params)
+        params = cull_kwargs(('status', 'max', 'offset'), kwargs)
+        return self.execute_cmd(POST, '/job/{0}/executions'.format(job_id), params=params, **kwargs)
 
 
-    def executions_running(self, project):
+    def executions_running(self, project, **kwargs):
         """ Wraps `Rundeck API GET /executions/running <http://rundeck.org/docs/api/index.html#listing-running-executions>`_
 
         :Parameters:
@@ -394,10 +397,10 @@ class RundeckApi(object):
         :rtype: RundeckResponse
         """
         params = {'project': project}
-        return self.execute_cmd(GET, '/executions/running', params=params)
+        return self.execute_cmd(GET, '/executions/running', params=params, **kwargs)
 
 
-    def execution(self, execution_id):
+    def execution(self, execution_id, **kwargs):
         """Wraps `Rundeck API GET /execution/[ID] <http://rundeck.org/docs/api/index.html#getting-execution-info>`_
 
         :Parameters:
@@ -407,7 +410,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(GET, '/execution/{0}'.format(execution_id))
+        return self.execute_cmd(GET, '/execution/{0}'.format(execution_id), **kwargs)
 
 
     def executions(self, project, **kwargs):
@@ -418,6 +421,8 @@ class RundeckApi(object):
                 name of the project
 
         :Keywords:
+            api_params : DO NOT SUPPLY
+                **see cull_kwargs decorator**
             statusFilter : str
                 one of Status.values
             abortedbyFilter : str
@@ -474,8 +479,15 @@ class RundeckApi(object):
         :rtype: RundeckResponse
         """
         self.requires_version(5)
-        params = {'project': project}
-        return self.execute_cmd(GET, '/executions', params=params)
+
+        params = cull_kwargs(('statusFilter', 'abortedbyFilter', 'userFilter', 'recentFilter', \
+            'begin', 'end', 'adhoc', 'jobIdListFilter', 'excludeJobIdListFilter', \
+            'jobListFilter', 'excludeJobListFilter', 'groupPath', 'groupPathExact', \
+            'excludeGroupPath', 'excludeGroupPathExact', 'jobExactFilter', \
+            'exludeJobExactFilter', 'max', 'offset'), kwargs)
+        params['project'] = project
+
+        return self.execute_cmd(GET, '/executions', params=params, **kwargs)
 
 
     def execution_output(self, execution_id, **kwargs):
@@ -500,28 +512,41 @@ class RundeckApi(object):
         :return: A Requests response
         :rtype: requests.models.Response
         """
-        fmt = kwargs.get('fmt', ExecutionOutputFormat.TEXT)
-        if fmt not in ExecutionOutputFormat.values:
-            raise InvalidResponseFormat(fmt)
+        params = cull_kwargs(('fmt', 'offset', 'lastlines', 'lastmod', 'maxlines'), kwargs)
+        if 'fmt' in params:
+            params['format'] = params.pop('fmt')
 
-        params = {'format': fmt}
-        param_keys = ('offset', 'lastlines', 'lastmod', 'maxlines')
-        params.update(
-            {k: v for k, v in kwargs.items() if k in param_keys})
-
-        return self.execute_cmd(GET, '/execution/{0}/output'.format(execution_id), params=params, parse_response=False)
+        return self.execute_cmd(GET, '/execution/{0}/output'.format(execution_id), params=params, parse_response=False, **kwargs)
 
 
-    def projects(self):
+    def execution_abort(self, execution_id, **kwargs):
+        """Wraps `Rundeck API GET /execution/[ID]/output <http://rundeck.org/docs/api/index.html#execution-output>`_
+
+        :Parameters:
+            execution_id : str
+                Rundeck Job Execution ID
+
+        :Keywords:
+            asUser : str
+                specifies a username identifying the user who aborted the execution
+
+        :return: A Requests response
+        :rtype: requests.models.Response
+        """
+        params = cull_kwargs(('asUser',), kwargs)
+        return self.execute_cmd(GET, '/execution/{0}/output'.format(execution_id), params=params, **kwargs)
+
+
+    def projects(self, **kwargs):
         """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(POST, '/projects')
+        return self.execute_cmd(POST, '/projects', **kwargs)
 
 
-    def project(self, name):
+    def project(self, name, **kwargs):
         """ Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
 
         :Parameters:
@@ -531,7 +556,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(GET, 'project/{0}'.format(name))
+        return self.execute_cmd(GET, 'project/{0}'.format(name), **kwargs)
 
 
     def project_resources(self, *args, **kwargs):

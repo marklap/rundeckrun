@@ -1,8 +1,7 @@
 import uuid
+import time
 from datetime import datetime
 from pprint import pprint
-
-from rundeck.client import transform_execution
 
 from tests import (
     rundeck_client,
@@ -78,13 +77,23 @@ def test_delete_job():
 
 
 def test_execution():
-    execution = transform_execution(rundeck_api.job_run(test_job_id))
-    assert rundeck_api.execution(execution['id']).success, 'execution call was unsuccessful'
+    execution = rundeck_api.job_run(test_job_id)
+    time.sleep(1)
+    execution_id = execution.as_dict['result']['executions']['execution']['@id']
+    assert rundeck_api.execution(execution_id).success, 'execution call was unsuccessful'
 
 
 def test_execution_output():
-    execution = transform_execution(rundeck_api.job_run(test_job_id))
-    assert rundeck_api.execution_output(execution['id']).status_code == 200, 'execution_output call was unsuccessful'
+    execution = rundeck_api.job_run(test_job_id)
+    time.sleep(1)
+    execution_id = execution.as_dict['result']['executions']['execution']['@id']
+    assert rundeck_api.execution_output(execution_id).status_code == 200, 'execution_output call was unsuccessful'
+
+def test_execution_abort():
+    execution = rundeck_api.job_run(test_job_id)
+    time.sleep(1)
+    execution_id = execution.as_dict['result']['executions']['execution']['@id']
+    assert rundeck_api.execution_abort(execution_id).success, 'execution_abort call was unsuccessful'
 
 
 def test_executions():
