@@ -58,6 +58,23 @@ def cull_kwargs(api_keys, kwargs):
     return {k: kwargs.pop(k) for k in api_keys if k in kwargs}
 
 
+def dict2argstring(argString):
+    """converts an argString dict into a string otherwise returns the string unchanged
+
+    :Parameters:
+        argString : str | dict
+            argument string to pass to job - if str, will be passed as-is else if dict will be
+            converted to compatible string
+
+    :return: an argString
+    :rtype: str
+    """
+    if isinstance(argString, dict):
+        return ' '.join(['-' + str(k) + ' ' + str(v) for k, v in argString.items()])
+    else:
+        return argString
+
+
 class RundeckApi(object):
     """As close to the Rundeck API as possible
 
@@ -147,12 +164,12 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        # the keyword args jobExactFilter and groupPathExact require API version 2 so we will too
-        # (but seriously... are you still using Rundeck API v1?!?!)
-        self.requires_version(2)
-
         params = cull_kwargs(
             ('idlist', 'groupPath', 'jobFilter', 'jobExactFilter', 'groupPathExact'), kwargs)
+
+        if 'jobExactFilter' in params or 'groupPathExact' in params:
+            self.requires_version(2)
+
         params['project'] = project
 
         return self.execute_cmd(GET, 'jobs', params=params, **kwargs)
@@ -245,10 +262,8 @@ class RundeckApi(object):
             'exlude-os-arch', 'exlude-os-version', 'exlude-name'), kwargs)
 
         argString = params.get('argString', None)
-        if isinstance(argString, dict):
-            params['argString'] = ' '.join(
-                ['-' + str(k) + ' ' + str(v) for k, v in argString.items()]
-                )
+        if argString is not None:
+            params['argString'] = dict2argstring(argString)
 
         return self.execute_cmd(GET, 'job/{0}/run'.format(job_id), params=params, **kwargs)
 
@@ -536,22 +551,213 @@ class RundeckApi(object):
         return self.execute_cmd(GET, '/execution/{0}/abort'.format(execution_id), params=params, **kwargs)
 
 
-    def run_command(self, *args, **kwargs):
+    def run_command(self, project, command, **kwargs):
         """ Wraps `Rundeck API GET /run/command <http://rundeck.org/docs/api/index.html#running-adhoc-commands>`_
+
+        :Parameters:
+            project : str
+                name of the project
+            command : str
+                the shell command string to run
+
+
+        :Keywords:
+            nodeThreadcount : int
+                the number of threads to use
+            nodeKeepgoing : bool
+                if True, continue executing on other nodes even if some fail
+            asUser : str
+                specifies a username identifying the user who ran the command; requires runAs
+                permission
+            hostname : str
+                hostname inclusion filter
+            tags : str
+                tags inclusion filter
+            os-name : str
+                os-name inclusion filter
+            os-family : str
+                os-family inclusion filter
+            os-arch : str
+                os-arch inclusion filter
+            os-version : str
+                os-version inclusion filter
+            name : str
+                name inclusion filter
+            exlude-hostname : str
+                hostname exclusion filter
+            exlude-tags : str
+                tags exclusion filter
+            exlude-os-name : str
+                os-name exclusion filter
+            exlude-os-family : str
+                os-family exclusion filter
+            exlude-os-arch : str
+                os-arch exclusion filter
+            exlude-os-version : str
+                os-version exclusion filter
+            exlude-name : str
+                name exclusion filter
         """
-        raise NotImplementedError('Method not implemented')
+        params = cull_kwargs(('nodeThreadcount', 'nodeKeepgoing', 'asUser', 'hostname', 'tags', \
+            'os-name', 'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', \
+            'exlude-tags', 'exlude-os-name', 'exlude-os-family', 'exlude-os-arch', \
+            'exlude-os-version', 'exlude-name'), kwargs)
+
+        params['project'] = project
+        params['exec'] = command
+
+        return self.execute_cmd(GET, '/run/command', params=params, **kwargs)
 
 
-    def run_script(self, *args, **kwargs):
-        """ Wraps `Rundeck API GET /run/script <http://rundeck.org/docs/api/index.html#running-adhoc-scripts>`_
+    def run_script(self, project, scriptFile, **kwargs):
+        """ Wraps `Rundeck API POST /run/script <http://rundeck.org/docs/api/index.html#running-adhoc-scripts>`_
+
+        :Parameters:
+            project : str
+                name of the project
+            scriptFile : str
+                a string containing the script file content
+
+
+        :Keywords:
+            argString : str | dict
+                argument string to pass to job - if str, will be passed as-is
+                else if dict will be converted to compatible string
+            nodeThreadcount : int
+                the number of threads to use
+            nodeKeepgoing : bool
+                if True, continue executing on other nodes even if some fail
+            asUser : str
+                specifies a username identifying the user who ran the command; requires runAs
+                permission
+            scriptInterpreter : str
+                a command to use to run the script (requires API version 8 or higher)
+            interpreterArgsQuoted : bool
+                if True the script file and arguments will be quoted as the last argument to the
+                scriptInterpreter (requires API version 8 or higher)
+            hostname : str
+                hostname inclusion filter
+            tags : str
+                tags inclusion filter
+            os-name : str
+                os-name inclusion filter
+            os-family : str
+                os-family inclusion filter
+            os-arch : str
+                os-arch inclusion filter
+            os-version : str
+                os-version inclusion filter
+            name : str
+                name inclusion filter
+            exlude-hostname : str
+                hostname exclusion filter
+            exlude-tags : str
+                tags exclusion filter
+            exlude-os-name : str
+                os-name exclusion filter
+            exlude-os-family : str
+                os-family exclusion filter
+            exlude-os-arch : str
+                os-arch exclusion filter
+            exlude-os-version : str
+                os-version exclusion filter
+            exlude-name : str
+                name exclusion filter
         """
-        raise NotImplementedError('Method not implemented')
+        params = cull_kwargs(('argString', 'nodeThreadcount', 'nodeKeepgoing', 'asUser', \
+            'scriptInterpreter', 'interpreterArgsQuoted', 'hostname', 'tags', 'os-name', \
+            'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', 'exlude-tags', \
+            'exlude-os-name', 'exlude-os-family', 'exlude-os-arch', 'exlude-os-version', \
+            'exlude-name'), kwargs)
+
+        params['project'] = project
+        params['scriptFile'] = scriptFile
+
+        if 'scriptInterpreter' in params or 'interpreterArgsQuoted' in params:
+            self.requires_version(8)
+
+        argString = params.get('argString', None)
+        if argString is not None:
+            params['argString'] = dict2argstring(argString)
 
 
-    def run_url(self, *args, **kwargs):
-        """ Wraps `Rundeck API GET /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
+        return self.execute_cmd(POST, '/run/script', params=params, **kwargs)
+
+
+    def run_url(self, project, scriptUrl, **kwargs):
+        """ Wraps `Rundeck API POST /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
+
+        :Parameters:
+            project : str
+                name of the project
+            scriptUrl : str
+                a URL referencing a script to download and run
+
+
+        :Keywords:
+            argString : str | dict
+                argument string to pass to job - if str, will be passed as-is
+                else if dict will be converted to compatible string
+            nodeThreadcount : int
+                the number of threads to use
+            nodeKeepgoing : bool
+                if True, continue executing on other nodes even if some fail
+            asUser : str
+                specifies a username identifying the user who ran the command; requires runAs
+                permission
+            scriptInterpreter : str
+                a command to use to run the script (requires API version 8 or higher)
+            interpreterArgsQuoted : bool
+                if True the script file and arguments will be quoted as the last argument to the
+                scriptInterpreter (requires API version 8 or higher)
+            hostname : str
+                hostname inclusion filter
+            tags : str
+                tags inclusion filter
+            os-name : str
+                os-name inclusion filter
+            os-family : str
+                os-family inclusion filter
+            os-arch : str
+                os-arch inclusion filter
+            os-version : str
+                os-version inclusion filter
+            name : str
+                name inclusion filter
+            exlude-hostname : str
+                hostname exclusion filter
+            exlude-tags : str
+                tags exclusion filter
+            exlude-os-name : str
+                os-name exclusion filter
+            exlude-os-family : str
+                os-family exclusion filter
+            exlude-os-arch : str
+                os-arch exclusion filter
+            exlude-os-version : str
+                os-version exclusion filter
+            exlude-name : str
+                name exclusion filter
         """
-        raise NotImplementedError('Method not implemented')
+        self.requires_version(4)
+
+        params = cull_kwargs(('argString', 'nodeThreadcount', 'nodeKeepgoing', 'asUser', \
+            'scriptInterpreter', 'interpreterArgsQuoted', 'hostname', 'tags', 'os-name', \
+            'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', 'exlude-tags', \
+            'exlude-os-name', 'exlude-os-family', 'exlude-os-arch', 'exlude-os-version', \
+            'exlude-name'), kwargs)
+
+        params['project'] = project
+        params['scriptFile'] = scriptFile
+
+        if 'scriptInterpreter' in params or 'interpreterArgsQuoted' in params:
+            self.requires_version(8)
+
+        argString = params.get('argString', None)
+        if argString is not None:
+            params['argString'] = dict2argstring(argString)
+
+        return self.execute_cmd(POST, '/run/url', params=params, **kwargs)
 
 
     def projects(self, **kwargs):
@@ -570,7 +776,7 @@ class RundeckApi(object):
             project : str
                 name of Project
 
-        :return: A RundeckResponse
+        :return: A RundeckResponse`
         :rtype: RundeckResponse
         """
         return self.execute_cmd(GET, 'project/{0}'.format(urllib.quote(project)), **kwargs)
