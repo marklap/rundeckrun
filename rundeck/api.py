@@ -246,7 +246,9 @@ class RundeckApi(object):
 
         argString = params.get('argString', None)
         if isinstance(argString, dict):
-            params['argString'] = ' '.join(['-' + k + ' ' + v for k, v in argString.items()])
+            params['argString'] = ' '.join(
+                ['-' + str(k) + ' ' + str(v) for k, v in argString.items()]
+                )
 
         return self.execute_cmd(GET, 'job/{0}/run'.format(job_id), params=params, **kwargs)
 
@@ -531,7 +533,7 @@ class RundeckApi(object):
         :rtype: requests.models.Response
         """
         params = cull_kwargs(('asUser',), kwargs)
-        return self.execute_cmd(GET, '/execution/{0}/output'.format(execution_id), params=params, **kwargs)
+        return self.execute_cmd(GET, '/execution/{0}/abort'.format(execution_id), params=params, **kwargs)
 
 
     def run_command(self, *args, **kwargs):
