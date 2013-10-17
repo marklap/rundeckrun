@@ -10,6 +10,7 @@ __docformat__ = "restructuredtext en"
 
 from functools import partial
 from string import maketrans, ascii_letters, digits
+from xml.sax.saxutils import quoteattr
 import urllib
 
 from connection import RundeckConnection
@@ -75,6 +76,118 @@ def dict2argstring(argString):
         return argString
 
 
+class RundeckNode(object):
+    """Represents a Rundeck node; mainly for serializing to XML
+
+    :IVariables:
+        name : str
+            name of the node
+        hostname : str
+            hostname of the node
+        username : str
+            username used for the remote connection
+        description : str
+            node description
+        osArch : str
+            the node's operating system architecture
+        osFamily : str
+            the node's operating system system family
+        osName : str
+            the node's operating system name
+        tags : list(str, ...)
+            a list of filtering tags
+        editUrl : str
+            URL to an external resource model editor service
+        remoteUrl : str
+            URL to an external resource model service
+        attributes : dict
+            a dictionary of name/value pairs to be used as node attributes
+    """
+
+    def __init__(self, name, hostname, username, **kwargs):
+        """Initialize a RundeckNode instance
+
+        :Parameters:
+            name : str
+                name of the node
+            hostname : str
+                hostname of the node
+            username : str
+                username used for the remote connection
+
+        :Keywords:
+            description : str
+                node description
+            osArch : str
+                the node's operating system architecture
+            osFamily : str
+                the node's operating system system family
+            osName : str
+                the node's operating system name
+            tags : list(str, ...)
+                a list of filtering tags
+            editUrl : str
+                URL to an external resource model editor service
+            remoteUrl : str
+                URL to an external resource model service
+            attributes : dict
+                a dictionary of name/value pairs to be used as node attributes
+        """
+        self.name = name
+        self.hostname = hostname
+        self.username = username
+
+        self.description = kwargs.get('description', None)
+        self.osArch = kwargs.get('osArch', None)
+        self.osFamily = kwargs.get('osFamily', None)
+        self.osName = kwargs.get('osName', None)
+        self.tags = kwargs.get('tags', None)
+        self.editUrl = kwargs.get('editUrl', None)
+        self.remoteUrl = kwargs.get('remoteUrl', None)
+        self.attributes = kwargs.get('attributes', None)
+
+
+    def serialize(self):
+        """serializes the instance to XML
+
+        :rtype: str
+        :return: an XML string
+        """
+        node_attr_keys = (
+            'name',
+            'hostname',
+            'username',
+            'description',
+            'osArch',
+            'osFamily',
+            'osName',
+            'editUrl',
+            'remoteUrl',
+        )
+
+        data = {k: getattr(self, k)
+                    for k in node_attr_keys if getattr(self, k, None) is not None}
+
+        if self.tags is not None and hasattr(self.tags, '__iter__'):
+            data['tags'] = ','.join(self.tags)
+        elif isinstance(self.tags, basestring):
+            data['tags'] = self.tags
+
+        node_xml_attrs = ' '.join(['{0}={1}'.format(k, quoteattr(v)) for k, v in data.items()])
+
+        node_attributes = ''
+        if self.attributes is not None and isinstance(self.attributes, dict):
+            node_attributes = ''.join(['<attribute name="{0}" value="{1}" />'.format(k, v)
+                                for k, v in self.attributes.items()])
+
+        return '<node {0}>{1}</node>'.format(node_xml_attrs, node_attributes)
+
+    @property
+    def xml(self):
+        return self.serialize()
+
+
+
 class RundeckApi(object):
     """As close to the Rundeck API as possible
 
@@ -84,7 +197,7 @@ class RundeckApi(object):
     """
 
     def __init__(self, server='localhost', protocol='http', port=4440, api_token=None, **kwargs):
-        """ Initialize a Rundeck API instance
+        """Initialize a Rundeck API instance
 
         :Parameters:
             server : str
@@ -488,7 +601,6 @@ class RundeckApi(object):
             offset : int
                 offset for result set (default: 0)
 
-
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
@@ -597,6 +709,9 @@ class RundeckApi(object):
                 os-version exclusion filter
             exlude-name : str
                 name exclusion filter
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
         """
         params = cull_kwargs(('nodeThreadcount', 'nodeKeepgoing', 'asUser', 'hostname', 'tags', \
             'os-name', 'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', \
@@ -663,6 +778,9 @@ class RundeckApi(object):
                 os-version exclusion filter
             exlude-name : str
                 name exclusion filter
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
         """
         params = cull_kwargs(('argString', 'nodeThreadcount', 'nodeKeepgoing', 'asUser', \
             'scriptInterpreter', 'interpreterArgsQuoted', 'hostname', 'tags', 'os-name', \
@@ -738,6 +856,9 @@ class RundeckApi(object):
                 os-version exclusion filter
             exlude-name : str
                 name exclusion filter
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
         """
         self.requires_version(4)
 
@@ -782,18 +903,77 @@ class RundeckApi(object):
         return self.execute_cmd(GET, 'project/{0}'.format(urllib.quote(project)), **kwargs)
 
 
-    def project_resources(self, *args, **kwargs):
+    def project_resources(self, project, **kwargs):
         """ Wraps `Rundeck API GET /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+
+        :Parameters:
+            project : str
+                name of the project
+
+        :Keywords:
+            fmt : str
+                the format of the response one of ExecutionOutputFormat.values (default: 'text')
+            hostname : str
+                hostname inclusion filter
+            tags : str
+                tags inclusion filter
+            os-name : str
+                os-name inclusion filter
+            os-family : str
+                os-family inclusion filter
+            os-arch : str
+                os-arch inclusion filter
+            os-version : str
+                os-version inclusion filter
+            name : str
+                name inclusion filter
+            exlude-hostname : str
+                hostname exclusion filter
+            exlude-tags : str
+                tags exclusion filter
+            exlude-os-name : str
+                os-name exclusion filter
+            exlude-os-family : str
+                os-family exclusion filter
+            exlude-os-arch : str
+                os-arch exclusion filter
+            exlude-os-version : str
+                os-version exclusion filter
+            exlude-name : str
+                name exclusion filter
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
         """
         self.requires_version(2)
-        raise NotImplementedError('Method not implemented')
+
+        params = cull_kwargs(('fmt', 'scriptInterpreter', 'interpreterArgsQuoted', 'hostname', \
+            'tags', 'os-name', 'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', \
+            'exlude-tags', 'exlude-os-name', 'exlude-os-family', 'exlude-os-arch', \
+            'exlude-os-version', 'exlude-name'), kwargs)
+
+        if 'fmt' in params:
+            params['format'] = params.pop('fmt')
+
+        return self.execute_cmd(GET, 'project/{0}/resources'.format(urllib.quote(project)), **kwargs)
 
 
-    def project_resources_update(self, *args, **kwargs):
+    def project_resources_update(self, project, nodes):
         """ Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        :Parameters:
+            project : str
+                name of the project
+            nodes : list(RundeckNode, ...)
+                a list of RundeckNode objects
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
         """
-        self.requires_version(2)
-        raise NotImplementedError('Method not implemented')
+        headers = {'Content-Type': 'text/xml'}
+
+        data = '<nodes>{0}</nodes>'.format('\n'.join([node.xml for node in nodes]))
+
+        return self.execute_cmd(POST, 'project/{0}/resources'.format(urllib.quote(project)), data=data, headers=headers)
 
 
     def project_resources_refresh(self, *args, **kwargs):

@@ -138,11 +138,14 @@ class RundeckConnection(object):
                 the XML or YAML payload necessary for some commands
                 (default: None)
 
+        :Keywords:
+            **passed along to the requests library**
+
         :rtype: RundeckXmlResponse | RundeckYamlResponse
         """
         url = self.make_url(url)
 
-        response = self.http.request(method, url, params=params, data=data)
+        response = self.http.request(method, url, params=params, data=data, **kwargs)
         if parse_response and response.status_code == requests.codes.ok:
             return RundeckResponse(response.text)
         else:

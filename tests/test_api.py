@@ -10,6 +10,7 @@ from tests import (
     test_job_name,
     test_job_proj,
     test_job_def_tmpl,
+    RundeckNode,
     )
 
 del_test_job_id = str(uuid.uuid4())
@@ -49,6 +50,12 @@ def test_project_jobs():
 
 def test_job_run():
     assert rundeck_api.job_run(test_job_id).success, 'job_run call was unsuccessful'
+    time.sleep(1)
+    assert rundeck_api.job_run(test_job_id, argString={'from': 'test_job_run'}).success, \
+        'job_run with argument dict call was unsuccessful'
+    time.sleep(1)
+    assert rundeck_api.job_run(test_job_id, argString='-from test_job_run').success, \
+        'job_run with argument string call was unsuccessful'
 
 
 def test_jobs_export():
@@ -89,12 +96,41 @@ def test_execution_output():
     execution_id = execution.as_dict['result']['executions']['execution']['@id']
     assert rundeck_api.execution_output(execution_id).status_code == 200, 'execution_output call was unsuccessful'
 
+
 def test_execution_abort():
-    execution = rundeck_api.job_run(test_job_id)
+    execution = rundeck_api.job_run(test_job_id, argString={'sleep': 30})
     time.sleep(1)
     execution_id = execution.as_dict['result']['executions']['execution']['@id']
     assert rundeck_api.execution_abort(execution_id).success, 'execution_abort call was unsuccessful'
+    time.sleep(1)
+    execution = rundeck_api.execution(execution_id)
+    assert execution.as_dict['result']['executions']['execution']['@status'] == 'aborted', \
+        'execution_abort status is not \'aborted\''
 
+
+def test_run_command():
+    assert False, 'test not yet implemented'
+
+
+def test_run_script():
+    assert False, 'test not yet implemented'
+
+
+def test_run_url():
+    assert False, 'test not yet implemented'
+
+
+def test_project_resources():
+    assert False, 'test not yet implemented'
+
+
+def test_project_resources_update():
+    host1 = RundeckNode('host1', 'hostname1', 'user1', description='I <3 XML', tags=['hot'], attributes={'foo': 'bar'})
+    host2 = RundeckNode('host2', 'hostname2', 'user2', tags=['cold'], attributes={'foz': 'baz'})
+    host3 = RundeckNode('host3', 'hostname3', 'user3')
+
+    assert rundeck_api.project_resources_update(test_job_proj, [host1, host2, host3]).success, \
+        'test_project_resources_update call was unsuccessful'
 
 def test_executions():
     assert rundeck_api.executions(test_job_proj).success, 'executions call was unsuccessful'

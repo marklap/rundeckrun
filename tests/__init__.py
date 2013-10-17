@@ -3,7 +3,7 @@ import logging
 import uuid
 
 from rundeck.client import Rundeck
-from rundeck.api import RundeckApi
+from rundeck.api import RundeckApi, RundeckNode
 
 _RUNDECK_API_TOKEN_VAR = 'RUNDECK_API_TOKEN'
 _RUNDECK_SERVER_VAR = 'RUNDECK_SERVER'
@@ -29,8 +29,7 @@ pwd = os.environ.get(_RUNDECK_PWD_VAR, None)
 
 test_job_id = uuid.uuid4()
 test_job_name = 'TestJob'
-#test_job_proj = 'TestProject'
-test_job_proj = 'monkey+stuff'
+test_job_proj = 'TestProject'
 test_job_def_tmpl = """<joblist>
   <job>
     <id>{0}</id>
@@ -43,13 +42,21 @@ test_job_def_tmpl = """<joblist>
           </configuration>
         </node-step-plugin>
       </command>
+      <command>
+        <node-step-plugin type='localexec'>
+          <configuration>
+            <entry key='command' value='sleep ${{option.sleep}}' />
+          </configuration>
+        </node-step-plugin>
+      </command>
     </sequence>
     <description></description>
     <name>{1}</name>
     <context>
       <project>{2}</project>
       <options>
-        <option name='from' />
+        <option name='from' value='Tester' />
+        <option name='sleep' value='0' />
       </options>
     </context>
     <uuid>{0}</uuid>
