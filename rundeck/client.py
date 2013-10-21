@@ -47,42 +47,6 @@ def is_job_id(job_id):
     return False
 
 
-def transform_execution(resp):
-    """Transforms an Execution's RundeckResponse object into a dict
-
-    :Parameters:
-        resp : RundeckResponse
-            a RundeckResponse representing a Rundeck Execution
-
-    :return: a dict object representing a Rundeck Execution
-    :rtype: dict
-    """
-    execution = {}
-    for execution_el in resp.body.iterfind('execution'):
-        execution.update(execution_el.attrib)
-
-        date_started = execution_el.find('date-started')
-        if date_started is not None:
-            execution['date-started'] = datetime.strptime(date_started.text, _DATETIME_ISOFORMAT)
-            execution_el.remove(date_started)
-
-        date_ended = execution_el.find('date-ended')
-        if date_ended is not None:
-            execution['date-ended'] = datetime.strptime(date_ended.text, _DATETIME_ISOFORMAT)
-            execution_el.remove(date_ended)
-
-        job_el = execution_el.find('job')
-        if job_el is not None:
-            execution['job'] = dict(job_el.attrib)
-            execution['job'].update({c.tag: c.text for c in job_el})
-            execution_el.remove(job_el)
-
-        execution.update({e.tag: e.text for e in execution_el})
-
-    return execution
-
-
-
 
 class Rundeck(object):
 
@@ -107,26 +71,7 @@ class Rundeck(object):
             api_version : int
                 Rundeck API version
         """
-        self.connection = RundeckConnection(server, protocol=protocol, port=port, api_token=api_token, **kwargs)
-
-
-    def execute_cmd(self, method, url, params=None, data=None):
-        """ Executes a job via the RundeckConnection
-
-        :Parameters:
-            method : str
-                either rundeck.defaults.GET or rundeck.defaults.POST
-            url : str
-                Rundeck API endpoint URL
-            params : dict
-                dict of query string params
-            data : dict
-                dict of POST data
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        return self.connection.execute_cmd(method, url, params, data)
+        self.api = RundeckApi(server, protocol=protocol, port=port, api_token=api_token, **kwargs)
 
 
     def get_job_id(self, project, name):
@@ -141,7 +86,7 @@ class Rundeck(object):
         :return: a Rundeck Job ID
         :rtype: str
         """
-        found_jobs = self.list_jobs(project, jobExactFilter=name)
+        found_jobs = self.api.jobs(project, jobExactFilter=name)
         if len(found_jobs) == 1:
             return found_jobs[0]['id']
         else:
@@ -149,12 +94,13 @@ class Rundeck(object):
 
 
     def system_info(self):
-        """ Wraps `Rundeck API GET /system/info <http://rundeck.org/docs/api/index.html#system-info>`_
+        """ Get Rundeck Server System Info
 
         :return: a dict object representing the Rundeck system information
         :rtype: dict
         """
-        resp = self.execute_cmd(GET, 'system/info')
+        resp = self.api.system_info()
+        resp.as_dict['']
         ts = resp.body.find('timestamp').find('datetime').text
         ts_date = datetime.strptime(ts, _DATETIME_ISOFORMAT)
 
@@ -339,41 +285,6 @@ class Rundeck(object):
         """Executes Rundeck.run_job with the 'block' argument set to True
         """
         return self.run_job(name, project, block=True, **kwargs)
-
-
-    def transform_execution(self, resp):
-        """Transforms an Execution's RundeckXmlResponse object into a dict
-
-        :Parameters:
-            resp : RundeckXmlResponse
-                a RundeckXmlResponse representing a Rundeck Execution
-
-        :return: a dict object representing a Rundeck Execution
-        :rtype: dict
-        """
-        execution = {}
-        for execution_el in resp.body.iterfind('execution'):
-            execution.update(execution_el.attrib)
-
-            date_started = execution_el.find('date-started')
-            if date_started is not None:
-                execution['date-started'] = datetime.strptime(date_started.text, _DATETIME_ISOFORMAT)
-                execution_el.remove(date_started)
-
-            date_ended = execution_el.find('date-ended')
-            if date_ended is not None:
-                execution['date-ended'] = datetime.strptime(date_ended.text, _DATETIME_ISOFORMAT)
-                execution_el.remove(date_ended)
-
-            job_el = execution_el.find('job')
-            if job_el is not None:
-                execution['job'] = dict(job_el.attrib)
-                execution['job'].update({c.tag: c.text for c in job_el})
-                execution_el.remove(job_el)
-
-            execution.update({e.tag: e.text for e in execution_el})
-
-        return execution
 
 
     def get_execution_info(self, id):
