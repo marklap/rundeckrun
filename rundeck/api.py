@@ -958,8 +958,9 @@ class RundeckApi(object):
         return self.execute_cmd(GET, 'project/{0}/resources'.format(urllib.quote(project)), **kwargs)
 
 
-    def project_resources_update(self, project, nodes):
+    def project_resources_update(self, project, nodes, **kwargs):
         """ Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+
         :Parameters:
             project : str
                 name of the project
@@ -973,14 +974,31 @@ class RundeckApi(object):
 
         data = '<nodes>{0}</nodes>'.format('\n'.join([node.xml for node in nodes]))
 
-        return self.execute_cmd(POST, 'project/{0}/resources'.format(urllib.quote(project)), data=data, headers=headers)
+        return self.execute_cmd(POST, 'project/{0}/resources'.format(urllib.quote(project)), data=data, headers=headers, **kwargs)
 
 
-    def project_resources_refresh(self, *args, **kwargs):
-        """ Wraps `Rundeck API GET /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
+    def project_resources_refresh(self, project, providerUrl=None, **kwargs):
+        """ Wraps `Rundeck API POST /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
+
+        :Parameters:
+            project : str
+                name of the project
+            providerUrl : str
+                Specify the Resource Model Provider URL to refresh the resources from; otherwise
+                the configured provider URL in the `project.properties` file will be used
+
+        :return: A RundeckResponse
+        :rtype: RundeckResponse
         """
         self.requires_version(2)
-        raise NotImplementedError('Method not implemented')
+
+        data = {}
+        if providerUrl is not None:
+            data['providerUrl'] = providerUrl
+
+        return self.execute_cmd(POST, '/project/{0}/resources/refresh'.format(project), data=data, **kwargs)
+
+
 
 
     def history(self, project, **kwargs):
