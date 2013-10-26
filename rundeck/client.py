@@ -12,7 +12,9 @@ import time
 import errno
 from string import maketrans, ascii_letters, digits
 from datetime import datetime
+from api import RundeckApi
 from connection import RundeckConnection
+from transforms import transform
 from exceptions import (
     JobNotFound,
     MissingProjectArgument,
@@ -73,7 +75,7 @@ class Rundeck(object):
         """
         self.api = RundeckApi(server, protocol=protocol, port=port, api_token=api_token, **kwargs)
 
-
+    '''
     def get_job_id(self, project, name):
         """ Fetch the ID for a job
 
@@ -91,15 +93,18 @@ class Rundeck(object):
             return found_jobs[0]['id']
         else:
             raise JobNotFound('Job {0!r} not found in Project {1!r}'.format(name, project))
+    '''
 
-
+    @transform('system_info')
     def system_info(self):
         """ Get Rundeck Server System Info
 
         :return: a dict object representing the Rundeck system information
         :rtype: dict
         """
-        resp = self.api.system_info()
+        return self.api.system_info()
+
+        '''
         resp.as_dict['']
         ts = resp.body.find('timestamp').find('datetime').text
         ts_date = datetime.strptime(ts, _DATETIME_ISOFORMAT)
@@ -113,8 +118,9 @@ class Rundeck(object):
 
         # TODO: include stats returned in the response
         return system_info
+        '''
 
-
+'''
     def list_projects(self):
         """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
@@ -464,3 +470,6 @@ class Rundeck(object):
             raise InvalidJobDefinitionFormat('Invalid Job definition format: {0}'.format(fmt))
 
         return self.import_job_definition_string(definition, fmt=fmt, **kwargs)
+
+
+'''

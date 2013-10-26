@@ -6,15 +6,14 @@
 :contact: rundeckrun@mindmind.com
 :copyright: Mark LaPerriere 2013
 
-:requires: requests
-"""
+:requires: requests"""
 __docformat__ = "restructuredtext en"
 
 import requests
-import xmltodict
 
 from .defaults import RUNDECK_API_VERSION
 from .exceptions import InvalidAuthentication
+from .transforms import transform
 
 
 class RundeckResponse(object):
@@ -33,8 +32,12 @@ class RundeckResponse(object):
 
     def _get_dict(self):
         if self._dict is None:
-            self._dict = xmltodict.parse(self._response)
+            pass  # self._dict = xmltodict.parse(self._response)
         return self._dict
+
+    @property
+    def response(self):
+        return self._response
 
     @property
     def as_dict(self):
@@ -63,6 +66,10 @@ class RundeckResponse(object):
             self._message = self.as_dict['result']['error']['message']
 
         return self._message
+
+
+class RundeckResponseError(RundeckResponse):
+    pass
 
 
 class RundeckConnection(object):
@@ -106,7 +113,7 @@ class RundeckConnection(object):
         if api_token is not None:
             self.http.headers['X-Rundeck-Auth-Token'] = api_token
         elif usr is not None and pwd is not None:
-            # TODO: support username/password authentication
+            # TODO: support username/password authentication (maybe)
             raise NotImplementedError('Username/password authentication is not yet supported')
 
         self.base_url = '{0}://{1}/api'.format(self.protocol, self.server)
@@ -144,9 +151,8 @@ class RundeckConnection(object):
         :rtype: RundeckXmlResponse | RundeckYamlResponse
         """
         url = self.make_url(url)
+        headers = {'X-Rundeck-Auth-Token': self.api_token}
 
-        response = self.http.request(method, url, params=params, data=data, **kwargs)
-        if parse_response and response.status_code == requests.codes.ok:
-            return RundeckResponse(response.text)
-        else:
-            return response
+        response = requests.request(method, url, params=params, data=data, cookies=None, headers=headers, **kwargs)
+        response.raise_for_status()
+        return response.text

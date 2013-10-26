@@ -59,7 +59,7 @@ def test_job_run():
 
 
 def test_jobs_export():
-    assert rundeck_api.jobs_export(test_job_proj).status_code == 200, 'jobs_export call was unsuccessful'
+    assert rundeck_api.jobs_export(test_job_proj).success, 'jobs_export call was unsuccessful'
 
 
 def test_jobs_delete():
@@ -76,7 +76,7 @@ def test_executions_running():
 
 
 def test_job():
-    assert rundeck_api.job(test_job_id).status_code == 200, 'job call was unsuccessful'
+    assert rundeck_api.job(test_job_id).success, 'job call was unsuccessful'
 
 
 def test_delete_job():
@@ -94,7 +94,7 @@ def test_execution_output():
     execution = rundeck_api.job_run(test_job_id)
     time.sleep(1)
     execution_id = execution.as_dict['result']['executions']['execution']['@id']
-    assert rundeck_api.execution_output(execution_id).status_code == 200, 'execution_output call was unsuccessful'
+    assert rundeck_api.execution_output(execution_id).success, 'execution_output call was unsuccessful'
 
 
 def test_execution_abort():
@@ -126,10 +126,11 @@ def test_project_resources():
 
 def test_project_resources_update():
     host1 = RundeckNode('host1', 'hostname1', 'user1', description='I <3 XML', tags=['hot'], attributes={'foo': 'bar'})
-    host2 = RundeckNode('host2', 'hostname2', 'user2', tags=['cold'], attributes={'foz': 'baz'})
-    host3 = RundeckNode('host3', 'hostname3', 'user3')
+    # host2 = RundeckNode('host2', 'hostname2', 'user2', tags=['cold'], attributes={'foz': 'baz'})
+    # host3 = RundeckNode('host3', 'hostname3', 'user3')
 
-    assert rundeck_api.project_resources_update(test_job_proj, [host1, host2, host3]).success, \
+    # assert rundeck_api.project_resources_update(test_job_proj, [host1, host2, host3]).success, \
+    assert rundeck_api.project_resources_update(test_job_proj, [host1]).success, \
         'test_project_resources_update call was unsuccessful'
 
 def test_executions():
