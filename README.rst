@@ -3,7 +3,7 @@ RundeckRun
 
 This is a lightweight wrapper written in Python to interact with the Rundeck
 API. It uses the awesome `requests <http://docs.python-requests.org/>`_
-library and the awesome `xmltodict <https://github.com/martinblech/xmltodict>`_ library.
+library.
 
 *DISCLAIMER:* Still in early stages of development
 
