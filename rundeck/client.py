@@ -95,6 +95,14 @@ class Rundeck(object):
             raise JobNotFound('Job {0!r} not found in Project {1!r}'.format(name, project))
     '''
 
+    @transform('execution')
+    def execution(self, execution_id, **kwargs):
+        return self.api.execution(execution_id, **kwargs)
+
+    @transform('execution')
+    def executions(self, project, **kwargs):
+        return self.api.execution(project, **kwargs)
+
     @transform('system_info')
     def system_info(self):
         """ Get Rundeck Server System Info

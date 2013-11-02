@@ -9,67 +9,83 @@
 :requires: requests"""
 __docformat__ = "restructuredtext en"
 
+from functools import wraps
+import xml.dom.minidom as xml_dom
+
 import requests
 
+from .transforms import ElementTree
 from .defaults import RUNDECK_API_VERSION
 from .exceptions import InvalidAuthentication
-from .transforms import transform
+
+
+def memoize(obj):
+    cache = obj.cache = {}
+
+    @wraps(obj)
+    def memoizer(*args, **kwargs):
+        key = str(args) + str(kwargs)
+        if key not in cache:
+            cache[key] = obj(*args, **kwargs)
+        return cache[key]
+    return memoizer
 
 
 class RundeckResponse(object):
 
-    def __init__(self, response):
+    def __init__(self, response, as_dict_method=None):
         """ Parses an XML string into a convenient Python object
 
         :Parameters:
-            response : str
-                a response from the Rundeck server
+            response : requests.Response
+                an instance of the requests.Response returned by the associated command request
         """
         self._response = response
-        self._dict = None
-        self._success = None
-        self._message = None
+        self._as_dict_method = None
 
-    def _get_dict(self):
-        if self._dict is None:
-            pass  # self._dict = xmltodict.parse(self._response)
-        return self._dict
+    @property
+    @memoize
+    def etree(self):
+        return ElementTree.fromstring(self.body)
 
     @property
     def response(self):
         return self._response
 
     @property
+    def body(self):
+        return self._response.text
+
+    @memoize
+    def pprint(self):
+        return xml_dom.parseString(self.body).toprettyxml()
+
+    @property
+    @memoize
     def as_dict(self):
-        return self._get_dict()
-
-    @property
-    def api_version(self):
-        return self.as_dict['result']['@apiversion']
-
-    @property
-    def success(self):
-        if self._success is not None:
-            return self._success
-
-        self._success = '@success' in self.as_dict['result']
-        return self._success
-
-    @property
-    def message(self):
-        if self._message is not None:
-            return self._message
-
-        if self.success:
-            self._message = self.as_dict['result']['success']['message']
+        if self._as_dict_method is None:
+            return None
         else:
-            self._message = self.as_dict['result']['error']['message']
+            return self._as_dict_method(self)
 
-        return self._message
+    @property
+    @memoize
+    def api_version(self):
+        return int(self.etree.attrib.get('apiversion', -1))
 
+    @property
+    @memoize
+    def success(self):
+        return 'success' in self.etree.attrib
 
-class RundeckResponseError(RundeckResponse):
-    pass
+    @property
+    @memoize
+    def message(self):
+        if self.success:
+            message_el = self.etree.find('success')
+        else:
+            message_el = self.etree.find('error')
+        return message_el.find('message').text
 
 
 class RundeckConnection(object):
@@ -155,4 +171,4 @@ class RundeckConnection(object):
 
         response = requests.request(method, url, params=params, data=data, cookies=None, headers=headers, **kwargs)
         response.raise_for_status()
-        return response.text
+        return RundeckResponse(response)

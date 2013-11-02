@@ -10,6 +10,9 @@
 """
 __docformat__ = "restructuredtext en"
 
+from pprint import pprint
+
+from datetime import datetime
 from functools import wraps
 import inspect
 
@@ -19,77 +22,15 @@ except ImportError:
     import xml.etree.ElementTree as ElementTree
 
 
-class RundeckResponse(object):
-
-    def __init__(self, response, as_dict_method=None):
-        """ Parses an XML string into a convenient Python object
-
-        :Parameters:
-            response : str
-                a response from the Rundeck server
-        """
-        self._response = response
-        self._dict = None
-        self._success = None
-        self._message = None
-
-    def _get_dict(self):
-        if self._dict is None:
-            pass  # self._dict = xmltodict.parse(self._response)
-        return self._dict
-
-    @property
-    def response(self):
-        return self._response
-
-    @property
-    def as_dict(self):
-        if self._as_dict_method is None:
-            return self._dict
-        else:
-            return self._as_dict_method(self)
-
-    @property
-    def api_version(self):
-        return self.as_dict['result']['@apiversion']
-
-    @property
-    def success(self):
-        if self._success is not None:
-            return self._success
-
-        self._success = '@success' in self.as_dict['result']
-        return self._success
-
-    @property
-    def message(self):
-        if self._message is not None:
-            return self._message
-
-        if self.success:
-            self._message = self.as_dict['result']['success']['message']
-        else:
-            self._message = self.as_dict['result']['error']['message']
-
-        return self._message
-
-
-class RundeckResponseError(RundeckResponse):
-    pass
-
-
+_DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def is_transform(func):
     func.__is_transform__ = True
     return func
 
-def _result(resp):
-    """Pulls the result information out - useful for just about all responses
-    """
 
-
-system_info = """\
+_system_info = """\
 <?xml version="1.0" ?>
 <result apiversion="9" success="true">
         <success>
@@ -141,7 +82,7 @@ system_info = """\
         </system>
 </result>"""
 
-projects = """\
+_projects = """\
 <?xml version="1.0" ?>
 <result apiversion="9" success="true">
         <projects count="1">
@@ -152,7 +93,7 @@ projects = """\
         </projects>
 </result>"""
 
-project = """\
+_project = """\
 <?xml version="1.0" ?>
 <result apiversion="9" success="true">
         <projects count="1">
@@ -162,14 +103,98 @@ project = """\
                 </project>
         </projects>
 </result>"""
+
+
+def child2dict(el):
+    return {c.tag: c.text for c in el}
+
+
+def attr2dict(el):
+    # according to the ElementTree docs... using the Element.attrib attribute directly is not
+    #    recommended - don't look at me
+    return {k: v for k, v in el.items()}
+
 
 @is_transform
 def system_info(resp):
-    return {'resp': resp}
+    base = resp.etree.find('system')
+    rundeck = base.find('rundeck')
+    os = base.find('os')
+    jvm = base.find('jvm')
+    stats = base.find('stats')
 
+    ts = base.find('timestamp').find('datetime').text
+    ts_date = datetime.strptime(ts, _DATETIME_ISOFORMAT)
+
+    data = {
+        'timestamp': {'datetime': ts_date},
+        'rundeck': child2dict(rundeck),
+        'os': child2dict(os),
+        'jvm': child2dict(jvm),
+        'stats': {
+            'uptime': attr2dict(stats.find('uptime')),
+            'cpu': child2dict(stats.find('cpu')),
+            'memory': child2dict(stats.find('memory')),
+            'scheduler': child2dict(stats.find('scheduler')),
+            'threads': child2dict(stats.find('threads')),
+            }
+        }
+
+    return data
+
+
+_execution = """\
+<?xml version="1.0" ?>
+<result apiversion="9" success="true">
+    <executions count="1">
+        <execution href="http://optimus-prime:4440/execution/follow/282" id="282" project="TestProject" status="succeeded">
+            <user>admin</user>
+            <date-started unixtime="1383364692131">2013-11-02T03:58:12Z</date-started>
+            <date-ended unixtime="1383364693001">2013-11-02T03:58:13Z</date-ended>
+            <job averageDuration="870" id="f114ab12-9590-41e9-934a-78cdfaaaba77">
+                <name>Huh</name>
+                <group>prod</group>
+                <project>TestProject</project>
+                <description/>
+            </job>
+            <description>Plugin[localexec, nodeStep: true] [... 2 steps]</description>
+            <argstring/>
+        </execution>
+    </executions>
+</result>"""
 
 @is_transform
 def execution(resp):
+    base = resp.etree.find('executions')
+    exec_count = int(base.attrib['count'])
+
+    def xform(el):
+
+        data = child2dict(el)
+        data.update(attr2dict(el))
+
+        job_el = el.find('job')
+        if job_el is not None:
+            data['job'] = attr2dict(job_el)
+            data['job'].update(child2dict(job_el))
+            el.remove(job_el)
+
+        if 'date-started' in data:
+            data['date-started'] = datetime.strptime(data['date-started'], _DATETIME_ISOFORMAT)
+        if 'date-ended' in data:
+            data['date-ended'] = datetime.strptime(data['date-ended'], _DATETIME_ISOFORMAT)
+        return data
+
+    if exec_count <= 0:
+        return []
+    elif exec_count == 1:
+        return xform(base.find('execution'))
+    else:
+        return [xform(el) for el in base.iterfind('execution')]
+
+
+@is_transform
+def execution_old(resp):
     """Transforms an Execution's RundeckResponse object into a dict
 
     :Parameters:
@@ -204,6 +229,36 @@ def execution(resp):
     return execution
 
 
+_job = """\
+<?xml version="1.0" ?>
+<result apiversion="9" success="true">
+    <jobs count="3">
+        <job id="8436f27f-7d16-48a1-9d4d-0a89145d1121">
+            <name>HelloWorld</name>
+            <group/>
+            <project>TestProject</project>
+            <description/>
+        </job>
+        <job id="16f4f377-0b3f-4eed-97e7-7946112e8dcc">
+            <name>Huh</name>
+            <group>test</group>
+            <project>TestProject</project>
+            <description/>
+        </job>
+        <job id="f114ab12-9590-41e9-934a-78cdfaaaba77">
+            <name>Huh</name>
+            <group>prod</group>
+            <project>TestProject</project>
+            <description/>
+        </job>
+    </jobs>
+</result>"""
+
+@is_transform
+def job(resp):
+    pass
+
+
 
 _transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}
 
@@ -212,13 +267,15 @@ def transform(resp_type):
     def inner(func):
 
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(self, *args, **kwargs):
             try:
                 xform = _transforms[resp_type]
             except KeyError:
                 raise Exception('Transform does not exist for type: {0}'.format(resp_type))
-            else:
-                return xform(func(*args, **kwargs))
+
+            results = func(self, *args, **kwargs)
+            results._as_dict_method = xform
+            return results
 
         return wrapper
 
