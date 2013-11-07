@@ -21,6 +21,7 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 
+from util import child2dict, attr2dict
 
 _DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -103,16 +104,6 @@ _project = """\
                 </project>
         </projects>
 </result>"""
-
-
-def child2dict(el):
-    return {c.tag: c.text for c in el}
-
-
-def attr2dict(el):
-    # according to the ElementTree docs... using the Element.attrib attribute directly is not
-    #    recommended - don't look at me
-    return {k: v for k, v in el.items()}
 
 
 @is_transform
@@ -254,9 +245,20 @@ _job = """\
     </jobs>
 </result>"""
 
+
 @is_transform
-def job(resp):
-    pass
+def jobs(resp):
+    base = resp.etree.find('jobs')
+    job_count = int(base.attrib['count'])
+
+    jobs = []
+    if job_count > 0:
+        for job_el in base.iterfind('job'):
+            job = attr2dict(job_el)
+            job.update(child2dict(job_el))
+            jobs.append(job)
+
+    return jobs
 
 
 

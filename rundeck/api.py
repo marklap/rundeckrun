@@ -289,7 +289,9 @@ class RundeckApi(object):
 
 
     def project_jobs(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /project/[NAME]/jobs <http://rundeck.org/docs/api/index.html#listing-jobs-for-a-project>`_
+        """ Simulates `Rundeck API GET /project/[NAME]/jobs <http://rundeck.org/docs/api/index.html#listing-jobs-for-a-project>`_
+            **Note**: Can't find any difference between this and /jobs, so this method is just a
+                synonym for the `jobs` method
 
         :Parameters:
             project : str
@@ -312,12 +314,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        self.requires_version(2)
-
-        params = cull_kwargs(
-            ('idlist', 'groupPath', 'jobFilter', 'jobExactFilter', 'groupPathExact'), kwargs)
-
-        return self.execute_cmd(GET, 'project/{0}/jobs'.format(urllib.quote(project)), params=params, **kwargs)
+        return self.jobs(project, **kwargs)
 
 
     def job_run(self, job_id, **kwargs):

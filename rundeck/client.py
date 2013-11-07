@@ -15,6 +15,7 @@ from datetime import datetime
 from api import RundeckApi
 from connection import RundeckConnection
 from transforms import transform
+from util import child2dict, attr2dict
 from exceptions import (
     JobNotFound,
     MissingProjectArgument,
@@ -34,8 +35,9 @@ _EXECUTION_PENDING = (Status.RUNNING,)
 
 
 def is_job_id(job_id):
-    """ Checks if a Job ID "looks" valid - does not check if it exists as a
-        job in Rundeck
+    """ Checks if a Job ID "looks" like a UUID. It does not check if it exists as a job in Rundeck.
+        And of course, a Rundeck Job ID does not have to be a "UUID". Any unique string will do
+        so be prepared for false negatives if you customize your job ids.
 
     :Parameters:
         job_id : str
@@ -75,32 +77,114 @@ class Rundeck(object):
         """
         self.api = RundeckApi(server, protocol=protocol, port=port, api_token=api_token, **kwargs)
 
-    '''
-    def get_job_id(self, project, name):
-        """ Fetch the ID for a job
+
+    def get_job_id(self, project, name=None, **kwargs):
+        """ Fetch a Job ID that matches the filter criterea specified
+            **WARNING**: if there is more than one job that matches the specified criteria, this
+                will return the first job that Rundeck server includes in the list of matches
 
         :Parameters:
             project : str
-                name of the Rundeck Project
-            name : str
-                name of the Rundeck Job
+                the name of a project
+
+        :Keywords:
+            idlist : str | list(str, ...)
+                specify a comma-separated string or a list of Job IDs to include
+            groupPath : str
+                specify a group or partial group path to include all jobs within that group path
+                or "*" for all groups or "-" to match top level jobs only (default: "*")
+            jobFilter : str
+                specify a job name filter; will match any job name that contains this string
+            jobExactFilter : str
+                specify an exact job name to match
+            groupPathExact : str
+                specify an exact group path to match or "-" to match the top level jobs only
 
         :return: a Rundeck Job ID
         :rtype: str
         """
-        found_jobs = self.api.jobs(project, jobExactFilter=name)
-        if len(found_jobs) == 1:
-            return found_jobs[0]['id']
-        else:
+        if name is not None:
+            kwargs['jobExactFilter'] = name
+
+        try:
+            job_list = self.get_job_ids(project, limit=1, **kwargs)
+        except JobNotFound:
             raise JobNotFound('Job {0!r} not found in Project {1!r}'.format(name, project))
-    '''
+        else:
+            return job_list[0]
+
+    def get_job_ids(self, project, **kwargs):
+        """ Fetch a list of Job IDs that match the filter criterea specified
+
+        :Parameters:
+            project : str
+                the name of a project
+
+        :Keywords:
+            limit : int
+                limit the result set to 1 or more jobs
+            idlist : str | list(str, ...)
+                specify a comma-separated string or a list of Job IDs to include
+            groupPath : str
+                specify a group or partial group path to include all jobs within that group path
+                or "*" for all groups or "-" to match top level jobs only (default: "*")
+            jobFilter : str
+                specify a job name filter; will match any job name that contains this string
+            jobExactFilter : str
+                specify an exact job name to match
+            groupPathExact : str
+                specify an exact group path to match or "-" to match the top level jobs only
+
+        :return: a list of Job IDs
+        :rtype: list
+        """
+        limit = kwargs.pop('limit', None)
+        resp = self.jobs(project, **kwargs)
+        jobs = resp.as_dict
+
+        job_ids = []
+        if len(jobs) > 0:
+            job_ids = [job['id'] for job in jobs]
+        else:
+            raise JobNotFound('No jobs in Project {0!r} matching criteria'.format(project))
+
+        return job_ids[:limit]  # if limit is None, this will return the whole shebang
+
+    @transform('jobs')
+    def jobs(self, project, **kwargs):
+        """ Fetch a listing of jobs for a project
+
+        :Parameters:
+            project : str
+                the name of a project
+
+        :Keywords:
+            limit : int
+                limit the result set to 1 or more jobs
+            idlist : str | list(str, ...)
+                specify a comma-separated string or a list of Job IDs to include
+            groupPath : str
+                specify a group or partial group path to include all jobs within that group path
+                or "*" for all groups or "-" to match top level jobs only (default: "*")
+            jobFilter : str
+                specify a job name filter; will match any job name that contains this string
+            jobExactFilter : str
+                specify an exact job name to match
+            groupPathExact : str
+                specify an exact group path to match or "-" to match the top level jobs only
+
+        :return: a list of Jobs
+        :rtype: list(dict, ...)
+        """
+        return self.api.jobs(project, **kwargs)
+
 
     @transform('execution')
     def execution(self, execution_id, **kwargs):
         return self.api.execution(execution_id, **kwargs)
 
     @transform('execution')
-    def executions(self, project, **kwargs):
+    def job_executions(self, job, **kwargs):
         return self.api.execution(project, **kwargs)
 
     @transform('system_info')
