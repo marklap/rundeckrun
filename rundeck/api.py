@@ -13,7 +13,8 @@ from string import maketrans, ascii_letters, digits
 from xml.sax.saxutils import quoteattr
 import urllib
 
-from connection import RundeckConnection
+from connection import RundeckConnection, RundeckConnectionNoisy
+from util import cull_kwargs, dict2argstring
 from exceptions import (
     InvalidResponseFormat,
     InvalidJobDefinitionFormat,
@@ -41,39 +42,6 @@ def api_version_check(api_version, required_version):
     """
     if api_version < required_version:
         raise NotImplementedError('Call requires API version {0} or higher'.format(required_version))
-
-
-def cull_kwargs(api_keys, kwargs):
-    """strips out the api_params from kwargs based on the list of api_keys
-    !! modifies kwargs inline
-
-    :Parameters:
-        api_keys : list | set | tuple
-            an iterable representing the keys of the key value pairs to pull out of kwargs
-        kwargs : dict
-            a dictionary of kwargs
-
-    :return: a dictionary the API params
-    :rtype: dict
-    """
-    return {k: kwargs.pop(k) for k in api_keys if k in kwargs}
-
-
-def dict2argstring(argString):
-    """converts an argString dict into a string otherwise returns the string unchanged
-
-    :Parameters:
-        argString : str | dict
-            argument string to pass to job - if str, will be passed as-is else if dict will be
-            converted to compatible string
-
-    :return: an argString
-    :rtype: str
-    """
-    if isinstance(argString, dict):
-        return ' '.join(['-' + str(k) + ' ' + str(v) for k, v in argString.items()])
-    else:
-        return argString
 
 
 class RundeckNode(object):
@@ -216,13 +184,23 @@ class RundeckApi(object):
                 Rundeck user password (used in combo with usr)
             api_version : int
                 Rundeck API version
+            connection : RundeckConnection
+                an instance of a RundeckConnection or instance of a subclass of RundeckConnection
         """
-        self.connection = RundeckConnection(
-            server, protocol=protocol, port=port, api_token=api_token, **kwargs)
+        connection = kwargs.pop('connection', None)
+
+        if connection is None:
+            self.connection = RundeckConnectionNoisy(
+                server, protocol=protocol, port=port, api_token=api_token, **kwargs)
+        elif isinsance(connection, RundeckConnection):
+            self.connection = connection
+        else:
+            raise Exception('Supplied connection argument is not a valide RundeckConnection: {0}'.format(connection))
+
         self.requires_version = partial(api_version_check, self.connection.api_version)
 
 
-    def execute_cmd(self, method, url, params=None, data=None, parse_response=True, **kwargs):
+    def _exec(self, method, url, params=None, data=None, parse_response=True, **kwargs):
         """ Executes a request to Rundeck via the RundeckConnection
 
         :Parameters:
@@ -237,12 +215,12 @@ class RundeckApi(object):
 
         :Keywords:
             \*\* : \*
-                all remaining keyword arguments will be passed on to RundeckConnection.execute_cmd
+                all remaining keyword arguments will be passed on to RundeckConnection._exec
 
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.connection.execute_cmd(method, url, params, data, parse_response, **kwargs)
+        return self.connection.request(method, url, params, data, parse_response, **kwargs)
 
 
     def system_info(self, **kwargs):
@@ -251,7 +229,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(GET, 'system/info', **kwargs)
+        return self._exec(GET, 'system/info', **kwargs)
 
 
     def jobs(self, project, **kwargs):
@@ -285,7 +263,7 @@ class RundeckApi(object):
 
         params['project'] = project
 
-        return self.execute_cmd(GET, 'jobs', params=params, **kwargs)
+        return self._exec(GET, 'jobs', params=params, **kwargs)
 
 
     def project_jobs(self, project, **kwargs):
@@ -375,7 +353,7 @@ class RundeckApi(object):
         if argString is not None:
             params['argString'] = dict2argstring(argString)
 
-        return self.execute_cmd(GET, 'job/{0}/run'.format(job_id), params=params, **kwargs)
+        return self._exec(GET, 'job/{0}/run'.format(job_id), params=params, **kwargs)
 
 
     def jobs_export(self, project, **kwargs):
@@ -403,7 +381,7 @@ class RundeckApi(object):
         if 'fmt' in params:
             params['format'] = params.pop('fmt')
 
-        return self.execute_cmd(GET, 'projects', params=params, parse_response=False, **kwargs)
+        return self._exec(GET, 'projects', params=params, parse_response=False, **kwargs)
 
 
     def jobs_import(self, definition, **kwargs):
@@ -434,7 +412,7 @@ class RundeckApi(object):
         if 'fmt' in data:
             data['format'] = data.pop('fmt')
 
-        return self.execute_cmd(POST, '/jobs/import', data=data, **kwargs)
+        return self._exec(POST, '/jobs/import', data=data, **kwargs)
 
 
     def job(self, job_id, **kwargs):
@@ -456,7 +434,7 @@ class RundeckApi(object):
         if 'fmt' in params:
             params['format'] = params.pop('fmt')
 
-        return self.execute_cmd(GET, '/job/{0}'.format(job_id), params=params, parse_response=False, **kwargs)
+        return self._exec(GET, '/job/{0}'.format(job_id), params=params, parse_response=False, **kwargs)
 
 
     def delete_job(self, job_id, **kwargs):
@@ -469,7 +447,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(DELETE, '/job/{0}'.format(job_id), **kwargs)
+        return self._exec(DELETE, '/job/{0}'.format(job_id), **kwargs)
 
 
     def jobs_delete(self, idlist, **kwargs):
@@ -487,7 +465,7 @@ class RundeckApi(object):
 
         params = {'idlist': idlist}
 
-        return self.execute_cmd(POST, '/jobs/delete', params=params, **kwargs)
+        return self._exec(POST, '/jobs/delete', params=params, **kwargs)
 
 
     def job_executions(self, job_id, **kwargs):
@@ -509,7 +487,7 @@ class RundeckApi(object):
         :rtype: RundeckResponse
         """
         params = cull_kwargs(('status', 'max', 'offset'), kwargs)
-        return self.execute_cmd(POST, '/job/{0}/executions'.format(job_id), params=params, **kwargs)
+        return self._exec(POST, '/job/{0}/executions'.format(job_id), params=params, **kwargs)
 
 
     def executions_running(self, project, **kwargs):
@@ -523,7 +501,7 @@ class RundeckApi(object):
         :rtype: RundeckResponse
         """
         params = {'project': project}
-        return self.execute_cmd(GET, '/executions/running', params=params, **kwargs)
+        return self._exec(GET, '/executions/running', params=params, **kwargs)
 
 
     def execution(self, execution_id, **kwargs):
@@ -536,7 +514,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(GET, '/execution/{0}'.format(execution_id), **kwargs)
+        return self._exec(GET, '/execution/{0}'.format(execution_id), **kwargs)
 
 
     def executions(self, project, **kwargs):
@@ -610,7 +588,7 @@ class RundeckApi(object):
             'exludeJobExactFilter', 'max', 'offset'), kwargs)
         params['project'] = project
 
-        return self.execute_cmd(GET, '/executions', params=params, **kwargs)
+        return self._exec(GET, '/executions', params=params, **kwargs)
 
 
     def execution_output(self, execution_id, **kwargs):
@@ -639,7 +617,7 @@ class RundeckApi(object):
         if 'fmt' in params:
             params['format'] = params.pop('fmt')
 
-        return self.execute_cmd(GET, '/execution/{0}/output'.format(execution_id), params=params, parse_response=False, **kwargs)
+        return self._exec(GET, '/execution/{0}/output'.format(execution_id), params=params, parse_response=False, **kwargs)
 
 
     def execution_abort(self, execution_id, **kwargs):
@@ -657,7 +635,7 @@ class RundeckApi(object):
         :rtype: requests.models.Response
         """
         params = cull_kwargs(('asUser',), kwargs)
-        return self.execute_cmd(GET, '/execution/{0}/abort'.format(execution_id), params=params, **kwargs)
+        return self._exec(GET, '/execution/{0}/abort'.format(execution_id), params=params, **kwargs)
 
 
     def run_command(self, project, command, **kwargs):
@@ -718,7 +696,7 @@ class RundeckApi(object):
         params['project'] = project
         params['exec'] = command
 
-        return self.execute_cmd(GET, '/run/command', params=params, **kwargs)
+        return self._exec(GET, '/run/command', params=params, **kwargs)
 
 
     def run_script(self, project, scriptFile, **kwargs):
@@ -796,7 +774,7 @@ class RundeckApi(object):
             params['argString'] = dict2argstring(argString)
 
 
-        return self.execute_cmd(POST, '/run/script', params=params, **kwargs)
+        return self._exec(POST, '/run/script', params=params, **kwargs)
 
 
     def run_url(self, project, scriptUrl, **kwargs):
@@ -875,7 +853,7 @@ class RundeckApi(object):
         if argString is not None:
             params['argString'] = dict2argstring(argString)
 
-        return self.execute_cmd(POST, '/run/url', params=params, **kwargs)
+        return self._exec(POST, '/run/url', params=params, **kwargs)
 
 
     def projects(self, **kwargs):
@@ -884,7 +862,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(POST, '/projects', **kwargs)
+        return self._exec(POST, '/projects', **kwargs)
 
 
     def project(self, project, **kwargs):
@@ -897,7 +875,7 @@ class RundeckApi(object):
         :return: A RundeckResponse`
         :rtype: RundeckResponse
         """
-        return self.execute_cmd(GET, 'project/{0}'.format(urllib.quote(project)), **kwargs)
+        return self._exec(GET, 'project/{0}'.format(urllib.quote(project)), **kwargs)
 
 
     def project_resources(self, project, **kwargs):
@@ -952,7 +930,7 @@ class RundeckApi(object):
         if 'fmt' in params:
             params['format'] = params.pop('fmt')
 
-        return self.execute_cmd(GET, 'project/{0}/resources'.format(urllib.quote(project)), **kwargs)
+        return self._exec(GET, 'project/{0}/resources'.format(urllib.quote(project)), **kwargs)
 
 
     def project_resources_update(self, project, nodes, **kwargs):
@@ -971,7 +949,7 @@ class RundeckApi(object):
 
         data = '<nodes>{0}</nodes>'.format('\n'.join([node.xml for node in nodes]))
 
-        return self.execute_cmd(POST, 'project/{0}/resources'.format(urllib.quote(project)), data=data, headers=headers, **kwargs)
+        return self._exec(POST, 'project/{0}/resources'.format(urllib.quote(project)), data=data, headers=headers, **kwargs)
 
 
     def project_resources_refresh(self, project, providerUrl=None, **kwargs):
@@ -993,7 +971,7 @@ class RundeckApi(object):
         if providerUrl is not None:
             data['providerUrl'] = providerUrl
 
-        return self.execute_cmd(POST, '/project/{0}/resources/refresh'.format(project), data=data, **kwargs)
+        return self._exec(POST, '/project/{0}/resources/refresh'.format(project), data=data, **kwargs)
 
 
 
@@ -1048,4 +1026,13 @@ class RundeckApi(object):
             'jobListFilter', 'excludeJobListFilter', 'recentFilter', 'begin', 'end', 'max', \
             'offset'), kwargs)
         params['project'] = project
-        return self.execute_cmd(GET, 'history', **kwargs)
+        return self._exec(GET, 'history', **kwargs)
+
+
+class RundeckApiNoisy(RundeckApi):
+    """ Same as RundeckApi, but complains (raises exceptions) on every Rundeck Server error
+    """
+    def _exec(self, *args, **kwargs):
+        result = super(RundeckApiNoisy, self)._exec(*args, **kwargs)
+        result.raise_for_error()
+        return result

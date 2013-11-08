@@ -16,7 +16,7 @@ import requests
 
 from .transforms import ElementTree
 from .defaults import RUNDECK_API_VERSION
-from .exceptions import InvalidAuthentication
+from .exceptions import InvalidAuthentication, RundeckServerError
 
 
 def memoize(obj):
@@ -40,21 +40,10 @@ class RundeckResponse(object):
             response : requests.Response
                 an instance of the requests.Response returned by the associated command request
         """
-        self._response = response
         self._as_dict_method = None
-
-    @property
-    @memoize
-    def etree(self):
-        return ElementTree.fromstring(self.body)
-
-    @property
-    def response(self):
-        return self._response
-
-    @property
-    def body(self):
-        return self._response.text
+        self.response = response
+        self.body = self.response.text
+        self.etree = ElementTree.fromstring(self.body)
 
     @memoize
     def pprint(self):
@@ -82,10 +71,23 @@ class RundeckResponse(object):
     @memoize
     def message(self):
         if self.success:
-            message_el = self.etree.find('success')
+            term = 'success'
         else:
-            message_el = self.etree.find('error')
-        return message_el.find('message').text
+            term = 'error'
+
+        message_el = self.etree.find(term)
+
+        if message_el is None:
+            return term
+        else:
+            return message_el.find('message').text
+
+    def raise_for_error(self, msg=None):
+        if msg is None:
+            msg = self.message
+
+        if not self.success:
+            raise RundeckServerError(msg)
 
 
 class RundeckConnection(object):
@@ -147,7 +149,7 @@ class RundeckConnection(object):
         """
         return '/'.join([self.base_url, str(self.api_version), api_url.lstrip('/')])
 
-    def execute_cmd(self, method, url, params=None, data=None, parse_response=True, **kwargs):
+    def request(self, method, url, params=None, data=None, parse_response=True, **kwargs):
         """ Sends the HTTP request to Rundeck
 
         :Parameters:
@@ -170,5 +172,12 @@ class RundeckConnection(object):
         headers = {'X-Rundeck-Auth-Token': self.api_token}
 
         response = requests.request(method, url, params=params, data=data, cookies=None, headers=headers, **kwargs)
-        response.raise_for_status()
         return RundeckResponse(response)
+
+
+class RundeckConnectionNoisy(RundeckConnection):
+
+    def request(self, *args, **kwargs):
+        response = super(RundeckConnectionNoisy, self).request(*args, **kwargs)
+        response.response.raise_for_status()
+        return response

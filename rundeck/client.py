@@ -12,10 +12,10 @@ import time
 import errno
 from string import maketrans, ascii_letters, digits
 from datetime import datetime
-from api import RundeckApi
+from api import RundeckApi, RundeckApiNoisy
 from connection import RundeckConnection
 from transforms import transform
-from util import child2dict, attr2dict
+from util import child2dict, attr2dict, cull_kwargs
 from exceptions import (
     JobNotFound,
     MissingProjectArgument,
@@ -74,8 +74,19 @@ class Rundeck(object):
                 Rundeck user password (used in combo with usr)
             api_version : int
                 Rundeck API version
+            api : RundeckApi
+                an instance of a RundeckApi or subclass of RundeckApi
+            connection : RundeckConnection
+                an instance of a RundeckConnection or instance of a subclass of RundeckConnection
         """
-        self.api = RundeckApi(server, protocol=protocol, port=port, api_token=api_token, **kwargs)
+        api = kwargs.pop('api', None)
+        if api is None:
+            self.api = RundeckApiNoisy(
+                server, protocol=protocol, port=port, api_token=api_token, **kwargs)
+        elif isinstance(api, RundeckApi):
+            self.api = api
+        else:
+            raise Exception('Supplied api argument is not a valide RundeckApi: {0}'.format(api))
 
 
     def get_job_id(self, project, name=None, **kwargs):
@@ -176,16 +187,44 @@ class Rundeck(object):
         :return: a list of Jobs
         :rtype: list(dict, ...)
         """
-        return self.api.jobs(project, **kwargs)
+        jobs = self.api.jobs(project, **kwargs)
+        jobs.raise_for_error()
+        return jobs
 
 
     @transform('execution')
     def execution(self, execution_id, **kwargs):
-        return self.api.execution(execution_id, **kwargs)
+        """ Get that status of an execution
 
-    @transform('execution')
-    def job_executions(self, job, **kwargs):
-        return self.api.execution(project, **kwargs)
+        :Parameters:
+            execution_id : str
+                Rundeck Job Execution ID
+
+        :return: an Execution
+        :rtype: dict
+        """
+        execution = self.api.execution(execution_id, **kwargs)
+
+    @transform('executions')
+    def job_executions(self, job_id, **kwargs):
+        """ Get a list of executions of a Job
+
+        :Parameters:
+            job : str
+                A Job ID
+
+        :Keywords:
+            status : str
+                one of Status.values
+            max : int
+                maximum number of results to include in response (default: 20)
+            offset : int
+                offset for result set (default: 0)
+
+        :return: an Execution
+        :rtype: dict
+        """
+        return self.api.job_executions(job_id, **kwargs)
 
     @transform('system_info')
     def system_info(self):

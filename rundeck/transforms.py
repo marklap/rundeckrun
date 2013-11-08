@@ -156,6 +156,10 @@ _execution = """\
 
 @is_transform
 def execution(resp):
+    return executions(resp)[0]
+
+@is_transform
+def executions(resp):
     base = resp.etree.find('executions')
     exec_count = int(base.attrib['count'])
 
@@ -176,12 +180,10 @@ def execution(resp):
             data['date-ended'] = datetime.strptime(data['date-ended'], _DATETIME_ISOFORMAT)
         return data
 
-    if exec_count <= 0:
-        return []
-    elif exec_count == 1:
-        return xform(base.find('execution'))
-    else:
+    if exec_count > 0:
         return [xform(el) for el in base.iterfind('execution')]
+    else:
+        return []
 
 
 @is_transform
