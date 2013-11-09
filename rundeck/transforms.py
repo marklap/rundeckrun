@@ -186,42 +186,6 @@ def executions(resp):
         return []
 
 
-@is_transform
-def execution_old(resp):
-    """Transforms an Execution's RundeckResponse object into a dict
-
-    :Parameters:
-        resp : RundeckResponse
-            a RundeckResponse representing a Rundeck Execution
-
-    :return: a dict object representing a Rundeck Execution
-    :rtype: dict
-    """
-    execution = {}
-    for execution_el in resp.body.iterfind('execution'):
-        execution.update(execution_el.attrib)
-
-        date_started = execution_el.find('date-started')
-        if date_started is not None:
-            execution['date-started'] = datetime.strptime(date_started.text, _DATETIME_ISOFORMAT)
-            execution_el.remove(date_started)
-
-        date_ended = execution_el.find('date-ended')
-        if date_ended is not None:
-            execution['date-ended'] = datetime.strptime(date_ended.text, _DATETIME_ISOFORMAT)
-            execution_el.remove(date_ended)
-
-        job_el = execution_el.find('job')
-        if job_el is not None:
-            execution['job'] = dict(job_el.attrib)
-            execution['job'].update({c.tag: c.text for c in job_el})
-            execution_el.remove(job_el)
-
-        execution.update({e.tag: e.text for e in execution_el})
-
-    return execution
-
-
 _job = """\
 <?xml version="1.0" ?>
 <result apiversion="9" success="true">
@@ -280,6 +244,10 @@ _projects = """\
 </result>"""
 
 @is_transform
+def project(resp):
+    return projects(resp)[0]
+
+@is_transform
 def projects(resp):
     base = resp.etree.find('projects')
     project_count = int(base.attrib['count'])
@@ -287,7 +255,18 @@ def projects(resp):
     projects = []
     if project_count > 0:
         for project_el in base.iterfind('project'):
-            projects.append(child2dict(project_el))
+            project = {}
+
+            # an attempt to accomodate the "additional items" specified in the API docs but don't
+            #     seem to be included in the response
+            #     https://github.com/dtolabs/rundeck/issues/586
+            resources_el = project_el.find('resources')
+            if resources_el:
+                project['resources'] = child2dict(resources_el)
+                project_el.remove(resources_el)
+
+            project.update(child2dict(project_el))
+            projects.append(project)
 
     return projects
 
