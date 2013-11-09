@@ -227,29 +227,23 @@ class Rundeck(object):
         return self.api.job_executions(job_id, **kwargs)
 
     @transform('system_info')
-    def system_info(self):
+    def system_info(self, **kwargs):
         """ Get Rundeck Server System Info
 
         :return: a dict object representing the Rundeck system information
         :rtype: dict
         """
-        return self.api.system_info()
+        return self.api.system_info(**kwargs)
 
-        '''
-        resp.as_dict['']
-        ts = resp.body.find('timestamp').find('datetime').text
-        ts_date = datetime.strptime(ts, _DATETIME_ISOFORMAT)
+    @transform('projects')
+    def projects(self, **kwargs):
+        """ Get a list of projects
 
-        system_info = {
-            'timestamp': {'datetime': ts_date},
-            'rundeck': {c.tag: c.text for c in resp.body.find('rundeck')},
-            'os': {c.tag: c.text for c in resp.body.find('os')},
-            'jvm': {c.tag: c.text for c in resp.body.find('jvm')},
-        }
+        :return: a list of Rundeck Project names
+        :rtype: list(str, ...)
+        """
+        return self.api.projects(**kwargs)
 
-        # TODO: include stats returned in the response
-        return system_info
-        '''
 
 '''
     def list_projects(self):

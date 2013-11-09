@@ -247,7 +247,6 @@ _job = """\
     </jobs>
 </result>"""
 
-
 @is_transform
 def jobs(resp):
     base = resp.etree.find('jobs')
@@ -262,6 +261,35 @@ def jobs(resp):
 
     return jobs
 
+
+
+
+_projects = """\
+<?xml version="1.0" ?>
+<result apiversion="9" success="true">
+    <projects count="2">
+        <project>
+            <name>JustAnotherProject</name>
+            <description/>
+        </project>
+        <project>
+            <name>TestProject</name>
+            <description/>
+        </project>
+    </projects>
+</result>"""
+
+@is_transform
+def projects(resp):
+    base = resp.etree.find('projects')
+    project_count = int(base.attrib['count'])
+
+    projects = []
+    if project_count > 0:
+        for project_el in base.iterfind('project'):
+            projects.append(child2dict(project_el))
+
+    return projects
 
 
 _transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}
