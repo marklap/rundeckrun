@@ -220,7 +220,8 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.connection.request(method, url, params, data, parse_response, **kwargs)
+        return self.connection.request(
+            method, url, params=params, data=data, parse_response=parse_response, **kwargs)
 
 
     def system_info(self, **kwargs):
@@ -454,7 +455,7 @@ class RundeckApi(object):
         """ Wraps `Rundeck API POST /jobs/delete <http://rundeck.org/docs/api/index.html#importing-jobs>`_
 
         :Parameters:
-            idlist : str | list(str, ...)
+            ids : str | list(str, ...)
                 a list of job ids or a string of comma seperated job ids to delete
 
         :return: A RundeckResponse
@@ -463,9 +464,9 @@ class RundeckApi(object):
         if not isinstance(idlist, basestring) and hasattr(idlist, '__iter__'):
             idlist = ','.join(idlist)
 
-        params = {'idlist': idlist}
+        data = {'idlist': idlist}
 
-        return self._exec(POST, 'jobs/delete', params=params, **kwargs)
+        return self._exec(POST, 'jobs/delete', data=data, **kwargs)
 
 
     def job_executions(self, job_id, **kwargs):
@@ -1032,7 +1033,11 @@ class RundeckApi(object):
 class RundeckApiNoisy(RundeckApi):
     """ Same as RundeckApi, but complains (raises exceptions) on every Rundeck Server error
     """
-    def _exec(self, *args, **kwargs):
-        result = super(RundeckApiNoisy, self)._exec(*args, **kwargs)
-        result.raise_for_error()
+    def _exec(self, method, url, params=None, data=None, parse_response=True, **kwargs):
+        result = super(RundeckApiNoisy, self)._exec(
+            method, url, params=params, data=data, parse_response=parse_response, **kwargs)
+
+        if parse_response:
+            result.raise_for_error()
+
         return result

@@ -31,81 +31,6 @@ def is_transform(func):
     return func
 
 
-_system_info = """\
-<?xml version="1.0" ?>
-<result apiversion="9" success="true">
-        <success>
-                <message>System Stats for RunDeck 1.6.1 on node 0136M956912L</message>
-        </success>
-        <system>
-                <timestamp epoch="1382731189837" unit="ms">
-                        <datetime>2013-10-25T19:59:49Z</datetime>
-                </timestamp>
-                <rundeck>
-                        <version>1.6.1</version>
-                        <build>1.6.1-1</build>
-                        <node>0136M956912L</node>
-                        <base>C:/workspace/servers/rundeck-1.6.1</base>
-                        <apiversion>9</apiversion>
-                </rundeck>
-                <os>
-                        <arch>amd64</arch>
-                        <name>Windows 7</name>
-                        <version>6.1</version>
-                </os>
-                <jvm>
-                        <name>Java HotSpot(TM) 64-Bit Server VM</name>
-                        <vendor>Oracle Corporation</vendor>
-                        <version>23.25-b01</version>
-                </jvm>
-                <stats>
-                        <uptime duration="283596" unit="ms">
-                                <since epoch="1382730906241" unit="ms">
-                                        <datetime>2013-10-25T19:55:06Z</datetime>
-                                </since>
-                        </uptime>
-                        <cpu>
-                                <loadAverage unit="percent">-1.0</loadAverage>
-                                <processors>4</processors>
-                        </cpu>
-                        <memory unit="byte">
-                                <max>1877213184</max>
-                                <free>366096184</free>
-                                <total>651886592</total>
-                        </memory>
-                        <scheduler>
-                                <running>0</running>
-                        </scheduler>
-                        <threads>
-                                <active>27</active>
-                        </threads>
-                </stats>
-        </system>
-</result>"""
-
-_projects = """\
-<?xml version="1.0" ?>
-<result apiversion="9" success="true">
-        <projects count="1">
-                <project>
-                        <name>TestProject</name>
-                        <description/>
-                </project>
-        </projects>
-</result>"""
-
-_project = """\
-<?xml version="1.0" ?>
-<result apiversion="9" success="true">
-        <projects count="1">
-                <project>
-                        <name>TestProject</name>
-                        <description/>
-                </project>
-        </projects>
-</result>"""
-
-
 @is_transform
 def system_info(resp):
     base = resp.etree.find('system')
@@ -134,29 +59,10 @@ def system_info(resp):
     return data
 
 
-_execution = """\
-<?xml version="1.0" ?>
-<result apiversion="9" success="true">
-    <executions count="1">
-        <execution href="http://optimus-prime:4440/execution/follow/282" id="282" project="TestProject" status="succeeded">
-            <user>admin</user>
-            <date-started unixtime="1383364692131">2013-11-02T03:58:12Z</date-started>
-            <date-ended unixtime="1383364693001">2013-11-02T03:58:13Z</date-ended>
-            <job averageDuration="870" id="f114ab12-9590-41e9-934a-78cdfaaaba77">
-                <name>Huh</name>
-                <group>prod</group>
-                <project>TestProject</project>
-                <description/>
-            </job>
-            <description>Plugin[localexec, nodeStep: true] [... 2 steps]</description>
-            <argstring/>
-        </execution>
-    </executions>
-</result>"""
-
 @is_transform
 def execution(resp):
     return executions(resp)[0]
+
 
 @is_transform
 def executions(resp):
@@ -186,31 +92,6 @@ def executions(resp):
         return []
 
 
-_job = """\
-<?xml version="1.0" ?>
-<result apiversion="9" success="true">
-    <jobs count="3">
-        <job id="8436f27f-7d16-48a1-9d4d-0a89145d1121">
-            <name>HelloWorld</name>
-            <group/>
-            <project>TestProject</project>
-            <description/>
-        </job>
-        <job id="16f4f377-0b3f-4eed-97e7-7946112e8dcc">
-            <name>Huh</name>
-            <group>test</group>
-            <project>TestProject</project>
-            <description/>
-        </job>
-        <job id="f114ab12-9590-41e9-934a-78cdfaaaba77">
-            <name>Huh</name>
-            <group>prod</group>
-            <project>TestProject</project>
-            <description/>
-        </job>
-    </jobs>
-</result>"""
-
 @is_transform
 def jobs(resp):
     base = resp.etree.find('jobs')
@@ -226,26 +107,10 @@ def jobs(resp):
     return jobs
 
 
-
-
-_projects = """\
-<?xml version="1.0" ?>
-<result apiversion="9" success="true">
-    <projects count="2">
-        <project>
-            <name>JustAnotherProject</name>
-            <description/>
-        </project>
-        <project>
-            <name>TestProject</name>
-            <description/>
-        </project>
-    </projects>
-</result>"""
-
 @is_transform
 def project(resp):
     return projects(resp)[0]
+
 
 @is_transform
 def projects(resp):
@@ -269,6 +134,42 @@ def projects(resp):
             projects.append(project)
 
     return projects
+
+
+@is_transform
+def job_import_status(resp):
+    results = {
+        'succeeded': None,
+        'failed': None,
+        'skipped': None,
+        }
+
+    for status in results.keys():
+        status_el = resp.etree.find(status)
+        if status_el is not None:
+            results[status] = [child2dict(job_el) for job_el in status_el.iterfind('job')] or None
+
+    return results
+
+
+@is_transform
+def jobs_delete(resp):
+    results ={
+        'succeeded': None,
+        'failed': None,
+    }
+
+    for status in results.keys():
+        status_el = resp.etree.find('status')
+        if status_el is not None:
+            results[status] = attr2dict(status_el)
+            results[status].update(child2dict(status_el))
+
+    results['requestCount'] = int(resp.etree.attrib.get('requestCount'))
+    results['allsuccessful'] = bool(resp.etree.attrib.get('allsuccessful'))
+
+    return results
+
 
 
 _transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}

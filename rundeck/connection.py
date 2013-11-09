@@ -171,13 +171,19 @@ class RundeckConnection(object):
         url = self.make_url(url)
         headers = {'X-Rundeck-Auth-Token': self.api_token}
 
-        response = requests.request(method, url, params=params, data=data, cookies=None, headers=headers, **kwargs)
-        return RundeckResponse(response)
+        response = requests.request(
+            method, url, params=params, data=data, cookies=None, headers=headers, **kwargs)
+
+        if parse_response:
+            return RundeckResponse(response)
+        else:
+            return response
 
 
 class RundeckConnectionNoisy(RundeckConnection):
 
-    def request(self, *args, **kwargs):
-        response = super(RundeckConnectionNoisy, self).request(*args, **kwargs)
+    def request(self, method, url, params=None, data=None, parse_response=True, **kwargs):
+        response = super(RundeckConnectionNoisy, self).request(
+            method, url, params=params, data=data, parse_response=parse_response, **kwargs)
         response.response.raise_for_status()
         return response

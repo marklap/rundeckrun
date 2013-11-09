@@ -20,7 +20,8 @@ Status = enum(
     RUNNING='running',
     SUCCEEDED='succeeded',
     FAILED='failed',
-    ABORTED='aborted'
+    ABORTED='aborted',
+    SKIPPED='skipped'
     )
 
 DupeOption = enum(
