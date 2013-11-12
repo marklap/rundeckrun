@@ -191,7 +191,7 @@ class RundeckApi(object):
 
         if connection is None:
             self.connection = RundeckConnectionNoisy(
-                server, protocol=protocol, port=port, api_token=api_token, **kwargs)
+                server=server, protocol=protocol, port=port, api_token=api_token, **kwargs)
         elif isinsance(connection, RundeckConnection):
             self.connection = connection
         else:
@@ -220,7 +220,7 @@ class RundeckApi(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        return self.connection.request(
+        return self.connection.call(
             method, url, params=params, data=data, parse_response=parse_response, **kwargs)
 
 
@@ -464,9 +464,15 @@ class RundeckApi(object):
         if not isinstance(idlist, basestring) and hasattr(idlist, '__iter__'):
             idlist = ','.join(idlist)
 
-        data = {'idlist': idlist}
+        data = {
+            'idlist': idlist,
+            }
 
-        return self._exec(POST, 'jobs/delete', data=data, **kwargs)
+        try:
+            return self._exec(POST, 'jobs/delete', data=data, **kwargs)
+        except Exception as exc:
+            print exc
+            raise
 
 
     def job_executions(self, job_id, **kwargs):

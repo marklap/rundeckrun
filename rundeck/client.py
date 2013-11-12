@@ -12,11 +12,13 @@ import time
 import errno
 from string import maketrans, ascii_letters, digits
 from datetime import datetime
+
 from api import RundeckApi, RundeckApiNoisy
 from connection import RundeckConnection
 from transforms import transform
 from util import child2dict, attr2dict, cull_kwargs
 from exceptions import (
+    RundeckServerError,
     JobNotFound,
     MissingProjectArgument,
     InvalidJobArgument,
@@ -387,12 +389,11 @@ class Rundeck(object):
         """
         return self.api.delete_job(job_id, **kwargs).success
 
-    @transform('jobs_delete')
-    def jobs_delete(self, ids, **kwargs):
+    def jobs_delete(self, idlist, **kwargs):
         """ Bulk Job delete
 
         :Parameters:
-            ids : str | list(str, ...)
+            idlist : str | list(str, ...)
                 a list of job ids or a string of comma seperated job ids to delete
 
         :return: results of the bulk delete with details
@@ -414,7 +415,23 @@ class Rundeck(object):
             }
 
         """
-        return self.api.jobs_delete(ids, **kwargs)
+        # while we're waiting for https://github.com/dtolabs/rundeck/issues/588 to get resolved,
+        #   we'll just use iterate over the list of ids and call delete_job - potentially REALLY
+        #   painfully slow for large lists
+        if isinstance(idlist, basestring):
+            idlist = idlist.split(',')
+
+        results = []
+        for id in idlist:
+            result = None
+            try:
+                result = self.delete_job(id)
+            except RundeckServerError as exc:
+                result = exc.rundecK_response
+            results.append(result)
+
+        return results
+
 
     @transform('execution')
     def execution(self, execution_id, **kwargs):

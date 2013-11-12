@@ -152,21 +152,42 @@ def job_import_status(resp):
     return results
 
 
+_jobs_delete = """\
+<?xml version="1.0" ?>
+<result apiversion="9" success="true">
+    <deleteJobs allsuccessful="true" requestCount="1">
+        <succeeded count="1">
+            <deleteJobResult id="a5bba965-0ee3-4f41-981f-3fbd7e4aad13">
+                <message>Job was successfully deleted: [a5bba965-0ee3-4f41-981f-3fbd7e4aad13] /Long Running</message>
+            </deleteJobResult>
+        </succeeded>
+    </deleteJobs>
+</result>"""
+
 @is_transform
 def jobs_delete(resp):
+    base = resp.etree.find('deleteJobs')
+
     results ={
         'succeeded': None,
         'failed': None,
     }
 
     for status in results.keys():
-        status_el = resp.etree.find('status')
+        status_el = base.find(status)
         if status_el is not None:
-            results[status] = attr2dict(status_el)
-            results[status].update(child2dict(status_el))
+            results[status] = {
+                'count': int(status_el.attrib.get('count'))
+                }
+            jobs = []
+            for job_req_el in status_el.iterfind('deleteJobResult'):
+                job = attr2dict(job_req_el)
+                job.update(child2dict(job_req_el))
+                jobs.append(job)
+            results[status]['jobs'] = jobs
 
-    results['requestCount'] = int(resp.etree.attrib.get('requestCount'))
-    results['allsuccessful'] = bool(resp.etree.attrib.get('allsuccessful'))
+    results['requestCount'] = int(base.attrib.get('requestCount'))
+    results['allsuccessful'] = bool(base.attrib.get('allsuccessful'))
 
     return results
 

@@ -87,7 +87,7 @@ class RundeckResponse(object):
             msg = self.message
 
         if not self.success:
-            raise RundeckServerError(msg)
+            raise RundeckServerError(msg, rundecK_response=self)
 
 
 class RundeckConnection(object):
@@ -149,7 +149,40 @@ class RundeckConnection(object):
         """
         return '/'.join([self.base_url, str(self.api_version), api_url.lstrip('/')])
 
-    def request(self, method, url, params=None, data=None, parse_response=True, **kwargs):
+    def call(self, method, url, params=None, data=None, parse_response=True, **kwargs):
+        """ Format the URL in preparation for making the HTTP request and return a
+        RundeckResponse if requested/necessary
+
+        :Parameters:
+            method : str
+                the HTTP request method
+            url : str
+                API URL
+            params : dict({str: str, ...})
+                a dict of query string params (default: None)
+            data : str
+                the XML or YAML payload necessary for some commands
+                (default: None)
+            parse_response : bool
+                parse the response as an xml message
+
+        :Keywords:
+            **passed along to the requests library**
+
+        :rtype: requests.Response
+        """
+        url = self.make_url(url)
+        headers = {'X-Rundeck-Auth-Token': self.api_token}
+
+        response = self.request(
+            method, url, params=params, data=data, cookies=None, headers=headers, **kwargs)
+
+        if parse_response:
+            return RundeckResponse(response)
+        else:
+            return response
+
+    def request(self, method, url, params=None, data=None, cookies=None, headers=None, **kwargs):
         """ Sends the HTTP request to Rundeck
 
         :Parameters:
@@ -166,24 +199,35 @@ class RundeckConnection(object):
         :Keywords:
             **passed along to the requests library**
 
-        :rtype: RundeckXmlResponse | RundeckYamlResponse
+        :rtype: requests.Response
         """
-        url = self.make_url(url)
-        headers = {'X-Rundeck-Auth-Token': self.api_token}
-
-        response = requests.request(
+        return requests.request(
             method, url, params=params, data=data, cookies=None, headers=headers, **kwargs)
-
-        if parse_response:
-            return RundeckResponse(response)
-        else:
-            return response
 
 
 class RundeckConnectionNoisy(RundeckConnection):
 
-    def request(self, method, url, params=None, data=None, parse_response=True, **kwargs):
+    def request(self, method, url, params=None, data=None, cookies=None, headers=None, **kwargs):
+        """ Override to call raise_for_status forcing non-successful HTTP responses to bubble up as
+        as exceptions
+
+        :Parameters:
+            method : str
+                the HTTP request method
+            url : str
+                API URL
+            params : dict({str: str, ...})
+                a dict of query string params (default: None)
+            data : str
+                the XML or YAML payload necessary for some commands
+                (default: None)
+
+        :Keywords:
+            **passed along to the requests library**
+
+        :rtype: requests.Response
+        """
         response = super(RundeckConnectionNoisy, self).request(
-            method, url, params=params, data=data, parse_response=parse_response, **kwargs)
-        response.response.raise_for_status()
+            method, url, params=params, data=data, cookies=cookies, headers=headers, **kwargs)
+        response.raise_for_status()
         return response
