@@ -433,19 +433,6 @@ class Rundeck(object):
         return results
 
 
-    @transform('execution')
-    def execution(self, execution_id, **kwargs):
-        """ Get that status of an execution
-
-        :Parameters:
-            execution_id : int
-                Rundeck Job Execution ID
-
-        :return: an Execution
-        :rtype: dict
-        """
-        return self.api.execution(execution_id, **kwargs)
-
     @transform('executions')
     def job_executions(self, job_id, **kwargs):
         """ Get a list of executions of a Job
@@ -462,333 +449,40 @@ class Rundeck(object):
             offset : int
                 offset for result set (default: 0)
 
-        :return: an Execution
-        :rtype: dict
+        :return: a list of Job Executions
+        :rtype: list(dict, ...)
         """
         return self.api.job_executions(job_id, **kwargs)
 
-    @transform('projects')
-    def projects(self, **kwargs):
-        """ Get a list of projects
+    @transform('executions')
+    def executions_running(self, project='*', **kwargs):
+        """ Retrieve running executions
 
-        :return: a list of Rundeck projects
+        :Parameters:
+            project : str
+                the name of a project (use "*" for all projects - API v9+ required)
+
+        :return: a list of Job Executions
         :rtype: list(dict, ...)
         """
-        return self.api.projects(**kwargs)
+        return self.api.executions_running(project, **kwargs)
 
-    @transform('project')
-    def project(self, project, **kwargs):
-        """ Fetch a listing of jobs for a project
-
-        :Parameters:
-            project : str
-                the name of a project
-
-        :return: detailed information about a project
-        :rtype: dict
-        """
-        return self.api.project(project, **kwargs)
-
-
-
-'''
-
-    def system_info(self, **kwargs):
-        """ Wraps `Rundeck API GET /system/info <http://rundeck.org/docs/api/index.html#system-info>`_
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        return self._exec(GET, 'system/info', **kwargs)
-
-
-    def jobs(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /jobs <http://rundeck.org/docs/api/index.html#listing-jobs>`_
-
-        :Parameters:
-            project : str
-                the name of a project
-
-        :Keywords:
-            idlist : str | list(str, ...)
-                specify a comma-separated string or a list of Job IDs to include
-            groupPath : str
-                specify a group or partial group path to include all jobs within that group path
-                or "*" for all groups or "-" to match top level jobs only (default: "*")
-            jobFilter : str
-                specify a job name filter; will match any job name that contains this string
-            jobExactFilter : str
-                specify an exact job name to match
-            groupPathExact : str
-                specify an exact group path to match or "-" to match the top level jobs only
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        params = cull_kwargs(
-            ('idlist', 'groupPath', 'jobFilter', 'jobExactFilter', 'groupPathExact'), kwargs)
-
-        if 'jobExactFilter' in params or 'groupPathExact' in params:
-            self.requires_version(2)
-
-        params['project'] = project
-
-        return self._exec(GET, 'jobs', params=params, **kwargs)
-
-
-    def project_jobs(self, project, **kwargs):
-        """ Simulates `Rundeck API GET /project/[NAME]/jobs <http://rundeck.org/docs/api/index.html#listing-jobs-for-a-project>`_
-            **Note**: Can't find any difference between this and /jobs, so this method is just a
-                synonym for the `jobs` method
-
-        :Parameters:
-            project : str
-                name of the project
-
-        :Keywords:
-            idlist : list(str, ...)
-                a list of job ids to return
-            groupPath : str
-                a group path, partial group path or the special top level only
-                char '-'
-            jobFilter: str
-                find job names that include this string
-            jobExactFilter : str
-                a specific job name to return
-            groupPathExact : str
-                a exact group path to match or the special top level only char
-                '-'
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        return self.jobs(project, **kwargs)
-
-
-    def job_run(self, job_id, **kwargs):
-        """Wraps `Rundeck API GET /job/[ID]/run <http://rundeck.org/docs/api/index.html#running-a-job>`_
-
-        :Parameters:
-            job_id : str
-                Rundeck Job ID
-
-        :Keywords:
-            argString : str | dict
-                argument string to pass to job - if str, will be passed as-is
-                else if dict will be converted to compatible string
-            loglevel : str('DEBUG', 'VERBOSE', 'INFO', 'WARN', 'ERROR')
-                logging level (default: 'INFO')
-            asUser : str
-                user to run the job as
-            exclude-precedence : bool
-                set the exclusion precedence (default True)
-            hostname : str
-                hostname inclusion filter
-            tags : str
-                tags inclusion filter
-            os-name : str
-                os-name inclusion filter
-            os-family : str
-                os-family inclusion filter
-            os-arch : str
-                os-arch inclusion filter
-            os-version : str
-                os-version inclusion filter
-            name : str
-                name inclusion filter
-            exlude-hostname : str
-                hostname exclusion filter
-            exlude-tags : str
-                tags exclusion filter
-            exlude-os-name : str
-                os-name exclusion filter
-            exlude-os-family : str
-                os-family exclusion filter
-            exlude-os-arch : str
-                os-arch exclusion filter
-            exlude-os-version : str
-                os-version exclusion filter
-            exlude-name : str
-                name exclusion filter
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        params = cull_kwargs(('argString', 'loglevel', 'asUser', 'exclude-precedence', \
-            'hostname', 'tags', 'os-name', 'os-family', 'os-arch', 'os-version', 'name', \
-            'exlude-hostname', 'exlude-tags', 'exlude-os-name', 'exlude-os-family', \
-            'exlude-os-arch', 'exlude-os-version', 'exlude-name'), kwargs)
-
-        argString = params.get('argString', None)
-        if argString is not None:
-            params['argString'] = dict2argstring(argString)
-
-        return self._exec(GET, 'job/{0}/run'.format(job_id), params=params, **kwargs)
-
-
-    def jobs_export(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
-
-        :Parameters:
-            name : str
-                name of the project
-
-        :Keywords:
-            fmt : str ('xml'|'yaml')
-                format of the definition string (default: 'xml')
-            idlist : list(str, ...)
-                a list of job ids to return
-            groupPath : str
-                a group path, partial group path or the special top level only
-                char '-'
-            jobFilter: str
-                find job names that include this string
-
-        :return: A Requests response
-        :rtype: requests.models.Response
-        """
-        params = cull_kwargs(('fmt', 'idlist', 'groupPath', 'jobFilter'), kwargs)
-        if 'fmt' in params:
-            params['format'] = params.pop('fmt')
-
-        return self._exec(GET, 'projects', params=params, parse_response=False, **kwargs)
-
-
-    def jobs_import(self, definition, **kwargs):
-        """ Wraps `Rundeck API POST /jobs/import <http://rundeck.org/docs/api/index.html#importing-jobs>`_
-
-        :Parameters:
-            definition : str
-                a string representing a job definition
-
-        :Keywords:
-            fmt : str ('xml'|'yaml')
-                format of the definition string (default: 'xml')
-            dupeOption : str ('skip'|'create'|'update')
-                a value to indicate the behavior when importing jobs which already exist
-                (default: 'create')
-            project : str
-                specify the project that all job definitions should be imported to otherwise all
-                job definitions must define a project
-            uuidOption : str ('preserve'|'remove')
-                preserve or remove UUIDs in imported jobs - preserve may fail if a UUID already
-                exists
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        data = cull_kwargs(('fmt', 'dupeOption', 'project', 'uuidOption'), kwargs)
-        data['xmlBatch'] = definition
-        if 'fmt' in data:
-            data['format'] = data.pop('fmt')
-
-        return self._exec(POST, 'jobs/import', data=data, **kwargs)
-
-
-    def job(self, job_id, **kwargs):
-        """ Wraps `Rundeck API GET /job/[ID] <http://rundeck.org/docs/api/index.html#getting-a-job-definition>`_
-
-        :Parameters:
-            job_id : str
-                Rundeck Job ID
-
-        :Keywords:
-            fmt : str
-                the format of the response one of JobDefFormat.values (default: 'xml')
-
-        :return: A Requests response
-        :rtype: requests.models.Response
-        """
-        params = cull_kwargs(('fmt',), kwargs)
-
-        if 'fmt' in params:
-            params['format'] = params.pop('fmt')
-
-        return self._exec(GET, 'job/{0}'.format(job_id), params=params, parse_response=False, **kwargs)
-
-
-    def delete_job(self, job_id, **kwargs):
-        """ Wraps `Rundeck API DELETE /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
-
-        :Parameters:
-            job_id : str
-                Rundeck Job ID
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        return self._exec(DELETE, 'job/{0}'.format(job_id), **kwargs)
-
-
-    def jobs_delete(self, idlist, **kwargs):
-        """ Wraps `Rundeck API POST /jobs/delete <http://rundeck.org/docs/api/index.html#importing-jobs>`_
-
-        :Parameters:
-            idlist : str | list(str, ...)
-                a list of job ids or a string of comma seperated job ids to delete
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        if not isinstance(idlist, basestring) and hasattr(idlist, '__iter__'):
-            idlist = ','.join(idlist)
-
-        params = {'idlist': idlist}
-
-        return self._exec(POST, 'jobs/delete', params=params, **kwargs)
-
-
-    def job_executions(self, job_id, **kwargs):
-        """ Wraps `Rundeck API GET /job/[ID]/executions <http://rundeck.org/docs/api/index.html#getting-executions-for-a-job>`_
-
-        :Parameters:
-            job_id : str
-                a Job ID
-
-        :Keywords:
-            status : str
-                one of Status.values
-            max : int
-                maximum number of results to include in response (default: 20)
-            offset : int
-                offset for result set (default: 0)
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        params = cull_kwargs(('status', 'max', 'offset'), kwargs)
-        return self._exec(POST, 'job/{0}/executions'.format(job_id), params=params, **kwargs)
-
-
-    def executions_running(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /executions/running <http://rundeck.org/docs/api/index.html#listing-running-executions>`_
-
-        :Parameters:
-            project : str
-                the name of a project
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        params = {'project': project}
-        return self._exec(GET, 'executions/running', params=params, **kwargs)
-
-
+    @transform('execution')
     def execution(self, execution_id, **kwargs):
-        """Wraps `Rundeck API GET /execution/[ID] <http://rundeck.org/docs/api/index.html#getting-execution-info>`_
+        """Get the status of an execution
 
         :Parameters:
-            execution_id : str
+            execution_id : int
                 Rundeck Job Execution ID
 
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
+        :return: an Execution
+        :rtype: dict
         """
-        return self._exec(GET, 'execution/{0}'.format(execution_id), **kwargs)
+        return self.api.execution(execution_id, **kwargs)
 
-
+    @transform('executions')
     def executions(self, project, **kwargs):
-        """Wraps `Rundeck API GET /executions <http://rundeck.org/docs/api/index.html#getting-execution-info>`_
+        """Execution query
 
         :Parameters:
             project : str
@@ -846,23 +540,40 @@ class Rundeck(object):
             offset : int
                 offset for result set (default: 0)
 
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
+        :return: a list of Job Executions
+        :rtype: list(dict, ...)
         """
-        self.requires_version(5)
+        return self.api.executions(project, **kwargs)
 
-        params = cull_kwargs(('statusFilter', 'abortedbyFilter', 'userFilter', 'recentFilter', \
-            'begin', 'end', 'adhoc', 'jobIdListFilter', 'excludeJobIdListFilter', \
-            'jobListFilter', 'excludeJobListFilter', 'groupPath', 'groupPathExact', \
-            'excludeGroupPath', 'excludeGroupPathExact', 'jobExactFilter', \
-            'exludeJobExactFilter', 'max', 'offset'), kwargs)
-        params['project'] = project
+    @transform('projects')
+    def projects(self, **kwargs):
+        """ Get a list of projects
 
-        return self._exec(GET, 'executions', params=params, **kwargs)
+        :return: a list of Rundeck projects
+        :rtype: list(dict, ...)
+        """
+        return self.api.projects(**kwargs)
 
+    @transform('project')
+    def project(self, project, **kwargs):
+        """ Fetch a listing of jobs for a project
+
+        :Parameters:
+            project : str
+                the name of a project
+
+        :return: detailed information about a project
+        :rtype: dict
+        """
+        return self.api.project(project, **kwargs)
+
+
+    @transform('execution_output')
+    def _execution_output_json(self, execution_id, **kwargs):
+        return self.api.execution_output(execution_id, **kwargs)
 
     def execution_output(self, execution_id, **kwargs):
-        """Wraps `Rundeck API GET /execution/[ID]/output <http://rundeck.org/docs/api/index.html#execution-output>`_
+        """Get the output for an execution in various formats
 
         :Parameters:
             execution_id : str
@@ -870,7 +581,9 @@ class Rundeck(object):
 
         :Keywords:
             fmt : str
-                the format of the response one of ExecutionOutputFormat.values (default: 'text')
+                the format of the response one of ExecutionOutputFormat.values (default: 'json')
+            raw : bool
+                return the results of the Execution output request unmodified (default: False)
             offset : int
                 byte offset to read from in the file, 0 indicates the beginning
             lastlines : int
@@ -880,15 +593,30 @@ class Rundeck(object):
             maxlines : int
                 maximum number of lines to retrieve forward from the specified offset
 
-        :return: A Requests response
-        :rtype: requests.models.Response
+        :return: Execution output
+        :rtype: str | dict | RundeckResponse
         """
-        params = cull_kwargs(('fmt', 'offset', 'lastlines', 'lastmod', 'maxlines'), kwargs)
-        if 'fmt' in params:
-            params['format'] = params.pop('fmt')
+        raw = kwargs.pop('raw', None)
+        fmt = kwargs.pop('fmt', None)
+        if fmt is None and raw is None:
+            fmt = 'json'
+            raw = False
 
-        return self._exec(GET, 'execution/{0}/output'.format(execution_id), params=params, parse_response=False, **kwargs)
+        if fmt is None:
+            # default raw is in xml format
+            fmt = 'xml'
 
+        if raw or fmt == 'text':
+            return self.api.execution_output(execution_id, fmt=fmt, **kwargs).text
+        elif fmt == 'json':
+            results = self._execution_output_json(execution_id, fmt=fmt, **kwargs)
+            return results._as_dict_method(results)
+        elif fmt == 'xml':
+            return self.api.execution_output(execution_id, fmt=fmt, parse_response=True, **kwargs)
+
+
+
+'''
 
     def execution_abort(self, execution_id, **kwargs):
         """Wraps `Rundeck API GET /execution/[ID]/output <http://rundeck.org/docs/api/index.html#execution-output>`_

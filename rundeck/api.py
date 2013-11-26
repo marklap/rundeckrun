@@ -624,7 +624,9 @@ class RundeckApi(object):
         if 'fmt' in params:
             params['format'] = params.pop('fmt')
 
-        return self._exec(GET, 'execution/{0}/output'.format(execution_id), params=params, parse_response=False, **kwargs)
+        parse_response = kwargs.pop('parse_response', False)
+
+        return self._exec(GET, 'execution/{0}/output'.format(execution_id), params=params, parse_response=parse_response, **kwargs)
 
 
     def execution_abort(self, execution_id, **kwargs):

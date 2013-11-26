@@ -12,6 +12,7 @@ __docformat__ = "restructuredtext en"
 
 from pprint import pprint
 
+import json
 from datetime import datetime
 from functools import wraps
 import inspect
@@ -152,18 +153,6 @@ def job_import_status(resp):
     return results
 
 
-_jobs_delete = """\
-<?xml version="1.0" ?>
-<result apiversion="9" success="true">
-    <deleteJobs allsuccessful="true" requestCount="1">
-        <succeeded count="1">
-            <deleteJobResult id="a5bba965-0ee3-4f41-981f-3fbd7e4aad13">
-                <message>Job was successfully deleted: [a5bba965-0ee3-4f41-981f-3fbd7e4aad13] /Long Running</message>
-            </deleteJobResult>
-        </succeeded>
-    </deleteJobs>
-</result>"""
-
 @is_transform
 def jobs_delete(resp):
     base = resp.etree.find('deleteJobs')
@@ -191,6 +180,10 @@ def jobs_delete(resp):
 
     return results
 
+
+@is_transform
+def execution_output(resp):
+    return json.loads(resp.text)
 
 
 _transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}
