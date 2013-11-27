@@ -1,5 +1,5 @@
 def child2dict(el):
-    """ Turns an ElementTree.Element's children into a dict using the node names as dict keys and
+    """Turns an ElementTree.Element's children into a dict using the node names as dict keys and
         and the node text as dict values
 
     :Parameters:
@@ -12,7 +12,7 @@ def child2dict(el):
 
 
 def attr2dict(el):
-    """ Turns an elements attrib dict into... wait for it... a dict. Yea, it's silly to me too.
+    """Turns an elements attrib dict into... wait for it... a dict. Yea, it's silly to me too.
         But, according to the ElementTree docs, using the Element.attrib attribute directly
         is not recommended - don't look at me - I just work here.
     :Parameters:
@@ -24,8 +24,14 @@ def attr2dict(el):
     return {k: v for k, v in el.items()}
 
 
+def node2dict(el):
+    """Combines both the attr2dict and child2dict functions
+    """
+    return dict(attr2dict(el).items() + child2dict(el).items())
+
+
 def cull_kwargs(api_keys, kwargs):
-    """strips out the api_params from kwargs based on the list of api_keys
+    """Strips out the api_params from kwargs based on the list of api_keys
     !! modifies kwargs inline
 
     :Parameters:
@@ -41,7 +47,7 @@ def cull_kwargs(api_keys, kwargs):
 
 
 def dict2argstring(argString):
-    """converts an argString dict into a string otherwise returns the string unchanged
+    """Converts an argString dict into a string otherwise returns the string unchanged
 
     :Parameters:
         argString : str | dict

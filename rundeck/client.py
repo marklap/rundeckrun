@@ -545,29 +545,6 @@ class Rundeck(object):
         """
         return self.api.executions(project, **kwargs)
 
-    @transform('projects')
-    def projects(self, **kwargs):
-        """ Get a list of projects
-
-        :return: a list of Rundeck projects
-        :rtype: list(dict, ...)
-        """
-        return self.api.projects(**kwargs)
-
-    @transform('project')
-    def project(self, project, **kwargs):
-        """ Fetch a listing of jobs for a project
-
-        :Parameters:
-            project : str
-                the name of a project
-
-        :return: detailed information about a project
-        :rtype: dict
-        """
-        return self.api.project(project, **kwargs)
-
-
     @transform('execution_output')
     def _execution_output_json(self, execution_id, **kwargs):
         return self.api.execution_output(execution_id, **kwargs)
@@ -616,10 +593,34 @@ class Rundeck(object):
 
 
 
-'''
 
+
+    @transform('projects')
+    def projects(self, **kwargs):
+        """ Get a list of projects
+
+        :return: a list of Rundeck projects
+        :rtype: list(dict, ...)
+        """
+        return self.api.projects(**kwargs)
+
+    @transform('project')
+    def project(self, project, **kwargs):
+        """ Fetch a listing of jobs for a project
+
+        :Parameters:
+            project : str
+                the name of a project
+
+        :return: detailed information about a project
+        :rtype: dict
+        """
+        return self.api.project(project, **kwargs)
+
+
+    @transform('execution_abort')
     def execution_abort(self, execution_id, **kwargs):
-        """Wraps `Rundeck API GET /execution/[ID]/output <http://rundeck.org/docs/api/index.html#execution-output>`_
+        """Abort a running Job Execution
 
         :Parameters:
             execution_id : str
@@ -629,12 +630,13 @@ class Rundeck(object):
             asUser : str
                 specifies a username identifying the user who aborted the execution
 
-        :return: A Requests response
-        :rtype: requests.models.Response
+        :return: abort status information
+        :rtype: dict
         """
-        params = cull_kwargs(('asUser',), kwargs)
-        return self._exec(GET, 'execution/{0}/abort'.format(execution_id), params=params, **kwargs)
+        return self.api.execution_abort(execution_id, **kwargs)
 
+
+'''
 
     def run_command(self, project, command, **kwargs):
         """ Wraps `Rundeck API GET /run/command <http://rundeck.org/docs/api/index.html#running-adhoc-commands>`_

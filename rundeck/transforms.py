@@ -22,7 +22,7 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 
-from util import child2dict, attr2dict
+from util import child2dict, attr2dict, node2dict
 
 _DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -77,8 +77,7 @@ def executions(resp):
 
         job_el = el.find('job')
         if job_el is not None:
-            data['job'] = attr2dict(job_el)
-            data['job'].update(child2dict(job_el))
+            data['job'] = node2dict(job_el)
             el.remove(job_el)
 
         if 'date-started' in data:
@@ -101,9 +100,7 @@ def jobs(resp):
     jobs = []
     if job_count > 0:
         for job_el in base.iterfind('job'):
-            job = attr2dict(job_el)
-            job.update(child2dict(job_el))
-            jobs.append(job)
+            jobs.append(node2dict(job_el))
 
     return jobs
 
@@ -170,9 +167,7 @@ def jobs_delete(resp):
                 }
             jobs = []
             for job_req_el in status_el.iterfind('deleteJobResult'):
-                job = attr2dict(job_req_el)
-                job.update(child2dict(job_req_el))
-                jobs.append(job)
+                jobs.append(node2dict(job_req_el))
             results[status]['jobs'] = jobs
 
     results['requestCount'] = int(base.attrib.get('requestCount'))
@@ -184,6 +179,23 @@ def jobs_delete(resp):
 @is_transform
 def execution_output(resp):
     return json.loads(resp.text)
+
+
+_execution_abort = """\
+<?xml version="1.0" ?>
+<result apiversion="9" success="true">
+    <success>
+        <message>Execution status: previously succeeded</message>
+    </success>
+    <abort reason="Job is not running" status="failed">
+        <execution id="295" status="succeeded"/>
+    </abort>
+</result>
+"""
+
+@is_transform
+def execution_abort(resp):
+    return node2dict(resp.etree.find('abort'))
 
 
 _transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}

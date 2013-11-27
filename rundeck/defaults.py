@@ -21,7 +21,8 @@ Status = enum(
     SUCCEEDED='succeeded',
     FAILED='failed',
     ABORTED='aborted',
-    SKIPPED='skipped'
+    SKIPPED='skipped',
+    PENDING='pending'
     )
 
 DupeOption = enum(
