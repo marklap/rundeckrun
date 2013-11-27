@@ -198,6 +198,15 @@ def execution_abort(resp):
     return node2dict(resp.etree.find('abort'))
 
 
+@is_transform
+def run_execution(resp):
+    execution = resp.etree.find('execution')
+    if execution is not None:
+        return int(execution.attrib.get('id', None))
+    else:
+        return None
+
+
 _transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}
 
 def transform(resp_type):

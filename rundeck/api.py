@@ -225,7 +225,7 @@ class RundeckApi(object):
 
 
     def system_info(self, **kwargs):
-        """ Wraps `Rundeck API GET /system/info <http://rundeck.org/docs/api/index.html#system-info>`_
+        """Wraps `Rundeck API GET /system/info <http://rundeck.org/docs/api/index.html#system-info>`_
 
         :return: A RundeckResponse
         :rtype: RundeckResponse
@@ -234,7 +234,7 @@ class RundeckApi(object):
 
 
     def jobs(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /jobs <http://rundeck.org/docs/api/index.html#listing-jobs>`_
+        """Wraps `Rundeck API GET /jobs <http://rundeck.org/docs/api/index.html#listing-jobs>`_
 
         :Parameters:
             project : str
@@ -358,7 +358,7 @@ class RundeckApi(object):
 
 
     def jobs_export(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
+        """Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
         :Parameters:
             name : str
@@ -386,7 +386,7 @@ class RundeckApi(object):
 
 
     def jobs_import(self, definition, **kwargs):
-        """ Wraps `Rundeck API POST /jobs/import <http://rundeck.org/docs/api/index.html#importing-jobs>`_
+        """Wraps `Rundeck API POST /jobs/import <http://rundeck.org/docs/api/index.html#importing-jobs>`_
 
         :Parameters:
             definition : str
@@ -417,7 +417,7 @@ class RundeckApi(object):
 
 
     def job(self, job_id, **kwargs):
-        """ Wraps `Rundeck API GET /job/[ID] <http://rundeck.org/docs/api/index.html#getting-a-job-definition>`_
+        """Wraps `Rundeck API GET /job/[ID] <http://rundeck.org/docs/api/index.html#getting-a-job-definition>`_
 
         :Parameters:
             job_id : str
@@ -439,7 +439,7 @@ class RundeckApi(object):
 
 
     def delete_job(self, job_id, **kwargs):
-        """ Wraps `Rundeck API DELETE /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
+        """Wraps `Rundeck API DELETE /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
 
         :Parameters:
             job_id : str
@@ -452,7 +452,7 @@ class RundeckApi(object):
 
 
     def jobs_delete(self, idlist, **kwargs):
-        """ Wraps `Rundeck API POST /jobs/delete <http://rundeck.org/docs/api/index.html#importing-jobs>`_
+        """Wraps `Rundeck API POST /jobs/delete <http://rundeck.org/docs/api/index.html#importing-jobs>`_
 
         :Parameters:
             ids : str | list(str, ...)
@@ -476,7 +476,7 @@ class RundeckApi(object):
 
 
     def job_executions(self, job_id, **kwargs):
-        """ Wraps `Rundeck API GET /job/[ID]/executions <http://rundeck.org/docs/api/index.html#getting-executions-for-a-job>`_
+        """Wraps `Rundeck API GET /job/[ID]/executions <http://rundeck.org/docs/api/index.html#getting-executions-for-a-job>`_
 
         :Parameters:
             job_id : str
@@ -498,7 +498,7 @@ class RundeckApi(object):
 
 
     def executions_running(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /executions/running <http://rundeck.org/docs/api/index.html#listing-running-executions>`_
+        """Wraps `Rundeck API GET /executions/running <http://rundeck.org/docs/api/index.html#listing-running-executions>`_
 
         :Parameters:
             project : str
@@ -648,7 +648,7 @@ class RundeckApi(object):
 
 
     def run_command(self, project, command, **kwargs):
-        """ Wraps `Rundeck API GET /run/command <http://rundeck.org/docs/api/index.html#running-adhoc-commands>`_
+        """Wraps `Rundeck API GET /run/command <http://rundeck.org/docs/api/index.html#running-adhoc-commands>`_
 
         :Parameters:
             project : str
@@ -709,7 +709,7 @@ class RundeckApi(object):
 
 
     def run_script(self, project, scriptFile, **kwargs):
-        """ Wraps `Rundeck API POST /run/script <http://rundeck.org/docs/api/index.html#running-adhoc-scripts>`_
+        """Wraps `Rundeck API POST /run/script <http://rundeck.org/docs/api/index.html#running-adhoc-scripts>`_
 
         :Parameters:
             project : str
@@ -773,7 +773,7 @@ class RundeckApi(object):
             'exlude-name'), kwargs)
 
         params['project'] = project
-        params['scriptFile'] = scriptFile
+        files = {'scriptFile': scriptFile}
 
         if 'scriptInterpreter' in params or 'interpreterArgsQuoted' in params:
             self.requires_version(8)
@@ -783,16 +783,16 @@ class RundeckApi(object):
             params['argString'] = dict2argstring(argString)
 
 
-        return self._exec(POST, 'run/script', params=params, **kwargs)
+        return self._exec(POST, 'run/script', params=params, files=files, **kwargs)
 
 
-    def run_url(self, project, scriptUrl, **kwargs):
-        """ Wraps `Rundeck API POST /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
+    def run_url(self, project, scriptURL, **kwargs):
+        """Wraps `Rundeck API POST /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
 
         :Parameters:
             project : str
                 name of the project
-            scriptUrl : str
+            scriptURL : str
                 a URL referencing a script to download and run
 
 
@@ -846,27 +846,27 @@ class RundeckApi(object):
         """
         self.requires_version(4)
 
-        params = cull_kwargs(('argString', 'nodeThreadcount', 'nodeKeepgoing', 'asUser', \
+        data = cull_kwargs(('argString', 'nodeThreadcount', 'nodeKeepgoing', 'asUser', \
             'scriptInterpreter', 'interpreterArgsQuoted', 'hostname', 'tags', 'os-name', \
             'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', 'exlude-tags', \
             'exlude-os-name', 'exlude-os-family', 'exlude-os-arch', 'exlude-os-version', \
             'exlude-name'), kwargs)
 
-        params['project'] = project
-        params['scriptFile'] = scriptFile
+        data['project'] = project
+        data['scriptURL'] = scriptURL
 
-        if 'scriptInterpreter' in params or 'interpreterArgsQuoted' in params:
+        if 'scriptInterpreter' in data or 'interpreterArgsQuoted' in data:
             self.requires_version(8)
 
-        argString = params.get('argString', None)
+        argString = data.get('argString', None)
         if argString is not None:
-            params['argString'] = dict2argstring(argString)
+            data['argString'] = dict2argstring(argString)
 
-        return self._exec(POST, 'run/url', params=params, **kwargs)
+        return self._exec(POST, 'run/url', data=data, **kwargs)
 
 
     def projects(self, **kwargs):
-        """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
+        """Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
         :return: A RundeckResponse
         :rtype: RundeckResponse
@@ -875,7 +875,7 @@ class RundeckApi(object):
 
 
     def project(self, project, **kwargs):
-        """ Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
+        """Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
 
         :Parameters:
             project : str
@@ -888,7 +888,7 @@ class RundeckApi(object):
 
 
     def project_resources(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """Wraps `Rundeck API GET /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
 
         :Parameters:
             project : str
@@ -943,7 +943,7 @@ class RundeckApi(object):
 
 
     def project_resources_update(self, project, nodes, **kwargs):
-        """ Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
 
         :Parameters:
             project : str
@@ -962,7 +962,7 @@ class RundeckApi(object):
 
 
     def project_resources_refresh(self, project, providerUrl=None, **kwargs):
-        """ Wraps `Rundeck API POST /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
+        """Wraps `Rundeck API POST /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
 
         :Parameters:
             project : str
@@ -986,7 +986,7 @@ class RundeckApi(object):
 
 
     def history(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /history <http://rundeck.org/docs/api/index.html#listing-history>`_
+        """Wraps `Rundeck API GET /history <http://rundeck.org/docs/api/index.html#listing-history>`_
 
         :Parameters:
             project : str

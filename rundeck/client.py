@@ -47,7 +47,7 @@ _EXECUTION_PENDING = (Status.RUNNING,)
 
 
 def is_job_id(job_id):
-    """ Checks if a Job ID "looks" like a UUID. It does not check if it exists as a job in Rundeck.
+    """Checks if a Job ID "looks" like a UUID. It does not check if it exists as a job in Rundeck.
         And of course, a Rundeck Job ID does not have to be a "UUID". Any unique string will do
         so be prepared for false negatives if you customize your job ids.
 
@@ -67,7 +67,7 @@ def is_job_id(job_id):
 class Rundeck(object):
 
     def __init__(self, server='localhost', protocol='http', port=4440, api_token=None, **kwargs):
-        """ Initialize a Rundeck API Client
+        """Initialize a Rundeck API Client
 
         :Parameters:
             server : str
@@ -102,7 +102,7 @@ class Rundeck(object):
 
     @transform('system_info')
     def system_info(self, **kwargs):
-        """ Get Rundeck Server System Info
+        """Get Rundeck Server System Info
 
         :return: a dict object representing the Rundeck system information
         :rtype: dict
@@ -110,7 +110,7 @@ class Rundeck(object):
         return self.api.system_info(**kwargs)
 
     def get_job_id(self, project, name=None, **kwargs):
-        """ Fetch a Job ID that matches the filter criterea specified
+        """Fetch a Job ID that matches the filter criterea specified
             **WARNING**: if there is more than one job that matches the specified criteria, this
                 will return the first job that Rundeck server includes in the list of matches
 
@@ -145,7 +145,7 @@ class Rundeck(object):
             return job_list[0]
 
     def get_job_ids(self, project, **kwargs):
-        """ Fetch a list of Job IDs that match the filter criterea specified
+        """Fetch a list of Job IDs that match the filter criterea specified
 
         :Parameters:
             project : str
@@ -183,7 +183,7 @@ class Rundeck(object):
 
     @transform('jobs')
     def jobs(self, project, **kwargs):
-        """ Fetch a listing of jobs for a project
+        """Fetch a listing of jobs for a project
 
         :Parameters:
             project : str
@@ -212,7 +212,7 @@ class Rundeck(object):
         return jobs
 
     def job_run_and_block(self, job_id, **kwargs):
-        """ Wraps job_run method and implements a blocking mechanism to wait for the job to
+        """Wraps job_run method and implements a blocking mechanism to wait for the job to
             complete (within reason, i.e. timeout and interval)
 
             See Rundeck.job_run docstring for additional keyword args
@@ -261,7 +261,7 @@ class Rundeck(object):
 
     @transform('execution')
     def job_run(self, job_id, **kwargs):
-        """ Kick off a Rundeck Job
+        """Kick off a Rundeck Job
 
         :Parameters:
             job_id : str
@@ -312,7 +312,7 @@ class Rundeck(object):
         return self.api.job_run(job_id, **kwargs)
 
     def jobs_export(self, project, **kwargs):
-        """ Export a the job definitions for a project in XML or YAML format
+        """Export a the job definitions for a project in XML or YAML format
 
         :Parameters:
             name : str
@@ -337,7 +337,7 @@ class Rundeck(object):
 
     @transform('job_import_status')
     def jobs_import(self, definition, **kwargs):
-        """ Import a job definition in XML or YAML format
+        """Import a job definition in XML or YAML format
 
         :Parameters:
             definition : str
@@ -362,7 +362,7 @@ class Rundeck(object):
         return self.api.jobs_import(definition, **kwargs)
 
     def job(self, job_id, **kwargs):
-        """ Export a job definition in XML or YAML format
+        """Export a job definition in XML or YAML format
 
         :Parameters:
             job_id : str
@@ -378,7 +378,7 @@ class Rundeck(object):
         return self.api.job(job_id, **kwargs)
 
     def delete_job(self, job_id, **kwargs):
-        """ Delete a job
+        """Delete a job
 
         :Parameters:
             job_id : str
@@ -390,7 +390,7 @@ class Rundeck(object):
         return self.api.delete_job(job_id, **kwargs).success
 
     def jobs_delete(self, idlist, **kwargs):
-        """ Bulk Job delete
+        """Bulk Job delete
 
         :Parameters:
             idlist : str | list(str, ...)
@@ -435,7 +435,7 @@ class Rundeck(object):
 
     @transform('executions')
     def job_executions(self, job_id, **kwargs):
-        """ Get a list of executions of a Job
+        """Get a list of executions of a Job
 
         :Parameters:
             job : str
@@ -456,7 +456,7 @@ class Rundeck(object):
 
     @transform('executions')
     def executions_running(self, project='*', **kwargs):
-        """ Retrieve running executions
+        """Retrieve running executions
 
         :Parameters:
             project : str
@@ -597,7 +597,7 @@ class Rundeck(object):
 
     @transform('projects')
     def projects(self, **kwargs):
-        """ Get a list of projects
+        """Get a list of projects
 
         :return: a list of Rundeck projects
         :rtype: list(dict, ...)
@@ -606,7 +606,7 @@ class Rundeck(object):
 
     @transform('project')
     def project(self, project, **kwargs):
-        """ Fetch a listing of jobs for a project
+        """Fetch a listing of jobs for a project
 
         :Parameters:
             project : str
@@ -636,10 +636,9 @@ class Rundeck(object):
         return self.api.execution_abort(execution_id, **kwargs)
 
 
-'''
-
+    @transform('run_execution')
     def run_command(self, project, command, **kwargs):
-        """ Wraps `Rundeck API GET /run/command <http://rundeck.org/docs/api/index.html#running-adhoc-commands>`_
+        """Run a command
 
         :Parameters:
             project : str
@@ -685,22 +684,15 @@ class Rundeck(object):
             exlude-name : str
                 name exclusion filter
 
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
+        :return: Execution ID
+        :rtype: int
         """
-        params = cull_kwargs(('nodeThreadcount', 'nodeKeepgoing', 'asUser', 'hostname', 'tags', \
-            'os-name', 'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', \
-            'exlude-tags', 'exlude-os-name', 'exlude-os-family', 'exlude-os-arch', \
-            'exlude-os-version', 'exlude-name'), kwargs)
-
-        params['project'] = project
-        params['exec'] = command
-
-        return self._exec(GET, 'run/command', params=params, **kwargs)
+        return self.api.run_command(project, command, **kwargs)
 
 
+    @transform('run_execution')
     def run_script(self, project, scriptFile, **kwargs):
-        """ Wraps `Rundeck API POST /run/script <http://rundeck.org/docs/api/index.html#running-adhoc-scripts>`_
+        """Run a script downloaded from a URL
 
         :Parameters:
             project : str
@@ -754,31 +746,15 @@ class Rundeck(object):
             exlude-name : str
                 name exclusion filter
 
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
+        :return: Execution ID
+        :rtype: int
         """
-        params = cull_kwargs(('argString', 'nodeThreadcount', 'nodeKeepgoing', 'asUser', \
-            'scriptInterpreter', 'interpreterArgsQuoted', 'hostname', 'tags', 'os-name', \
-            'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', 'exlude-tags', \
-            'exlude-os-name', 'exlude-os-family', 'exlude-os-arch', 'exlude-os-version', \
-            'exlude-name'), kwargs)
-
-        params['project'] = project
-        params['scriptFile'] = scriptFile
-
-        if 'scriptInterpreter' in params or 'interpreterArgsQuoted' in params:
-            self.requires_version(8)
-
-        argString = params.get('argString', None)
-        if argString is not None:
-            params['argString'] = dict2argstring(argString)
+        return self.api.run_script(project, scriptFile, **kwargs)
 
 
-        return self._exec(POST, 'run/script', params=params, **kwargs)
-
-
+    @transform('run_execution')
     def run_url(self, project, scriptUrl, **kwargs):
-        """ Wraps `Rundeck API POST /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
+        """Run a script downloaded from a URL
 
         :Parameters:
             project : str
@@ -832,32 +808,16 @@ class Rundeck(object):
             exlude-name : str
                 name exclusion filter
 
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
+        :return: Execution ID
+        :rtype: int
         """
-        self.requires_version(4)
+        return self.api.run_url(project, scriptUrl, **kwargs)
 
-        params = cull_kwargs(('argString', 'nodeThreadcount', 'nodeKeepgoing', 'asUser', \
-            'scriptInterpreter', 'interpreterArgsQuoted', 'hostname', 'tags', 'os-name', \
-            'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', 'exlude-tags', \
-            'exlude-os-name', 'exlude-os-family', 'exlude-os-arch', 'exlude-os-version', \
-            'exlude-name'), kwargs)
 
-        params['project'] = project
-        params['scriptFile'] = scriptFile
-
-        if 'scriptInterpreter' in params or 'interpreterArgsQuoted' in params:
-            self.requires_version(8)
-
-        argString = params.get('argString', None)
-        if argString is not None:
-            params['argString'] = dict2argstring(argString)
-
-        return self._exec(POST, 'run/url', params=params, **kwargs)
-
+'''
 
     def projects(self, **kwargs):
-        """ Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
+        """Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
         :return: A RundeckResponse
         :rtype: RundeckResponse
@@ -866,7 +826,7 @@ class Rundeck(object):
 
 
     def project(self, project, **kwargs):
-        """ Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
+        """Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
 
         :Parameters:
             project : str
@@ -879,7 +839,7 @@ class Rundeck(object):
 
 
     def project_resources(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """Wraps `Rundeck API GET /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
 
         :Parameters:
             project : str
@@ -934,7 +894,7 @@ class Rundeck(object):
 
 
     def project_resources_update(self, project, nodes, **kwargs):
-        """ Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
 
         :Parameters:
             project : str
@@ -953,7 +913,7 @@ class Rundeck(object):
 
 
     def project_resources_refresh(self, project, providerUrl=None, **kwargs):
-        """ Wraps `Rundeck API POST /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
+        """Wraps `Rundeck API POST /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
 
         :Parameters:
             project : str
@@ -977,7 +937,7 @@ class Rundeck(object):
 
 
     def history(self, project, **kwargs):
-        """ Wraps `Rundeck API GET /history <http://rundeck.org/docs/api/index.html#listing-history>`_
+        """Wraps `Rundeck API GET /history <http://rundeck.org/docs/api/index.html#listing-history>`_
 
         :Parameters:
             project : str
@@ -1031,7 +991,7 @@ class Rundeck(object):
 
 
     def job_definition(self, name, project=None, fmt=None):
-        """ Wraps `Rundeck API /job/[ID] <http://rundeck.org/docs/api/index.html#getting-a-job-definition>`_
+        """Wraps `Rundeck API /job/[ID] <http://rundeck.org/docs/api/index.html#getting-a-job-definition>`_
 
         :Parameters:
             name : str
@@ -1074,13 +1034,13 @@ class Rundeck(object):
 
 
     def delete_job(self, id):
-        """ Wraps `Rundeck API /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
+        """Wraps `Rundeck API /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
         """
         self.execute_cmd(DELETE, '/job/{0}'.format(id))
 
 
     def import_job(self, definition, *args, **kwargs):
-        """ Determines the type of argument passed in (file path or string) and calls the
+        """Determines the type of argument passed in (file path or string) and calls the
             appropriate method passing along all extra arguments and keyword arguments
 
         :Parameters:
@@ -1106,7 +1066,7 @@ class Rundeck(object):
 
 
     def import_job_definition_string(self, definition, **kwargs):
-        """ Wraps `Rundeck API /jobs/import <http://rundeck.org/docs/api/index.html#importing-jobs>`_
+        """Wraps `Rundeck API /jobs/import <http://rundeck.org/docs/api/index.html#importing-jobs>`_
 
         :Parameters:
             file_path : str
@@ -1160,7 +1120,7 @@ class Rundeck(object):
 
 
     def import_job_definition_file(self, file_path, *args, **kwargs):
-        """ Convenience method for reading in the contents of a job definition file for import
+        """Convenience method for reading in the contents of a job definition file for import
 
         :Parameters:
             file_path : str
