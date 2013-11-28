@@ -592,32 +592,6 @@ class Rundeck(object):
             return self.api.execution_output(execution_id, fmt=fmt, parse_response=True, **kwargs)
 
 
-
-
-
-    @transform('projects')
-    def projects(self, **kwargs):
-        """Get a list of projects
-
-        :return: a list of Rundeck projects
-        :rtype: list(dict, ...)
-        """
-        return self.api.projects(**kwargs)
-
-    @transform('project')
-    def project(self, project, **kwargs):
-        """Fetch a listing of jobs for a project
-
-        :Parameters:
-            project : str
-                the name of a project
-
-        :return: detailed information about a project
-        :rtype: dict
-        """
-        return self.api.project(project, **kwargs)
-
-
     @transform('execution_abort')
     def execution_abort(self, execution_id, **kwargs):
         """Abort a running Job Execution
@@ -814,32 +788,39 @@ class Rundeck(object):
         return self.api.run_url(project, scriptUrl, **kwargs)
 
 
-'''
-
+    @transform('projects')
     def projects(self, **kwargs):
-        """Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
+        """Get a list of projects
 
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
+        :return: a list of Rundeck projects
+        :rtype: list(dict, ...)
         """
-        return self._exec(POST, 'projects', **kwargs)
+        return self.api.projects(**kwargs)
 
 
+    @transform('project')
     def project(self, project, **kwargs):
-        """Wraps `Rundeck API /project/[NAME] <http://rundeck.org/docs/api/index.html#getting-project-info>`_
+        """Fetch a listing of jobs for a project
 
         :Parameters:
             project : str
-                name of Project
+                the name of a project
 
-        :return: A RundeckResponse`
-        :rtype: RundeckResponse
+        :return: detailed information about a project
+        :rtype: dict
         """
-        return self._exec(GET, 'project/{0}'.format(urllib.quote(project)), **kwargs)
+        return self.api.project(project, **kwargs)
+
+
+    @transform('project_resources')
+    def _project_resources(self, project, **kwargs):
+        """Transforms a Rundeck.project_resources response
+        """
+        return self.api.project_resources(project, **kwargs)
 
 
     def project_resources(self, project, **kwargs):
-        """Wraps `Rundeck API GET /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """Retrieve the list of resources for a project. If `fmt` is unspecified, a python
 
         :Parameters:
             project : str
@@ -847,7 +828,8 @@ class Rundeck(object):
 
         :Keywords:
             fmt : str
-                the format of the response one of ExecutionOutputFormat.values (default: 'text')
+                the format of the response, either 'python' (dict), 'xml' or 'yaml'
+                    (default: 'python')
             hostname : str
                 hostname inclusion filter
             tags : str
@@ -877,20 +859,19 @@ class Rundeck(object):
             exlude-name : str
                 name exclusion filter
 
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
+        :return: A list of resources or a string representing the requested resources in the
+            requested format
+        :rtype: list({'name': str, 'hostname': str, 'username': str)) | str
         """
-        self.requires_version(2)
+        fmt = kwargs.pop('fmt', 'python')
 
-        params = cull_kwargs(('fmt', 'scriptInterpreter', 'interpreterArgsQuoted', 'hostname', \
-            'tags', 'os-name', 'os-family', 'os-arch', 'os-version', 'name', 'exlude-hostname', \
-            'exlude-tags', 'exlude-os-name', 'exlude-os-family', 'exlude-os-arch', \
-            'exlude-os-version', 'exlude-name'), kwargs)
+        if fmt is 'python':
+            return self._project_resources(project, quiet=True, **kwargs)
+        else:
+            return self.api.project_resources(project, fmt=fmt, parse_response=False, **kwargs).text
 
-        if 'fmt' in params:
-            params['format'] = params.pop('fmt')
 
-        return self._exec(GET, 'project/{0}/resources'.format(urllib.quote(project)), **kwargs)
+'''
 
 
     def project_resources_update(self, project, nodes, **kwargs):

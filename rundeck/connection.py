@@ -149,7 +149,7 @@ class RundeckConnection(object):
         """
         return '/'.join([self.base_url, str(self.api_version), api_url.lstrip('/')])
 
-    def call(self, method, url, params=None, data=None, parse_response=True, **kwargs):
+    def call(self, method, url, params=None, data=None, files=None, parse_response=True, **kwargs):
         """ Format the URL in preparation for making the HTTP request and return a
         RundeckResponse if requested/necessary
 
@@ -163,11 +163,13 @@ class RundeckConnection(object):
             data : str
                 the XML or YAML payload necessary for some commands
                 (default: None)
+            files : dict({str: str, ...})
+                a dict of files to upload
             parse_response : bool
                 parse the response as an xml message
 
         :Keywords:
-            **passed along to the requests library**
+            **passed along to RundeckConnection.request**
 
         :rtype: requests.Response
         """
@@ -175,14 +177,14 @@ class RundeckConnection(object):
         headers = {'X-Rundeck-Auth-Token': self.api_token}
 
         response = self.request(
-            method, url, params=params, data=data, cookies=None, headers=headers, **kwargs)
+            method, url, params=params, data=data, headers=headers, files=files, **kwargs)
 
         if parse_response:
             return RundeckResponse(response)
         else:
             return response
 
-    def request(self, method, url, params=None, data=None, cookies=None, headers=None, **kwargs):
+    def request(self, method, url, params=None, data=None, headers=None, files=None):
         """ Sends the HTTP request to Rundeck
 
         :Parameters:
@@ -193,21 +195,20 @@ class RundeckConnection(object):
             params : dict({str: str, ...})
                 a dict of query string params (default: None)
             data : str
-                the XML or YAML payload necessary for some commands
-                (default: None)
-
-        :Keywords:
-            **passed along to the requests library**
+                the url encoded payload necessary for some commands (default: None)
+            files : dict({str: str, ...})
+                a dict of files to upload
 
         :rtype: requests.Response
         """
         return requests.request(
-            method, url, params=params, data=data, cookies=None, headers=headers, **kwargs)
+            method, url, params=params, data=data, headers=headers, files=files)
 
 
 class RundeckConnectionNoisy(RundeckConnection):
 
-    def request(self, method, url, params=None, data=None, cookies=None, headers=None, **kwargs):
+    def request(self, method, url, params=None, data=None, headers=None, files=None,
+        quiet=False):
         """ Override to call raise_for_status forcing non-successful HTTP responses to bubble up as
         as exceptions
 
@@ -219,15 +220,18 @@ class RundeckConnectionNoisy(RundeckConnection):
             params : dict({str: str, ...})
                 a dict of query string params (default: None)
             data : str
-                the XML or YAML payload necessary for some commands
-                (default: None)
-
-        :Keywords:
-            **passed along to the requests library**
+                the url encoded payload necessary for some commands (default: None)
+            files : dict({str: str, ...})
+                a dict of files to upload (default: None)
+            quiet : bool
+                suppress calling raise_for_status (default: False)
 
         :rtype: requests.Response
         """
         response = super(RundeckConnectionNoisy, self).request(
-            method, url, params=params, data=data, cookies=cookies, headers=headers, **kwargs)
-        response.raise_for_status()
+            method, url, params=params, data=data, headers=headers, files=files)
+
+        if not quiet:
+            response.raise_for_status()
+
         return response

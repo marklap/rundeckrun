@@ -207,6 +207,26 @@ def run_execution(resp):
         return None
 
 
+_project_resources = """\
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+  <node name="host1" description="I &lt;3 XML" tags="hot" hostname="hostname1" osArch="" osFamily="" osName="" osVersion="" username="user1" foo="bar"/>
+  <node name="host2" description="" tags="cold" hostname="hostname2" osArch="" osFamily="" osName="" osVersion="" username="user2" foz="baz"/>
+  <node name="host3" description="" tags="" hostname="hostname3" osArch="" osFamily="" osName="" osVersion="" username="user3"/>
+  <node name="optimus-prime" description="Rundeck server node" tags="" hostname="optimus-prime" osArch="amd64" osFamily="unix" osName="Linux" osVersion="3.8.0-19-generic" username="root"/>
+</project>
+"""
+
+@is_transform
+def project_resources(resp):
+    nodes = {}
+    for node in list(resp.etree):
+        node_attr = attr2dict(node)
+        nodes[node_attr['name']] = node_attr
+    return nodes
+
+
 _transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}
 
 def transform(resp_type):

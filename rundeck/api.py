@@ -939,7 +939,7 @@ class RundeckApi(object):
         if 'fmt' in params:
             params['format'] = params.pop('fmt')
 
-        return self._exec(GET, 'project/{0}/resources'.format(urllib.quote(project)), **kwargs)
+        return self._exec(GET, 'project/{0}/resources'.format(urllib.quote(project)), params=params, **kwargs)
 
 
     def project_resources_update(self, project, nodes, **kwargs):
@@ -1042,10 +1042,12 @@ class RundeckApiNoisy(RundeckApi):
     """ Same as RundeckApi, but complains (raises exceptions) on every Rundeck Server error
     """
     def _exec(self, method, url, params=None, data=None, parse_response=True, **kwargs):
+        quiet = kwargs.get('quiet', False)
+
         result = super(RundeckApiNoisy, self)._exec(
             method, url, params=params, data=data, parse_response=parse_response, **kwargs)
 
-        if parse_response:
+        if not quiet and parse_response:
             result.raise_for_error()
 
         return result
