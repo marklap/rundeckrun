@@ -227,6 +227,11 @@ def project_resources(resp):
     return nodes
 
 
+@is_transform
+def success_message(resp):
+    return {'success': resp.success, 'message': resp.message}
+
+
 _transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}
 
 def transform(resp_type):

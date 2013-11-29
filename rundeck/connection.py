@@ -149,7 +149,8 @@ class RundeckConnection(object):
         """
         return '/'.join([self.base_url, str(self.api_version), api_url.lstrip('/')])
 
-    def call(self, method, url, params=None, data=None, files=None, parse_response=True, **kwargs):
+    def call(self, method, url, params=None, headers=None, data=None, files=None,
+        parse_response=True, **kwargs):
         """ Format the URL in preparation for making the HTTP request and return a
         RundeckResponse if requested/necessary
 
@@ -160,6 +161,8 @@ class RundeckConnection(object):
                 API URL
             params : dict({str: str, ...})
                 a dict of query string params (default: None)
+            headers : dict({str: str, ...})
+                a dict of HTTP headers
             data : str
                 the XML or YAML payload necessary for some commands
                 (default: None)
@@ -174,7 +177,11 @@ class RundeckConnection(object):
         :rtype: requests.Response
         """
         url = self.make_url(url)
-        headers = {'X-Rundeck-Auth-Token': self.api_token}
+        auth_header = {'X-Rundeck-Auth-Token': self.api_token}
+        if headers is None:
+            headers = auth_header
+        else:
+            headers.update(auth_header)
 
         response = self.request(
             method, url, params=params, data=data, headers=headers, files=files, **kwargs)
@@ -184,7 +191,7 @@ class RundeckConnection(object):
         else:
             return response
 
-    def request(self, method, url, params=None, data=None, headers=None, files=None):
+    def request(self, method, url, params=None, headers=None, data=None, files=None):
         """ Sends the HTTP request to Rundeck
 
         :Parameters:
@@ -207,7 +214,7 @@ class RundeckConnection(object):
 
 class RundeckConnectionNoisy(RundeckConnection):
 
-    def request(self, method, url, params=None, data=None, headers=None, files=None,
+    def request(self, method, url, params=None, headers=None, data=None, files=None,
         quiet=False):
         """ Override to call raise_for_status forcing non-successful HTTP responses to bubble up as
         as exceptions

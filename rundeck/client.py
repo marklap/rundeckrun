@@ -13,7 +13,7 @@ import errno
 from string import maketrans, ascii_letters, digits
 from datetime import datetime
 
-from api import RundeckApi, RundeckApiNoisy
+from api import RundeckApi, RundeckApiNoisy, RundeckNode
 from connection import RundeckConnection
 from transforms import transform
 from util import child2dict, attr2dict, cull_kwargs
@@ -24,6 +24,7 @@ from exceptions import (
     InvalidJobArgument,
     InvalidResponseFormat,
     InvalidJobDefinitionFormat,
+    InvalidResourceSpecification,
     )
 from defaults import (
     GET,
@@ -821,6 +822,7 @@ class Rundeck(object):
 
     def project_resources(self, project, **kwargs):
         """Retrieve the list of resources for a project. If `fmt` is unspecified, a python
+        dictionary will be returned
 
         :Parameters:
             project : str
@@ -870,27 +872,50 @@ class Rundeck(object):
         else:
             return self.api.project_resources(project, fmt=fmt, parse_response=False, **kwargs).text
 
-
-'''
-
-
+    @transform('success_message')
     def project_resources_update(self, project, nodes, **kwargs):
-        """Wraps `Rundeck API POST /project/[NAME]/resources <http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project>`_
+        """Update the resources for a project
 
         :Parameters:
             project : str
                 name of the project
-            nodes : list(RundeckNode, ...)
-                a list of RundeckNode objects
+            nodes : list
+                a list of nodes in the form of a three tuple (`(name, hostname, username)`) or
+                a dictionary at least the following keys 'name', 'hostname' and 'username'
 
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
+        :return: success message
+        :rtype: dict
         """
-        headers = {'Content-Type': 'text/xml'}
+        if isinstance(nodes, tuple):
+            nodes = [nodes]
+        elif isinstance(nodes, dict):
+            nodes = [nodes]
+        elif not isinstance(nodes, list):
+            raise InvalidResourceSpecification(
+                "'nodes' must be a tuple or a dict or a list of tuples or dicts")
 
-        data = '<nodes>{0}</nodes>'.format('\n'.join([node.xml for node in nodes]))
+        required_keys = ('name', 'hostname', 'username')
+        rundeck_nodes = []
+        for node in nodes:
+            if isinstance(node, dict) and set(d.keys()).issuperset(required_keys):
+                rundeck_nodes.append(
+                    RundeckNode(
+                        node.pop('name'),
+                        node.pop('hostname'),
+                        node.pop('username'),
+                        **node
+                        )
+                    )
+            elif isinstance(node, tuple) and len(node) == 3:
+                rundeck_nodes.append(RundeckNode(*node))
 
-        return self._exec(POST, 'project/{0}/resources'.format(urllib.quote(project)), data=data, headers=headers, **kwargs)
+        if len(rundeck_nodes) > 0:
+            return self.api.project_resources_update(project, rundeck_nodes, **kwargs)
+        else:
+            raise InvalidResourceSpecification('No valid nodes provided')
+
+
+'''
 
 
     def project_resources_refresh(self, project, providerUrl=None, **kwargs):

@@ -48,3 +48,6 @@ class InvalidDupeOption(Exception):
 
 class InvalidUuidOption(Exception):
     """The uuidOption specified is invalid"""
+
+class InvalidResourceSpecification(Exception):
+    """The resource specified does not meet requirements"""
