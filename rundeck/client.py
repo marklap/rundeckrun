@@ -915,6 +915,23 @@ class Rundeck(object):
             raise InvalidResourceSpecification('No valid nodes provided')
 
 
+    @transform('success_message')
+    def project_resources_refresh(self, project, providerUrl=None, **kwargs):
+        """Refresh the resources for a project via its Resource Model Provider URL
+
+        :Parameters:
+            project : str
+                name of the project
+            providerUrl : str
+                Specify the Resource Model Provider URL to refresh the resources from; otherwise
+                the configured provider URL in the `project.properties` file will be used
+
+        :return: success message
+        :rtype: dict
+        """
+        return self.api.project_resources_refresh(project, providerUrl, **kwargs)
+
+
 '''
 
 
