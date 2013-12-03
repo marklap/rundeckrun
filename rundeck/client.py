@@ -38,7 +38,6 @@ from defaults import (
     JOB_RUN_INTERVAL,
     )
 
-_DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 _JOB_ID_CHARS = ascii_letters + digits
 _JOB_ID_TRANS_TAB = maketrans(_JOB_ID_CHARS, '#' * len(_JOB_ID_CHARS))
 _JOB_ID_TEMPLATE = '########-####-####-####-############'
@@ -101,6 +100,7 @@ class Rundeck(object):
         else:
             raise Exception('Supplied api argument is not a valide RundeckApi: {0}'.format(api))
 
+
     @transform('system_info')
     def system_info(self, **kwargs):
         """Get Rundeck Server System Info
@@ -109,6 +109,7 @@ class Rundeck(object):
         :rtype: dict
         """
         return self.api.system_info(**kwargs)
+
 
     def get_job_id(self, project, name=None, **kwargs):
         """Fetch a Job ID that matches the filter criterea specified
@@ -144,6 +145,7 @@ class Rundeck(object):
             raise JobNotFound('Job {0!r} not found in Project {1!r}'.format(name, project))
         else:
             return job_list[0]
+
 
     def get_job_ids(self, project, **kwargs):
         """Fetch a list of Job IDs that match the filter criterea specified
@@ -182,6 +184,7 @@ class Rundeck(object):
 
         return job_ids[:limit]  # if limit is None, this will return the whole shebang
 
+
     @transform('jobs')
     def jobs(self, project, **kwargs):
         """Fetch a listing of jobs for a project
@@ -211,6 +214,7 @@ class Rundeck(object):
         jobs = self.api.jobs(project, **kwargs)
         jobs.raise_for_error()
         return jobs
+
 
     def job_run_and_block(self, job_id, **kwargs):
         """Wraps job_run method and implements a blocking mechanism to wait for the job to
@@ -259,6 +263,7 @@ class Rundeck(object):
             duration = time.time() - start
 
         return execution
+
 
     @transform('execution')
     def job_run(self, job_id, **kwargs):
@@ -312,6 +317,7 @@ class Rundeck(object):
         """
         return self.api.job_run(job_id, **kwargs)
 
+
     def jobs_export(self, project, **kwargs):
         """Export a the job definitions for a project in XML or YAML format
 
@@ -362,6 +368,41 @@ class Rundeck(object):
         """
         return self.api.jobs_import(definition, **kwargs)
 
+
+    def jobs_import_file(self, file_path, **kwargs):
+        """Convenience method for reading in the contents of a job definition file for import
+
+        :Parameters:
+            file_path : str
+                the path to a readable job definition file
+
+        :Keywords:
+            file_format : str ('xml'|'yaml')
+                if not specified it will be derived from the file extension (default: 'xml')
+
+        :raise IOError: raised if job definition file can not be found or is not readable
+
+        :return: a dict object representing a set of Rundeck status messages
+        :rtype: dict
+        """
+        fmt = kwargs.pop('file_format', None)
+        if fmt is None:
+            fmt = JobDefFormat.XML
+            fmt_specified = False
+        else:
+            fmt_specified = True
+
+        definition = open(file_path, 'r').read()
+
+        if not fmt_specified:
+            fmt = os.path.splitext(file_name.strip())[1][1:].lower()
+
+        if fmt not in JobDefFormat.values:
+            raise InvalidJobDefinitionFormat('Invalid Job definition format: {0}'.format(fmt))
+
+        return self.jobs_import(definition, fmt=fmt, **kwargs)
+
+
     def job(self, job_id, **kwargs):
         """Export a job definition in XML or YAML format
 
@@ -378,6 +419,7 @@ class Rundeck(object):
         """
         return self.api.job(job_id, **kwargs)
 
+
     def delete_job(self, job_id, **kwargs):
         """Delete a job
 
@@ -389,6 +431,7 @@ class Rundeck(object):
         :rtype: bool
         """
         return self.api.delete_job(job_id, **kwargs).success
+
 
     def jobs_delete(self, idlist, **kwargs):
         """Bulk Job delete
@@ -455,6 +498,7 @@ class Rundeck(object):
         """
         return self.api.job_executions(job_id, **kwargs)
 
+
     @transform('executions')
     def executions_running(self, project='*', **kwargs):
         """Retrieve running executions
@@ -468,6 +512,7 @@ class Rundeck(object):
         """
         return self.api.executions_running(project, **kwargs)
 
+
     @transform('execution')
     def execution(self, execution_id, **kwargs):
         """Get the status of an execution
@@ -480,6 +525,7 @@ class Rundeck(object):
         :rtype: dict
         """
         return self.api.execution(execution_id, **kwargs)
+
 
     @transform('executions')
     def executions(self, project, **kwargs):
@@ -546,9 +592,11 @@ class Rundeck(object):
         """
         return self.api.executions(project, **kwargs)
 
+
     @transform('execution_output')
     def _execution_output_json(self, execution_id, **kwargs):
         return self.api.execution_output(execution_id, **kwargs)
+
 
     def execution_output(self, execution_id, **kwargs):
         """Get the output for an execution in various formats
@@ -872,6 +920,7 @@ class Rundeck(object):
         else:
             return self.api.project_resources(project, fmt=fmt, parse_response=False, **kwargs).text
 
+
     @transform('success_message')
     def project_resources_update(self, project, nodes, **kwargs):
         """Update the resources for a project
@@ -916,51 +965,25 @@ class Rundeck(object):
 
 
     @transform('success_message')
-    def project_resources_refresh(self, project, providerUrl=None, **kwargs):
+    def project_resources_refresh(self, project, providerURL=None, **kwargs):
         """Refresh the resources for a project via its Resource Model Provider URL
 
         :Parameters:
             project : str
                 name of the project
-            providerUrl : str
+            providerURL : str
                 Specify the Resource Model Provider URL to refresh the resources from; otherwise
                 the configured provider URL in the `project.properties` file will be used
 
         :return: success message
         :rtype: dict
         """
-        return self.api.project_resources_refresh(project, providerUrl, **kwargs)
+        return self.api.project_resources_refresh(project, providerURL=providerURL, **kwargs)
 
 
-'''
-
-
-    def project_resources_refresh(self, project, providerUrl=None, **kwargs):
-        """Wraps `Rundeck API POST /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
-
-        :Parameters:
-            project : str
-                name of the project
-            providerUrl : str
-                Specify the Resource Model Provider URL to refresh the resources from; otherwise
-                the configured provider URL in the `project.properties` file will be used
-
-        :return: A RundeckResponse
-        :rtype: RundeckResponse
-        """
-        self.requires_version(2)
-
-        data = {}
-        if providerUrl is not None:
-            data['providerUrl'] = providerUrl
-
-        return self._exec(POST, 'project/{0}/resources/refresh'.format(project), data=data, **kwargs)
-
-
-
-
+    @transform('events')
     def history(self, project, **kwargs):
-        """Wraps `Rundeck API GET /history <http://rundeck.org/docs/api/index.html#listing-history>`_
+        """
 
         :Parameters:
             project : str
@@ -1004,177 +1027,4 @@ class Rundeck(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        self.requires_version(4)
-        params = cull_kwargs(('jobIdFilter', 'reportIdFilter', 'userFilter', 'statFilter', \
-            'jobListFilter', 'excludeJobListFilter', 'recentFilter', 'begin', 'end', 'max', \
-            'offset'), kwargs)
-        params['project'] = project
-        return self._exec(GET, 'history', **kwargs)
-
-
-
-    def job_definition(self, name, project=None, fmt=None):
-        """Wraps `Rundeck API /job/[ID] <http://rundeck.org/docs/api/index.html#getting-a-job-definition>`_
-
-        :Parameters:
-            name : str
-                Rundeck Job name (or ID) - if ID is provided project is not
-                necessary
-            project : str
-                Rundeck Project name - if a Job ID is provided this is not
-                necessary (default: None)
-            fmt : str('python', 'xml' or 'yaml')
-                if undefined, the Rundeck response will be converted to a Python dict
-                (default: 'python')
-
-        :return: a dict object representing a Rundeck Job or a the raw response
-            from Rundeck in the requested format
-        :rtype: dict | str
-        """
-        if self.is_job_id(name):
-            id = name
-        else:
-            if not isinstance(project, basestring):
-                raise MissingProjectArgument('job_definittion method requires project argument when name argument is not a Job ID')
-            else:
-                id = self.get_job_id(project, name)
-
-
-        params = {}
-        if fmt is None:
-            # we're not ready to convert a job def xml format into a dict yet
-            raise NotImplementedError('Conversion of a Job Defintion is not yet supported')
-        else:
-            if fmt in _RUNDECK_RESP_FORMATS:
-                params['format'] = fmt
-            else:
-                raise InvalidResponseFormat(fmt)
-
-        resp = self.execute_cmd(GET, '/job/{0}'.format(id), params=params)
-
-        # TODO: support converting an xml Job Defintion (http://rundeck.org/docs/manpages/man5/job-v20.html) into a dict
-        return resp.xml
-
-
-    def delete_job(self, id):
-        """Wraps `Rundeck API /job/[ID] <http://rundeck.org/docs/api/index.html#deleting-a-job-definition>`_
-        """
-        self.execute_cmd(DELETE, '/job/{0}'.format(id))
-
-
-    def import_job(self, definition, *args, **kwargs):
-        """Determines the type of argument passed in (file path or string) and calls the
-            appropriate method passing along all extra arguments and keyword arguments
-
-        :Parameters:
-            definition : str
-                the path to a job definition file or a string representing a job definition
-                (automatically treated as job definition string if a newline character is found)
-
-        :Keywords:
-            definition_type : str ('file', 'string', 'auto')
-                force the definition argument to be treated as a file or a string or
-                attempt to determine automatically (default: 'auto')
-
-        :return: a dict object representing a set of Rundeck status messages
-        :rtype: dict
-        """
-
-        if definition_type == 'string' or '\n' in definition.strip():
-            return self.import_job_definition_string(*args, **kwargs)
-        elif definition_type in ('file', 'auto'):
-            return self.import_job_definition_file(definition, *args, **kwargs)
-        else:
-            raise Exception('Could not determine the type of definition')
-
-
-    def import_job_definition_string(self, definition, **kwargs):
-        """Wraps `Rundeck API /jobs/import <http://rundeck.org/docs/api/index.html#importing-jobs>`_
-
-        :Parameters:
-            file_path : str
-                the path to a job definition file or a string representing a job definition
-                (automatically treated as job definition string if a newline character is found)
-
-        :Keywords:
-            fmt : str ('xml'|'yaml')
-                format of the definition string (default: 'xml')
-            dupeOption : str ('skip'|'create'|'update')
-                a value to indicate the behavior when importing jobs which already exist
-                (default: 'create')
-            project : str
-                specify the project that all job definitions should be imported to otherwise all
-                job definitions must define a project
-            uuidOption : str ('preserve'|'remove')
-                preserve or remove UUIDs in imported jobs - preserve may fail if a UUID already
-                exists
-
-        :return: a dict object representing a set of Rundeck status messages
-        :rtype: dict
-        """
-
-        fmt = kwargs.get('fmt', JobDefFormat.XML)
-        if fmt not in JobDefFormat.values:
-            fmt = JobDefFormat.XML
-
-        dupe_option = kwargs.get('dupeOption', DupeOption.CREATE)
-        if dupe_option not in DupeOption.values:
-            dupe_option = DupeOption.CREATE
-
-        uuid_option = kwargs.get('uuidOption', UuidOption.PRESERVE)
-        if uuid_option not in UuidOption.values:
-            uuid_option = UuidOption.PRESERVE
-
-        # TODO: if this is not None, for API versions <8, maybe we could inject/update the job def
-        #       as a convenience to the end user
-        project = kwargs.get('project', None)
-
-        api_kwargs = {
-            'xmlBatch': definition,
-            'format': fmt,
-            'dupeOption': dupe_option,
-            'uuidOption': uuid_option,
-        }
-        if project is not None:
-            api_kwargs['project'] = project
-
-        resp = self.execute_cmd(POST, '/jobs/import', data=api_kwargs)
-
-
-
-    def import_job_definition_file(self, file_path, *args, **kwargs):
-        """Convenience method for reading in the contents of a job definition file for import
-
-        :Parameters:
-            file_path : str
-                the path to a readable job definition file
-
-        :Keywords:
-            file_format : str ('xml'|'yaml')
-                if not specified it will be derived from the file extension (default: 'xml')
-
-        :raise IOError: raised if job definition file can not be found or is not readable
-
-        :return: a dict object representing a set of Rundeck status messages
-        :rtype: dict
-        """
-
-        fmt = kwargs.pop('file_format', None)
-        if fmt is None:
-            fmt = JobDefFormat.XML
-            fmt_specified = False
-        else:
-            fmt_specified = True
-
-        definition = open(file_path, 'r').read()
-
-        if not fmt_specified:
-            fmt = os.path.splitext(file_name.strip())[1][1:].lower()
-
-        if fmt not in JobDefFormat.values:
-            raise InvalidJobDefinitionFormat('Invalid Job definition format: {0}'.format(fmt))
-
-        return self.import_job_definition_string(definition, fmt=fmt, **kwargs)
-
-
-'''
+        return self.api.history(project, **kwargs)

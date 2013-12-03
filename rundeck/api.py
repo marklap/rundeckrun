@@ -31,7 +31,6 @@ from defaults import (
     ExecutionOutputFormat,
     )
 
-_DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 _JOB_ID_CHARS = ascii_letters + digits
 _JOB_ID_TRANS_TAB = maketrans(_JOB_ID_CHARS, '#' * len(_JOB_ID_CHARS))
 _JOB_ID_TEMPLATE = '########-####-####-####-############'
@@ -961,13 +960,13 @@ class RundeckApi(object):
         return self._exec(POST, 'project/{0}/resources'.format(urllib.quote(project)), data=data, headers=headers, **kwargs)
 
 
-    def project_resources_refresh(self, project, providerUrl=None, **kwargs):
+    def project_resources_refresh(self, project, providerURL=None, **kwargs):
         """Wraps `Rundeck API POST /project/[NAME]/resources/refresh <http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project>`_
 
         :Parameters:
             project : str
                 name of the project
-            providerUrl : str
+            providerURL : str
                 Specify the Resource Model Provider URL to refresh the resources from; otherwise
                 the configured provider URL in the `project.properties` file will be used
 
@@ -977,8 +976,8 @@ class RundeckApi(object):
         self.requires_version(2)
 
         data = {}
-        if providerUrl is not None:
-            data['providerUrl'] = providerUrl
+        if providerURL is not None:
+            data['providerURL'] = providerURL
 
         return self._exec(POST, 'project/{0}/resources/refresh'.format(project), data=data, **kwargs)
 
@@ -1035,7 +1034,7 @@ class RundeckApi(object):
             'jobListFilter', 'excludeJobListFilter', 'recentFilter', 'begin', 'end', 'max', \
             'offset'), kwargs)
         params['project'] = project
-        return self._exec(GET, 'history', **kwargs)
+        return self._exec(GET, 'history', params=params, **kwargs)
 
 
 class RundeckApiNoisy(RundeckApi):
