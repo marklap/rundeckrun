@@ -48,7 +48,7 @@ Use
      'status': 'running',
      'user': 'rundeckrun'}
     >>> # Use the block arg to wait for the job to complete
-    >>> rd.run_job('HelloWorld', 'TestProject', argString={'from':'rundeck'}, block=True)
+    >>> rd.job_run('HelloWorld', 'TestProject', argString={'from':'rundeck'}, block=True)
     {'argstring': '-from rundeckrun',
      'date-ended': datetime.datetime(2013, 8, 8, 6, 21, 51),
      'date-started': datetime.datetime(2013, 8, 8, 6, 21, 51),
