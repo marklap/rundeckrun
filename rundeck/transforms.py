@@ -28,6 +28,10 @@ _DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def is_transform(func):
+    """A simple decorator that marks a function as a "trasform" which allows the transform
+    decorator to only reference functions that are specifically intended to transform client
+    method call responses.
+    """
     func.__is_transform__ = True
     return func
 
@@ -181,18 +185,6 @@ def execution_output(resp):
     return json.loads(resp.text)
 
 
-_execution_abort = """\
-<?xml version="1.0" ?>
-<result apiversion="9" success="true">
-    <success>
-        <message>Execution status: previously succeeded</message>
-    </success>
-    <abort reason="Job is not running" status="failed">
-        <execution id="295" status="succeeded"/>
-    </abort>
-</result>
-"""
-
 @is_transform
 def execution_abort(resp):
     return node2dict(resp.etree.find('abort'))
@@ -207,17 +199,6 @@ def run_execution(resp):
         return None
 
 
-_project_resources = """\
-<?xml version="1.0" encoding="UTF-8"?>
-
-<project>
-  <node name="host1" description="I &lt;3 XML" tags="hot" hostname="hostname1" osArch="" osFamily="" osName="" osVersion="" username="user1" foo="bar"/>
-  <node name="host2" description="" tags="cold" hostname="hostname2" osArch="" osFamily="" osName="" osVersion="" username="user2" foz="baz"/>
-  <node name="host3" description="" tags="" hostname="hostname3" osArch="" osFamily="" osName="" osVersion="" username="user3"/>
-  <node name="optimus-prime" description="Rundeck server node" tags="" hostname="optimus-prime" osArch="amd64" osFamily="unix" osName="Linux" osVersion="3.8.0-19-generic" username="root"/>
-</project>
-"""
-
 @is_transform
 def project_resources(resp):
     nodes = {}
@@ -231,237 +212,6 @@ def project_resources(resp):
 def success_message(resp):
     return {'success': resp.success, 'message': resp.message}
 
-
-_history = """\
-<?xml version="1.0" ?>
-<result apiversion="9" success="true">
-    <events count="20" max="20" offset="0" total="280">
-        <event endtime="1385586242542" starttime="1385586242236">
-            <title>adhoc</title>
-            <status>succeeded</status>
-            <summary>http://localhost:8000/hello_world.sh</summary>
-            <node-summary failed="0" succeeded="1" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T21:04:02Z</date-started>
-            <date-ended>2013-11-27T21:04:02Z</date-ended>
-            <execution id="319"/>
-        </event>
-        <event endtime="1385586223580" starttime="1385586223263">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://localhost:8000/hello_world.sh</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T21:03:43Z</date-started>
-            <date-ended>2013-11-27T21:03:43Z</date-ended>
-            <execution id="318"/>
-        </event>
-        <event endtime="1385586167788" starttime="1385586167236">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T21:02:47Z</date-started>
-            <date-ended>2013-11-27T21:02:47Z</date-ended>
-            <execution id="317"/>
-        </event>
-        <event endtime="1385586158719" starttime="1385586158128">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T21:02:38Z</date-started>
-            <date-ended>2013-11-27T21:02:38Z</date-ended>
-            <execution id="316"/>
-        </event>
-        <event endtime="1385586106495" starttime="1385586106011">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T21:01:46Z</date-started>
-            <date-ended>2013-11-27T21:01:46Z</date-ended>
-            <execution id="315"/>
-        </event>
-        <event endtime="1385586083766" starttime="1385586082684">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T21:01:22Z</date-started>
-            <date-ended>2013-11-27T21:01:23Z</date-ended>
-            <execution id="314"/>
-        </event>
-        <event endtime="1385586001103" starttime="1385586000796">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T21:00:00Z</date-started>
-            <date-ended>2013-11-27T21:00:01Z</date-ended>
-            <execution id="313"/>
-        </event>
-        <event endtime="1385585991019" starttime="1385585990692">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T20:59:50Z</date-started>
-            <date-ended>2013-11-27T20:59:51Z</date-ended>
-            <execution id="312"/>
-        </event>
-        <event endtime="1385585842511" starttime="1385585842180">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T20:57:22Z</date-started>
-            <date-ended>2013-11-27T20:57:22Z</date-ended>
-            <execution id="311"/>
-        </event>
-        <event endtime="1385585823438" starttime="1385585823078">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T20:57:03Z</date-started>
-            <date-ended>2013-11-27T20:57:03Z</date-ended>
-            <execution id="310"/>
-        </event>
-        <event endtime="1385585685919" starttime="1385585685471">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T20:54:45Z</date-started>
-            <date-ended>2013-11-27T20:54:45Z</date-ended>
-            <execution id="309"/>
-        </event>
-        <event endtime="1385567180973" starttime="1385567180644">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T15:46:20Z</date-started>
-            <date-ended>2013-11-27T15:46:20Z</date-ended>
-            <execution id="308"/>
-        </event>
-        <event endtime="1385567131567" starttime="1385567131241">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T15:45:31Z</date-started>
-            <date-ended>2013-11-27T15:45:31Z</date-ended>
-            <execution id="307"/>
-        </event>
-        <event endtime="1385567062006" starttime="1385567061686">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>https://httpbin.org/html</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T15:44:21Z</date-started>
-            <date-ended>2013-11-27T15:44:22Z</date-ended>
-            <execution id="306"/>
-        </event>
-        <event endtime="1385566849484" starttime="1385566849142">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>http://localhost:8000/hello_world.sh</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T15:40:49Z</date-started>
-            <date-ended>2013-11-27T15:40:49Z</date-ended>
-            <execution id="305"/>
-        </event>
-        <event endtime="1385566717147" starttime="1385566716795">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>http://localhost:8000/hello_world.sh</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T15:38:36Z</date-started>
-            <date-ended>2013-11-27T15:38:37Z</date-ended>
-            <execution id="304"/>
-        </event>
-        <event endtime="1385562632886" starttime="1385562632535">
-            <title>adhoc</title>
-            <status>succeeded</status>
-            <summary>echo &quot;Hello World!&quot;
-</summary>
-            <node-summary failed="0" succeeded="1" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T14:30:32Z</date-started>
-            <date-ended>2013-11-27T14:30:32Z</date-ended>
-            <execution id="303"/>
-        </event>
-        <event endtime="1385562592222" starttime="1385562591898">
-            <title>adhoc</title>
-            <status>succeeded</status>
-            <summary>echo &quot;Hello World!&quot;
-</summary>
-            <node-summary failed="0" succeeded="1" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T14:29:51Z</date-started>
-            <date-ended>2013-11-27T14:29:52Z</date-ended>
-            <execution id="302"/>
-        </event>
-        <event endtime="1385562580027" starttime="1385562579687">
-            <title>adhoc</title>
-            <status>succeeded</status>
-            <summary>echo &quot;monkey&quot;
-</summary>
-            <node-summary failed="0" succeeded="1" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T14:29:39Z</date-started>
-            <date-ended>2013-11-27T14:29:40Z</date-ended>
-            <execution id="301"/>
-        </event>
-        <event endtime="1385562485666" starttime="1385562485226">
-            <title>adhoc</title>
-            <status>failed</status>
-            <summary>&quot;echo &quot;monkey&quot;&quot;
-</summary>
-            <node-summary failed="1" succeeded="0" total="1"/>
-            <user>admin</user>
-            <project>TestProject</project>
-            <date-started>2013-11-27T14:28:05Z</date-started>
-            <date-ended>2013-11-27T14:28:05Z</date-ended>
-            <execution id="300"/>
-        </event>
-    </events>
-</result>"""
 
 @is_transform
 def events(resp):
@@ -499,9 +249,12 @@ def events(resp):
     return events
 
 
-_transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}
 
+_transforms = {obj_key: obj_val for obj_key, obj_val in locals().items() if hasattr(obj_val, '__is_transform__')}
 def transform(resp_type):
+    """A decorator to take a RundeckResponse and pass it through one of the is_transform marked
+    functions above
+    """
 
     def inner(func):
 
