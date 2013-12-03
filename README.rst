@@ -26,15 +26,19 @@ Use
 
     >>> from rundeckrun.client import Rundeck
     >>> rd = Rundeck('rundeck.server.com', api_token='SECRET_API_TOKEN')
-    >>> rd.list_projects()
-    [{'description': 'Test Project', 'name': 'TestProject'}]
-    >>> rd.list_jobs('TestProject')
+    >>> rd.projects()
+    [{
+        'description': None,
+        'name': 'TestProject',
+        'resources': {'providerURL': 'http://localhost:8000/resources.xml'},
+    }]
+    >>> rd.jobs('TestProject')
     [{'description': 'Hello World!',
       'group': None,
       'id': 'a6e1e0f7-ad32-4b93-ba2c-9387be06a146',
       'name': 'HelloWorld',
       'project': 'TestProject'}]
-    >>> rd.run_job('HelloWorld', 'TestProject', argString={'from':'rundeckrun'})
+    >>> rd.job_run('HelloWorld', 'TestProject', argString={'from':'rundeckrun'})
     {'argstring': '-from rundeckrun',
      'date-started': datetime.datetime(2013, 7, 11, 18, 4, 24),
      'description': 'Plugin[localexec, nodeStep: true]',
@@ -66,4 +70,4 @@ Use
 Documentation
 -------------
 
-Coming soon...
+Source code docstrings are a pretty good start. More to come...

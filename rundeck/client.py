@@ -186,7 +186,7 @@ class Rundeck(object):
 
 
     @transform('jobs')
-    def jobs(self, project, **kwargs):
+    def list_jobs(self, project, **kwargs):
         """Fetch a listing of jobs for a project
 
         :Parameters:
@@ -216,7 +216,7 @@ class Rundeck(object):
         return jobs
 
 
-    def job_run_and_block(self, job_id, **kwargs):
+    def run_job(self, project, job_name, **kwargs):
         """Wraps job_run method and implements a blocking mechanism to wait for the job to
             complete (within reason, i.e. timeout and interval)
 
@@ -266,7 +266,7 @@ class Rundeck(object):
 
 
     @transform('execution')
-    def job_run(self, job_id, **kwargs):
+    def _run_job(self, job_id, **kwargs):
         """Kick off a Rundeck Job
 
         :Parameters:
@@ -343,8 +343,8 @@ class Rundeck(object):
 
 
     @transform('job_import_status')
-    def jobs_import(self, definition, **kwargs):
-        """Import a job definition in XML or YAML format
+    def import_job(self, definition, **kwargs):
+        """Import a job definition string in XML or YAML format
 
         :Parameters:
             definition : str
@@ -369,8 +369,8 @@ class Rundeck(object):
         return self.api.jobs_import(definition, **kwargs)
 
 
-    def jobs_import_file(self, file_path, **kwargs):
-        """Convenience method for reading in the contents of a job definition file for import
+    def import_job_file(self, file_path, **kwargs):
+        """Read in the contents of a job definition file for import
 
         :Parameters:
             file_path : str
@@ -403,7 +403,7 @@ class Rundeck(object):
         return self.jobs_import(definition, fmt=fmt, **kwargs)
 
 
-    def job(self, job_id, **kwargs):
+    def export_job(self, job_id, **kwargs):
         """Export a job definition in XML or YAML format
 
         :Parameters:
@@ -433,7 +433,7 @@ class Rundeck(object):
         return self.api.delete_job(job_id, **kwargs).success
 
 
-    def jobs_delete(self, idlist, **kwargs):
+    def delete_jobs(self, idlist, **kwargs):
         """Bulk Job delete
 
         :Parameters:
@@ -478,7 +478,7 @@ class Rundeck(object):
 
 
     @transform('executions')
-    def job_executions(self, job_id, **kwargs):
+    def list_job_executions(self, job_id, **kwargs):
         """Get a list of executions of a Job
 
         :Parameters:
@@ -500,7 +500,7 @@ class Rundeck(object):
 
 
     @transform('executions')
-    def executions_running(self, project='*', **kwargs):
+    def list_running_executions(self, project='*', **kwargs):
         """Retrieve running executions
 
         :Parameters:
@@ -514,7 +514,7 @@ class Rundeck(object):
 
 
     @transform('execution')
-    def execution(self, execution_id, **kwargs):
+    def execution_status(self, execution_id, **kwargs):
         """Get the status of an execution
 
         :Parameters:
@@ -528,7 +528,7 @@ class Rundeck(object):
 
 
     @transform('executions')
-    def executions(self, project, **kwargs):
+    def query_executions(self, project, **kwargs):
         """Execution query
 
         :Parameters:
@@ -598,7 +598,7 @@ class Rundeck(object):
         return self.api.execution_output(execution_id, **kwargs)
 
 
-    def execution_output(self, execution_id, **kwargs):
+    def get_execution_output(self, execution_id, **kwargs):
         """Get the output for an execution in various formats
 
         :Parameters:
@@ -642,7 +642,7 @@ class Rundeck(object):
 
 
     @transform('execution_abort')
-    def execution_abort(self, execution_id, **kwargs):
+    def abort_execution(self, execution_id, **kwargs):
         """Abort a running Job Execution
 
         :Parameters:
@@ -660,7 +660,7 @@ class Rundeck(object):
 
 
     @transform('run_execution')
-    def run_command(self, project, command, **kwargs):
+    def run_adhoc_command(self, project, command, **kwargs):
         """Run a command
 
         :Parameters:
@@ -714,7 +714,7 @@ class Rundeck(object):
 
 
     @transform('run_execution')
-    def run_script(self, project, scriptFile, **kwargs):
+    def run_adhoc_script(self, project, scriptFile, **kwargs):
         """Run a script downloaded from a URL
 
         :Parameters:
@@ -776,7 +776,7 @@ class Rundeck(object):
 
 
     @transform('run_execution')
-    def run_url(self, project, scriptUrl, **kwargs):
+    def run_adhoc_url(self, project, scriptUrl, **kwargs):
         """Run a script downloaded from a URL
 
         :Parameters:
@@ -838,7 +838,7 @@ class Rundeck(object):
 
 
     @transform('projects')
-    def projects(self, **kwargs):
+    def list_projects(self, **kwargs):
         """Get a list of projects
 
         :return: a list of Rundeck projects
@@ -848,8 +848,8 @@ class Rundeck(object):
 
 
     @transform('project')
-    def project(self, project, **kwargs):
-        """Fetch a listing of jobs for a project
+    def get_project(self, project, **kwargs):
+        """Fetch a project details
 
         :Parameters:
             project : str
@@ -868,7 +868,7 @@ class Rundeck(object):
         return self.api.project_resources(project, **kwargs)
 
 
-    def project_resources(self, project, **kwargs):
+    def list_project_resources(self, project, **kwargs):
         """Retrieve the list of resources for a project. If `fmt` is unspecified, a python
         dictionary will be returned
 
@@ -922,7 +922,7 @@ class Rundeck(object):
 
 
     @transform('success_message')
-    def project_resources_update(self, project, nodes, **kwargs):
+    def update_project_resources(self, project, nodes, **kwargs):
         """Update the resources for a project
 
         :Parameters:
@@ -965,7 +965,7 @@ class Rundeck(object):
 
 
     @transform('success_message')
-    def project_resources_refresh(self, project, providerURL=None, **kwargs):
+    def refresh_project_resources(self, project, providerURL=None, **kwargs):
         """Refresh the resources for a project via its Resource Model Provider URL
 
         :Parameters:
@@ -982,8 +982,8 @@ class Rundeck(object):
 
 
     @transform('events')
-    def history(self, project, **kwargs):
-        """
+    def get_project_history(self, project, **kwargs):
+        """List history events for a project
 
         :Parameters:
             project : str
