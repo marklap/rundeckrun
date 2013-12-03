@@ -6,7 +6,8 @@
 :contact: rundeckrun@mindmind.com
 :copyright: Mark LaPerriere 2013
 
-:requires: requests"""
+:requires: requests
+"""
 __docformat__ = "restructuredtext en"
 
 from functools import wraps
