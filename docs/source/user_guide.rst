@@ -26,6 +26,7 @@ Installation
 The code above should result in a list of projects on the target Rundeck server such as this...
 
 .. code-block:: python
+
     [{
         'description': None,
         'name': 'TestProject',
