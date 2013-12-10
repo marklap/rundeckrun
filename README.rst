@@ -7,7 +7,8 @@ library.
 
 Documentation is hosted on `Read the Docs <http://rundeckrun.readthedocs.org/>`_
 
-*DISCLAIMER:* Still in active development, but most features have been tested and should work.
+*DISCLAIMER:* Still in active development, but most features have been tested and should work. Only
+tested on Python 2.7 but *should* work on Python 3.x as well.
 
 
 Installation

@@ -16,8 +16,7 @@ setup(
     version=VERSION,
     packages=find_packages(),
     description='Rundeck API Python client',
-    long_description='A lightweight wrapper written in Python to interact' + \
-        ' with the Rundeck API.',
+    long_description='A client library written in Python to interact with the Rundeck API.',
     url='https://github.com/marklap/rundeckrun',
     author='rundeckrun@mindmind.com',
     author_email='rundeckrun@mindmind.com',
@@ -31,7 +30,6 @@ setup(
         'Intended Audience :: System Administrators',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.2',
         'Topic :: System :: Software Distribution',
         'Topic :: System :: Systems Administration',
         'Topic :: Utilities',
