@@ -4,6 +4,7 @@ import uuid
 
 from rundeck.client import Rundeck
 from rundeck.api import RundeckApi, RundeckNode
+from rundeck.transforms import _transforms as transforms
 
 _RUNDECK_API_TOKEN_VAR = 'RUNDECK_API_TOKEN'
 _RUNDECK_SERVER_VAR = 'RUNDECK_SERVER'
@@ -12,9 +13,12 @@ _RUNDECK_PROTOCOL_VAR = 'RUNDECK_PROTOCOL'
 _RUNDECK_USR_VAR = 'RUNDECK_USR'
 _RUNDECK_PWD_VAR = 'RUNDECK_PWD'
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
+# logger.addHandler(logging.NullHandler())
+logger = logging.getLogger('')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 job_def_file = 'TestJobDef.xml'
@@ -28,8 +32,8 @@ usr = os.environ.get(_RUNDECK_USR_VAR, None)
 pwd = os.environ.get(_RUNDECK_PWD_VAR, None)
 
 test_job_id = uuid.uuid4()
-test_job_name = 'TestJob'
-test_job_proj = 'TestProject'
+test_job_name = 'TestJobTest'
+test_job_proj = 'TestProjectTest'
 test_job_def_tmpl = """<joblist>
   <job>
     <id>{0}</id>
@@ -72,8 +76,9 @@ rundeck_api = RundeckApi(server=server, protocol=protocol, port=port, api_token=
 
 
 def setup():
-    rundeck_api.jobs_import(test_job_def)
+    rundeck_api.jobs_import(test_job_def, uuidOption='preserve')
 
 
 def teardown():
-    rundeck_api.delete_job(test_job_id)
+    jobs = transforms['jobs'](rundeck_api.jobs(test_job_proj))
+    rundeck_api.jobs_delete([job['id'] for job in jobs])

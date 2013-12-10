@@ -91,7 +91,7 @@ class RundeckResponse(object):
             raise RundeckServerError(msg, rundecK_response=self)
 
 
-class RundeckConnection(object):
+class RundeckConnectionTolerant(object):
 
     def __init__(self, server='localhost', protocol='http', port=4440, api_token=None, **kwargs):
         """ Initialize a Rundeck API client connection
@@ -213,7 +213,7 @@ class RundeckConnection(object):
             method, url, params=params, data=data, headers=headers, files=files)
 
 
-class RundeckConnectionNoisy(RundeckConnection):
+class RundeckConnection(RundeckConnectionTolerant):
 
     def request(self, method, url, params=None, headers=None, data=None, files=None,
         quiet=False):
@@ -236,7 +236,7 @@ class RundeckConnectionNoisy(RundeckConnection):
 
         :rtype: requests.Response
         """
-        response = super(RundeckConnectionNoisy, self).request(
+        response = super(RundeckConnection, self).request(
             method, url, params=params, data=data, headers=headers, files=files)
 
         if not quiet:

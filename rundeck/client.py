@@ -13,7 +13,7 @@ import errno
 from string import maketrans, ascii_letters, digits
 from datetime import datetime
 
-from api import RundeckApi, RundeckApiNoisy, RundeckNode
+from api import RundeckApiTolerant, RundeckApi, RundeckNode
 from connection import RundeckConnection
 from transforms import transform
 from util import child2dict, attr2dict, cull_kwargs
@@ -93,9 +93,9 @@ class Rundeck(object):
         """
         api = kwargs.pop('api', None)
         if api is None:
-            self.api = RundeckApiNoisy(
+            self.api = RundeckApi(
                 server, protocol=protocol, port=port, api_token=api_token, **kwargs)
-        elif isinstance(api, RundeckApi):
+        elif isinstance(api, RundeckApiTolerant):
             self.api = api
         else:
             raise Exception('Supplied api argument is not a valide RundeckApi: {0}'.format(api))

@@ -13,7 +13,7 @@ from string import maketrans, ascii_letters, digits
 from xml.sax.saxutils import quoteattr
 import urllib
 
-from connection import RundeckConnection, RundeckConnectionNoisy
+from connection import RundeckConnectionTolerant, RundeckConnection
 from util import cull_kwargs, dict2argstring
 from exceptions import (
     InvalidResponseFormat,
@@ -155,8 +155,9 @@ class RundeckNode(object):
 
 
 
-class RundeckApi(object):
-    """As close to the Rundeck API as possible
+class RundeckApiTolerant(object):
+    """As close to the Rundeck API as possible. The "Tolerant" class does not throw exceptions
+    when HTTP status codes are returned. Probably don't want/need to use this.
 
     :IVariables:
         connection : RundeckConnection
@@ -189,9 +190,9 @@ class RundeckApi(object):
         connection = kwargs.pop('connection', None)
 
         if connection is None:
-            self.connection = RundeckConnectionNoisy(
+            self.connection = RundeckConnection(
                 server=server, protocol=protocol, port=port, api_token=api_token, **kwargs)
-        elif isinsance(connection, RundeckConnection):
+        elif isinsance(connection, RundeckConnectionTolerant):
             self.connection = connection
         else:
             raise Exception('Supplied connection argument is not a valide RundeckConnection: {0}'.format(connection))
@@ -1037,13 +1038,14 @@ class RundeckApi(object):
         return self._exec(GET, 'history', params=params, **kwargs)
 
 
-class RundeckApiNoisy(RundeckApi):
-    """ Same as RundeckApi, but complains (raises exceptions) on every Rundeck Server error
+class RundeckApi(RundeckApiTolerant):
+    """ Same as RundeckApiTolerant and complains on every Rundeck Server error or 4xx/5xx HTTP
+    status code.
     """
     def _exec(self, method, url, params=None, data=None, parse_response=True, **kwargs):
         quiet = kwargs.get('quiet', False)
 
-        result = super(RundeckApiNoisy, self)._exec(
+        result = super(RundeckApi, self)._exec(
             method, url, params=params, data=data, parse_response=parse_response, **kwargs)
 
         if not quiet and parse_response:
