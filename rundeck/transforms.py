@@ -128,7 +128,7 @@ def projects(resp):
             #     seem to be included in the response
             #     https://github.com/dtolabs/rundeck/issues/586
             resources_el = project_el.find('resources')
-            if resources_el:
+            if resources_el is not None:
                 project['resources'] = child2dict(resources_el)
                 project_el.remove(resources_el)
 
@@ -260,13 +260,15 @@ def transform(resp_type):
 
         @wraps(func)
         def wrapper(self, *args, **kwargs):
+            results = func(self, *args, **kwargs)
+
             try:
                 xform = _transforms[resp_type]
             except KeyError:
                 raise Exception('Transform does not exist for type: {0}'.format(resp_type))
+            else:
+                results = xform(results)
 
-            results = func(self, *args, **kwargs)
-            results._as_dict_method = xform
             return results
 
         return wrapper

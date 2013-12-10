@@ -173,8 +173,8 @@ class Rundeck(object):
         :rtype: list
         """
         limit = kwargs.pop('limit', None)
-        resp = self.jobs(project, **kwargs)
-        jobs = resp.as_dict
+        resp = self.list_jobs(project, **kwargs)
+        jobs = resp
 
         job_ids = []
         if len(jobs) > 0:
@@ -216,7 +216,7 @@ class Rundeck(object):
         return jobs
 
 
-    def run_job(self, project, job_name, **kwargs):
+    def run_job(self, job_id, **kwargs):
         """Wraps job_run method and implements a blocking mechanism to wait for the job to
             complete (within reason, i.e. timeout and interval)
 
@@ -238,18 +238,18 @@ class Rundeck(object):
         timeout = kwargs.pop('timeout', JOB_RUN_TIMEOUT)
         interval = kwargs.pop('interval', JOB_RUN_INTERVAL)
 
-        execution = self.job_run(job_id, **kwargs)
+        execution = self._run_job(job_id, **kwargs)
 
-        exec_id = execution.as_dict['id']
+        exec_id = execution['id']
         start = time.time()
         duration = 0
 
         while (duration < timeout):
 
-            execution = self.execution(exec_id)
+            execution = self.execution_status(exec_id)
 
             try:
-                exec_status = execution.as_dict['status']
+                exec_status = execution['status']
             except AttributeError:
                 # for some reason, we don't always immediately get an execution back from Rundeck
                 #    loop once before we let the execption bubble up
@@ -400,7 +400,7 @@ class Rundeck(object):
         if fmt not in JobDefFormat.values:
             raise InvalidJobDefinitionFormat('Invalid Job definition format: {0}'.format(fmt))
 
-        return self.jobs_import(definition, fmt=fmt, **kwargs)
+        return self.import_job(definition, fmt=fmt, **kwargs)
 
 
     def export_job(self, job_id, **kwargs):

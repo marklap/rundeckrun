@@ -1,7 +1,7 @@
 RundeckRun
 ==========
 
-This is a lightweight wrapper written in Python to interact with the Rundeck
+A client library written in Python to interact with the Rundeck
 API. It uses the awesome `requests <http://docs.python-requests.org/>`_
 library.
 
@@ -26,19 +26,19 @@ Use
 
     >>> from rundeckrun.client import Rundeck
     >>> rd = Rundeck('rundeck.server.com', api_token='SECRET_API_TOKEN')
-    >>> rd.projects()
+    >>> rd.list_projects()
     [{
         'description': None,
         'name': 'TestProject',
         'resources': {'providerURL': 'http://localhost:8000/resources.xml'},
     }]
-    >>> rd.jobs('TestProject')
+    >>> rd.list_jobs('TestProject')
     [{'description': 'Hello World!',
       'group': None,
       'id': 'a6e1e0f7-ad32-4b93-ba2c-9387be06a146',
       'name': 'HelloWorld',
       'project': 'TestProject'}]
-    >>> rd.job_run('HelloWorld', 'TestProject', argString={'from':'rundeckrun'})
+    >>> rd.run_job('HelloWorld', 'TestProject', argString={'from':'rundeckrun'})
     {'argstring': '-from rundeckrun',
      'date-started': datetime.datetime(2013, 7, 11, 18, 4, 24),
      'description': 'Plugin[localexec, nodeStep: true]',
@@ -47,27 +47,7 @@ Use
      'job': None,
      'status': 'running',
      'user': 'rundeckrun'}
-    >>> # Use the block arg to wait for the job to complete
-    >>> rd.job_run('HelloWorld', 'TestProject', argString={'from':'rundeck'}, block=True)
-    {'argstring': '-from rundeckrun',
-     'date-ended': datetime.datetime(2013, 8, 8, 6, 21, 51),
-     'date-started': datetime.datetime(2013, 8, 8, 6, 21, 51),
-     'description': 'Plugin[localexec, nodeStep: true]',
-     'href': 'http://rundeck.server.com/execution/follow/16',
-     'id': '16',
-     'job': {'averageDuration': '291',
-             'description': None,
-             'group': 'RundeckRun/Tests',
-             'id': 'cb973e3a-e682-4b45-9dbe-9e5301a4361e',
-             'name': 'HelloWorld',
-             'project': 'TestProject'},
-     'status': 'succeeded',
-     'user': 'rundeckrun'}
-
-
 
 
 Documentation
 -------------
-
-Source code docstrings are a pretty good start. More to come...
