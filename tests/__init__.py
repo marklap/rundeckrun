@@ -13,11 +13,9 @@ _RUNDECK_PROTOCOL_VAR = 'RUNDECK_PROTOCOL'
 _RUNDECK_USR_VAR = 'RUNDECK_USR'
 _RUNDECK_PWD_VAR = 'RUNDECK_PWD'
 
-# logging.basicConfig(level=logging.INFO)
-# logger = logging.getLogger(__name__)
-# logger.addHandler(logging.NullHandler())
-logger = logging.getLogger('')
-logger.setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
+# logger = logging.getLogger('')  # for debugging
+logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 cwd = os.path.dirname(os.path.realpath(__file__))
