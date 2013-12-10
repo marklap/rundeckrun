@@ -51,3 +51,48 @@ Use
      'job': None,
      'status': 'running',
      'user': 'rundeckrun'}
+
+
+Running Tests
+-------------
+
+.. note::
+    You'll probably want to create a `virtualenv <http://www.virtualenv.org/en/latest/>`_ for this.
+
+Running the tests requires a running Rundeck server (the Rundeck standalone jar works well) and an
+API token for said Rundeck server.
+
+You'll have to at least set the API token environment variable of ``RUNDECK_API_TOKEN`` but there
+are other environment variables to be aware of. The list is below and can be found at the head of
+the tests/\_\_init\_\_.py file. They should be fairly self-explanatory (OK, RUNDECK_PROTOCOL might
+not be self-explanatory... use either 'http' or 'https' there).
+
+.. code-block:: bash
+
+    RUNDECK_API_TOKEN
+    RUNDECK_SERVER
+    RUNDECK_PORT
+    RUNDECK_PROTOCOL
+    RUNDECK_USR
+    RUNDECK_PWD
+
+Next clone the repo.
+
+.. code-block:: bash
+
+    git clone https://github.com/marklap/rundeckrun
+
+.. note::
+    Activate your virtualenv...
+
+Then install the requirements and dev requirements.
+
+.. code-block:: bash
+
+    pip install -r requirements.txt
+    pip install -r requirements_dev.txt
+
+Lastly, execute nose tests.
+
+.. code-block:: bash
+    nosetests
