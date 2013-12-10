@@ -56,8 +56,8 @@ Use
 Running Tests
 -------------
 
-.. note::
-    You'll probably want to create a `virtualenv <http://www.virtualenv.org/en/latest/>`_ for this.
+.. tip:: You'll probably want to create a `virtualenv <http://www.virtualenv.org/en/latest/>`_
+for this.
 
 Running the tests requires a running Rundeck server (the Rundeck standalone jar works well) and an
 API token for said Rundeck server.
@@ -82,8 +82,7 @@ Next clone the repo.
 
     git clone https://github.com/marklap/rundeckrun
 
-.. note::
-    Activate your virtualenv...
+.. tip:: activate your `virtualenv <http://www.virtualenv.org/en/latest/>`_
 
 Then install the requirements and dev requirements.
 
