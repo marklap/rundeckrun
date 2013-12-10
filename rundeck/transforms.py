@@ -10,8 +10,6 @@
 """
 __docformat__ = "restructuredtext en"
 
-from pprint import pprint
-
 import json
 from datetime import datetime
 from functools import wraps
@@ -22,7 +20,7 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 
-from util import child2dict, attr2dict, node2dict
+from .util import child2dict, attr2dict, node2dict
 
 _DATETIME_ISOFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -217,11 +215,8 @@ def success_message(resp):
 def events(resp):
     base = resp.etree.find('events')
 
-    from pprint import pprint
-
     events = []
     for event_el in base.iterfind('event'):
-        pprint(event_el)
 
         event = {}
         job_el = event_el.find('job')

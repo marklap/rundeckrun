@@ -13,15 +13,15 @@ from string import maketrans, ascii_letters, digits
 from xml.sax.saxutils import quoteattr
 import urllib
 
-from connection import RundeckConnectionTolerant, RundeckConnection
-from util import cull_kwargs, dict2argstring
-from exceptions import (
+from .connection import RundeckConnectionTolerant, RundeckConnection
+from .util import cull_kwargs, dict2argstring
+from .exceptions import (
     InvalidResponseFormat,
     InvalidJobDefinitionFormat,
     InvalidDupeOption,
     InvalidUuidOption
     )
-from defaults import (
+from .defaults import (
     GET,
     POST,
     DELETE,
@@ -471,7 +471,6 @@ class RundeckApiTolerant(object):
         try:
             return self._exec(POST, 'jobs/delete', data=data, **kwargs)
         except Exception as exc:
-            print exc
             raise
 
 

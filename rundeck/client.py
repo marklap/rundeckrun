@@ -10,14 +10,19 @@ __docformat__ = "restructuredtext en"
 
 import time
 import errno
-from string import maketrans, ascii_letters, digits
 from datetime import datetime
+from string import ascii_letters, digits
+try:
+    from string import maketrans
+except ImportError:
+    # python 3
+    maketrans = str.maketrans
 
-from api import RundeckApiTolerant, RundeckApi, RundeckNode
-from connection import RundeckConnection
-from transforms import transform
-from util import child2dict, attr2dict, cull_kwargs
-from exceptions import (
+from .api import RundeckApiTolerant, RundeckApi, RundeckNode
+from .connection import RundeckConnection
+from .transforms import transform
+from .util import child2dict, attr2dict, cull_kwargs
+from .exceptions import (
     RundeckServerError,
     JobNotFound,
     MissingProjectArgument,
@@ -26,7 +31,7 @@ from exceptions import (
     InvalidJobDefinitionFormat,
     InvalidResourceSpecification,
     )
-from defaults import (
+from .defaults import (
     GET,
     POST,
     DELETE,
