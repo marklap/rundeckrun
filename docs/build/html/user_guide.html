@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>User Guide &mdash; RundeckRun 0.0.2 documentation</title>
+  <title>User Guide &mdash; RundeckRun 0.1.4 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'0.0.2',
+        VERSION:'0.1.4',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="RundeckRun 0.0.2 documentation" href="index.html"/>
+    <link rel="top" title="RundeckRun 0.1.4 documentation" href="index.html"/>
         <link rel="next" title="Module Reference" href="api.html"/>
         <link rel="prev" title="RundeckRun" href="index.html"/> 
 
@@ -70,7 +70,10 @@
         
         
             <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">User Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Module Reference</a></li>
 </ul>
 
@@ -101,6 +104,31 @@
           
   <div class="section" id="user-guide">
 <span id="id1"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre>pip install rundeckrun
+</pre></div>
+</div>
+</div>
+<div class="section" id="hello-world">
+<h3>&#8220;Hello World!&#8221;<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">rundeckrun.client</span> <span class="kn">import</span> <span class="n">Rundeck</span>
+<span class="n">rd</span> <span class="o">=</span> <span class="n">Rundeck</span><span class="p">(</span><span class="n">api_token</span><span class="o">=</span><span class="s">&#39;SECRET_API_TOKEN&#39;</span><span class="p">)</span>
+<span class="n">rd</span><span class="o">.</span><span class="n">list_projects</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The code above should result in a list of projects on the target Rundeck server such as this...</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[{</span>
+    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;TestProject&#39;</span><span class="p">,</span>
+    <span class="s">&#39;resources&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;providerURL&#39;</span><span class="p">:</span> <span class="s">&#39;http://localhost:8000/resources.xml&#39;</span><span class="p">},</span>
+<span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 
 

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Module Reference &mdash; RundeckRun 0.0.2 documentation</title>
+  <title>Module Reference &mdash; RundeckRun 0.1.4 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'0.0.2',
+        VERSION:'0.1.4',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="RundeckRun 0.0.2 documentation" href="index.html"/>
+    <link rel="top" title="RundeckRun 0.1.4 documentation" href="index.html"/>
         <link rel="prev" title="User Guide" href="user_guide.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -69,7 +69,10 @@
         
         
             <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#getting-started">Getting Started</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Module Reference</a></li>
 </ul>
 
@@ -119,7 +122,15 @@
 <dl class="class">
 <dt id="rundeck.api.RundeckApi">
 <em class="property">class </em><tt class="descclassname">rundeck.api.</tt><tt class="descname">RundeckApi</tt><big>(</big><em>server='localhost'</em>, <em>protocol='http'</em>, <em>port=4440</em>, <em>api_token=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi" title="Permalink to this definition">¶</a></dt>
-<dd><p>As close to the Rundeck API as possible</p>
+<dd><p>Same as RundeckApiTolerant and complains on every Rundeck Server error or 4xx/5xx HTTP
+status code.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="rundeck.api.RundeckApiTolerant">
+<em class="property">class </em><tt class="descclassname">rundeck.api.</tt><tt class="descname">RundeckApiTolerant</tt><big>(</big><em>server='localhost'</em>, <em>protocol='http'</em>, <em>port=4440</em>, <em>api_token=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant" title="Permalink to this definition">¶</a></dt>
+<dd><p>As close to the Rundeck API as possible. The &#8220;Tolerant&#8221; class does not throw exceptions
+when HTTP status codes are returned. Probably don&#8217;t want/need to use this.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -134,8 +145,8 @@
 </tbody>
 </table>
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.delete_job">
-<tt class="descname">delete_job</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.delete_job" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.delete_job">
+<tt class="descname">delete_job</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.delete_job" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#deleting-a-job-definition">Rundeck API DELETE /job/[ID]</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -159,8 +170,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.execution">
-<tt class="descname">execution</tt><big>(</big><em>execution_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.execution" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.execution">
+<tt class="descname">execution</tt><big>(</big><em>execution_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.execution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#getting-execution-info">Rundeck API GET /execution/[ID]</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -184,8 +195,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.execution_abort">
-<tt class="descname">execution_abort</tt><big>(</big><em>execution_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.execution_abort" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.execution_abort">
+<tt class="descname">execution_abort</tt><big>(</big><em>execution_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.execution_abort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#execution-output">Rundeck API GET /execution/[ID]/output</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -216,8 +227,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.execution_output">
-<tt class="descname">execution_output</tt><big>(</big><em>execution_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.execution_output" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.execution_output">
+<tt class="descname">execution_output</tt><big>(</big><em>execution_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.execution_output" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#execution-output">Rundeck API GET /execution/[ID]/output</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -260,8 +271,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.executions">
-<tt class="descname">executions</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.executions" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.executions">
+<tt class="descname">executions</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.executions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#getting-execution-info">Rundeck API GET /executions</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -359,8 +370,8 @@ jobs only</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.executions_running">
-<tt class="descname">executions_running</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.executions_running" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.executions_running">
+<tt class="descname">executions_running</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.executions_running" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#listing-running-executions">Rundeck API GET /executions/running</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -384,8 +395,8 @@ jobs only</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.history">
-<tt class="descname">history</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.history" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.history">
+<tt class="descname">history</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.history" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#listing-history">Rundeck API GET /history</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -457,8 +468,8 @@ time; the format is &#8220;XY&#8221; where &#8216;X&#8217; is an integer and &#8
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.job">
-<tt class="descname">job</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.job" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.job">
+<tt class="descname">job</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.job" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#getting-a-job-definition">Rundeck API GET /job/[ID]</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -489,8 +500,8 @@ time; the format is &#8220;XY&#8221; where &#8216;X&#8217; is an integer and &#8
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.job_executions">
-<tt class="descname">job_executions</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.job_executions" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.job_executions">
+<tt class="descname">job_executions</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.job_executions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#getting-executions-for-a-job">Rundeck API GET /job/[ID]/executions</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -527,8 +538,8 @@ time; the format is &#8220;XY&#8221; where &#8216;X&#8217; is an integer and &#8
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.job_run">
-<tt class="descname">job_run</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.job_run" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.job_run">
+<tt class="descname">job_run</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.job_run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#running-a-job">Rundeck API GET /job/[ID]/run</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -611,8 +622,8 @@ else if dict will be converted to compatible string</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.jobs">
-<tt class="descname">jobs</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.jobs" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.jobs">
+<tt class="descname">jobs</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.jobs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#listing-jobs">Rundeck API GET /jobs</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -656,8 +667,8 @@ or &#8220;*&#8221; for all groups or &#8220;-&#8221; to match top level jobs onl
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.jobs_delete">
-<tt class="descname">jobs_delete</tt><big>(</big><em>idlist</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.jobs_delete" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.jobs_delete">
+<tt class="descname">jobs_delete</tt><big>(</big><em>idlist</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.jobs_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#importing-jobs">Rundeck API POST /jobs/delete</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -681,8 +692,8 @@ or &#8220;*&#8221; for all groups or &#8220;-&#8221; to match top level jobs onl
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.jobs_export">
-<tt class="descname">jobs_export</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.jobs_export" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.jobs_export">
+<tt class="descname">jobs_export</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.jobs_export" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#listing-projects">Rundeck API GET /projects</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -723,8 +734,8 @@ char &#8216;-&#8216;</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.jobs_import">
-<tt class="descname">jobs_import</tt><big>(</big><em>definition</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.jobs_import" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.jobs_import">
+<tt class="descname">jobs_import</tt><big>(</big><em>definition</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.jobs_import" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#importing-jobs">Rundeck API POST /jobs/import</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -767,8 +778,8 @@ exists</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.project">
-<tt class="descname">project</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.project" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.project">
+<tt class="descname">project</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#getting-project-info">Rundeck API /project/[NAME]</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -792,8 +803,8 @@ exists</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.project_jobs">
-<tt class="descname">project_jobs</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.project_jobs" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.project_jobs">
+<tt class="descname">project_jobs</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.project_jobs" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>Simulates <a class="reference external" href="http://rundeck.org/docs/api/index.html#listing-jobs-for-a-project">Rundeck API GET /project/[NAME]/jobs</a></dt>
 <dd><dl class="first last docutils">
@@ -845,8 +856,8 @@ char &#8216;-&#8216;</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.project_resources">
-<tt class="descname">project_resources</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.project_resources" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.project_resources">
+<tt class="descname">project_resources</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.project_resources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project">Rundeck API GET /project/[NAME]/resources</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -919,8 +930,8 @@ char &#8216;-&#8216;</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.project_resources_refresh">
-<tt class="descname">project_resources_refresh</tt><big>(</big><em>project</em>, <em>providerURL=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.project_resources_refresh" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.project_resources_refresh">
+<tt class="descname">project_resources_refresh</tt><big>(</big><em>project</em>, <em>providerURL=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.project_resources_refresh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#refreshing-resources-for-a-project">Rundeck API POST /project/[NAME]/resources/refresh</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -948,8 +959,8 @@ the configured provider URL in the <cite>project.properties</cite> file will be 
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.project_resources_update">
-<tt class="descname">project_resources_update</tt><big>(</big><em>project</em>, <em>nodes</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.project_resources_update" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.project_resources_update">
+<tt class="descname">project_resources_update</tt><big>(</big><em>project</em>, <em>nodes</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.project_resources_update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#updating-and-listing-resources-for-a-project">Rundeck API POST /project/[NAME]/resources</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -976,8 +987,8 @@ the configured provider URL in the <cite>project.properties</cite> file will be 
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.projects">
-<tt class="descname">projects</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.projects" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.projects">
+<tt class="descname">projects</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.projects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#listing-projects">Rundeck API GET /projects</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -992,8 +1003,8 @@ the configured provider URL in the <cite>project.properties</cite> file will be 
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.run_command">
-<tt class="descname">run_command</tt><big>(</big><em>project</em>, <em>command</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.run_command" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.run_command">
+<tt class="descname">run_command</tt><big>(</big><em>project</em>, <em>command</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.run_command" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#running-adhoc-commands">Rundeck API GET /run/command</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1076,8 +1087,8 @@ permission</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.run_script">
-<tt class="descname">run_script</tt><big>(</big><em>project</em>, <em>scriptFile</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.run_script" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.run_script">
+<tt class="descname">run_script</tt><big>(</big><em>project</em>, <em>scriptFile</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.run_script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#running-adhoc-scripts">Rundeck API POST /run/script</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1171,8 +1182,8 @@ scriptInterpreter (requires API version 8 or higher)</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.run_url">
-<tt class="descname">run_url</tt><big>(</big><em>project</em>, <em>scriptURL</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.run_url" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.run_url">
+<tt class="descname">run_url</tt><big>(</big><em>project</em>, <em>scriptURL</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.run_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#running-adhoc-script-urls">Rundeck API POST /run/url</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1266,8 +1277,8 @@ scriptInterpreter (requires API version 8 or higher)</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.api.RundeckApi.system_info">
-<tt class="descname">system_info</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApi.system_info" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.api.RundeckApiTolerant.system_info">
+<tt class="descname">system_info</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.system_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps <a class="reference external" href="http://rundeck.org/docs/api/index.html#system-info">Rundeck API GET /system/info</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1281,12 +1292,6 @@ scriptInterpreter (requires API version 8 or higher)</p>
 </table>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="class">
-<dt id="rundeck.api.RundeckApiNoisy">
-<em class="property">class </em><tt class="descclassname">rundeck.api.</tt><tt class="descname">RundeckApiNoisy</tt><big>(</big><em>server='localhost'</em>, <em>protocol='http'</em>, <em>port=4440</em>, <em>api_token=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiNoisy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Same as RundeckApi, but complains (raises exceptions) on every Rundeck Server error</p>
 </dd></dl>
 
 <dl class="class">

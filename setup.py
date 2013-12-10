@@ -7,22 +7,29 @@ __docformat__ = "restructuredtext en"
 :contact: rundeckrun@mindmind.com
 :copyright: Mark LaPerriere 2013
 """
+import os
 from setuptools import setup, find_packages
 from rundeck import VERSION
 
+project = 'rundeckrun'
+install_requires = ['requests>=1.2.0']
+
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'README.rst'), 'r') as fp:
+    long_description = fp.read()
+
 setup(
-    name='rundeckrun',
+    name=project,
     license='http://creativecommons.org/licenses/by-sa/3.0/',
     version=VERSION,
     packages=find_packages(),
     description='Rundeck API Python client',
-    long_description='A client library written in Python to interact with the Rundeck API.',
-    url='https://github.com/marklap/rundeckrun',
-    author='rundeckrun@mindmind.com',
-    author_email='rundeckrun@mindmind.com',
-    maintainer='rundeckrun@mindmind.com',
-    maintainer_email='rundeckrun@mindmind.com',
-    install_requires=['requests>=1.2.0'],
+    long_description=long_description,
+    url='https://github.com/marklap/{0}'.format(project),
+    author='{0}@mindmind.com'.format(project),
+    author_email='{0}@mindmind.com'.format(project),
+    maintainer='{0}@mindmind.com'.format(project),
+    maintainer_email='{0}@mindmind.com'.format(project),
+    install_requires=install_requires,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

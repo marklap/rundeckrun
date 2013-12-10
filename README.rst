@@ -2,10 +2,10 @@ RundeckRun
 ==========
 
 A client library written in Python to interact with the Rundeck
-API. It uses the awesome `requests <http://docs.python-requests.org/>`_
+API. It uses the awesome `requests`_
 library.
 
-Documentation is hosted on `Read the Docs <http://rundeckrun.readthedocs.org/>`_
+Documentation is hosted on `Read the Docs`_
 
 *DISCLAIMER:* Still in active development, but most features have been tested and should work. Only
 tested on Python 2.7 but *should* work on Python 3.x as well.
@@ -16,7 +16,7 @@ Installation
 
 Requires
 ~~~~~~~~
-* `requests <http://docs.python-requests.org/>`_
+* `requests`_
 
 .. code-block:: bash
 
@@ -94,4 +94,8 @@ Then install the requirements and dev requirements.
 Lastly, execute nose tests.
 
 .. code-block:: bash
+
     nosetests
+
+.. _requests: http://docs.python-requests.org/
+.. _Read the Docs:  http://rundeckrun.readthedocs.org/
