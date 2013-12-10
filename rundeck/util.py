@@ -27,7 +27,7 @@ def attr2dict(el):
 def node2dict(el):
     """Combines both the attr2dict and child2dict functions
     """
-    return dict(attr2dict(el).items() + child2dict(el).items())
+    return dict(list(attr2dict(el).items()) + list(child2dict(el).items()))
 
 
 def cull_kwargs(api_keys, kwargs):
