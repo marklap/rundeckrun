@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <node name="node1" hostname="node1" username="monty"/>
+  <node name="node2" hostname="node2" username="monty"/>
+</project>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <node name="edon1" hostname="edon1" username="ytnom"/>
+  <node name="edon2" hostname="edon2" username="ytnom"/>
+</project>
