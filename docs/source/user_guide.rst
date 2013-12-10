@@ -23,7 +23,7 @@ Installation
     rd = Rundeck(api_token='SECRET_API_TOKEN')
     rd.list_projects()
 
-The code above should result in a list of projects on the target Rundeck server such as this:
+The code above should result in a list of projects on the target Rundeck server such as this...
 
 .. code-block:: python
     [{
