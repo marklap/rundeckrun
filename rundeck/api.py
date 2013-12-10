@@ -9,7 +9,6 @@
 __docformat__ = "restructuredtext en"
 
 from functools import partial
-from string import maketrans, ascii_letters, digits
 from xml.sax.saxutils import quoteattr
 import urllib
 
@@ -30,11 +29,6 @@ from .defaults import (
     JobDefFormat,
     ExecutionOutputFormat,
     )
-
-_JOB_ID_CHARS = ascii_letters + digits
-_JOB_ID_TRANS_TAB = maketrans(_JOB_ID_CHARS, '#' * len(_JOB_ID_CHARS))
-_JOB_ID_TEMPLATE = '########-####-####-####-############'
-
 
 def api_version_check(api_version, required_version):
     """Raises a NotImplementedError if the api_version of the connection isn't sufficient
