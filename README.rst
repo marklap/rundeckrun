@@ -5,7 +5,10 @@ A client library written in Python to interact with the Rundeck
 API. It uses the awesome `requests <http://docs.python-requests.org/>`_
 library.
 
-*DISCLAIMER:* Still in early stages of development
+Documentation is hosted on `Read the Docs <http://rundeckrun.readthedocs.org/>`_
+
+*DISCLAIMER:* Still in active development, but most features have been tested and should work.
+
 
 Installation
 ------------
@@ -47,7 +50,3 @@ Use
      'job': None,
      'status': 'running',
      'user': 'rundeckrun'}
-
-
-Documentation
--------------
