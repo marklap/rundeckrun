@@ -131,7 +131,7 @@ class RundeckNode(object):
 
         if self.tags is not None and hasattr(self.tags, '__iter__'):
             data['tags'] = ','.join(self.tags)
-        elif isinstance(self.tags, basestring):
+        elif isinstance(self.tags, (str, unicode)):
             data['tags'] = self.tags
 
         node_xml_attrs = ' '.join(['{0}={1}'.format(k, quoteattr(v)) for k, v in data.items()])
@@ -455,7 +455,7 @@ class RundeckApiTolerant(object):
         :return: A RundeckResponse
         :rtype: RundeckResponse
         """
-        if not isinstance(idlist, basestring) and hasattr(idlist, '__iter__'):
+        if not isinstance(idlist, (str, unicode)) and hasattr(idlist, '__iter__'):
             idlist = ','.join(idlist)
 
         data = {

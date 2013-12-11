@@ -62,7 +62,7 @@ def is_job_id(job_id):
 
     :rtype: bool
     """
-    if job_id and isinstance(job_id, basestring):
+    if job_id and isinstance(job_id, (str, unicode)):
         return job_id.translate(_JOB_ID_TRANS_TAB) == _JOB_ID_TEMPLATE
 
     return False
@@ -467,7 +467,7 @@ class Rundeck(object):
         # while we're waiting for https://github.com/dtolabs/rundeck/issues/588 to get resolved,
         #   we'll just use iterate over the list of ids and call delete_job - potentially REALLY
         #   painfully slow for large lists
-        if isinstance(idlist, basestring):
+        if isinstance(idlist, (str, unicode)):
             idlist = idlist.split(',')
 
         results = []
