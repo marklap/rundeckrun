@@ -6,6 +6,8 @@
 RundeckRun
 ==========
 
+[Version |version|]
+
 This is a lightweight wrapper written in Python to interact with the Rundeck
 API. It uses the awesome `requests <http://docs.python-requests.org/>`_
 library.
@@ -71,16 +73,20 @@ Execute a Job
      'status': 'running',
      'user': 'rundeckrun'}
 
+
+User Guide
+----------
+
 .. toctree::
-   :maxdepth: 2
+  :maxdepth: 2
 
-   user_guide
-   api
+  user_guide/index
 
-Indices and tables
-==================
+API
+---
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree::
+  :maxdepth: 2
+
+  api
 

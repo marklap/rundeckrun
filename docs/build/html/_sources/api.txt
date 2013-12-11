@@ -1,7 +1,5 @@
-.. _api:
-
-Module Reference
-================
+API
+===
 
 .. automodule:: rundeck
     :members:
