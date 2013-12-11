@@ -63,3 +63,8 @@ def dict2argstring(argString):
         return argString
 
 
+try:
+    from types import StringType
+except ImportError:
+    # python 3
+    StringType = type('')
