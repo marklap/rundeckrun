@@ -10,7 +10,11 @@ __docformat__ = "restructuredtext en"
 
 from functools import partial
 from xml.sax.saxutils import quoteattr
-import urllib
+try:
+    from urllib import quote as urlquote
+except ImportError:
+    # python 3
+    from urllib.parse import quote as urlquote
 
 from .connection import RundeckConnectionTolerant, RundeckConnection
 from .util import cull_kwargs, dict2argstring, StringType
@@ -877,7 +881,7 @@ class RundeckApiTolerant(object):
         :return: A RundeckResponse`
         :rtype: RundeckResponse
         """
-        return self._exec(GET, 'project/{0}'.format(urllib.quote(project)), **kwargs)
+        return self._exec(GET, 'project/{0}'.format(urlquote(project)), **kwargs)
 
 
     def project_resources(self, project, **kwargs):
@@ -932,7 +936,7 @@ class RundeckApiTolerant(object):
         if 'fmt' in params:
             params['format'] = params.pop('fmt')
 
-        return self._exec(GET, 'project/{0}/resources'.format(urllib.quote(project)), params=params, **kwargs)
+        return self._exec(GET, 'project/{0}/resources'.format(urlquote(project)), params=params, **kwargs)
 
 
     def project_resources_update(self, project, nodes, **kwargs):
@@ -951,7 +955,7 @@ class RundeckApiTolerant(object):
 
         data = '<nodes>{0}</nodes>'.format('\n'.join([node.xml for node in nodes]))
 
-        return self._exec(POST, 'project/{0}/resources'.format(urllib.quote(project)), data=data, headers=headers, **kwargs)
+        return self._exec(POST, 'project/{0}/resources'.format(urlquote(project)), data=data, headers=headers, **kwargs)
 
 
     def project_resources_refresh(self, project, providerURL=None, **kwargs):
