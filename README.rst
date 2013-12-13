@@ -28,7 +28,7 @@ Use
 
 .. code-block:: pycon
 
-    >>> from rundeckrun.client import Rundeck
+    >>> from rundeck.client import Rundeck
     >>> rd = Rundeck('rundeck.server.com', api_token='SECRET_API_TOKEN')
     >>> rd.list_projects()
     [{
