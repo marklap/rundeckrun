@@ -73,8 +73,6 @@ not be self-explanatory... use either 'http' or 'https' there).
     RUNDECK_SERVER
     RUNDECK_PORT
     RUNDECK_PROTOCOL
-    RUNDECK_USR
-    RUNDECK_PWD
 
 Next clone the repo.
 
