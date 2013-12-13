@@ -7,5 +7,5 @@ __docformat__ = "restructuredtext en"
 :contact: rundeckrun@mindmind.com
 :copyright: Mark LaPerriere 2013
 """
-__VERSION__ = (0, 1, 5)
+__VERSION__ = (0, 1, 6)
 VERSION = '.'.join(map(str, __VERSION__))

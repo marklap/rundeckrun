@@ -7,8 +7,8 @@ library.
 
 Documentation is hosted on `Read the Docs`_
 
-*DISCLAIMER:* Still in active development, but most features have been tested and should work. Only
-tested on Python 2.7 but *should* work on Python 3.x as well.
+*DISCLAIMER:* Still in active development, but most features have been tested and should work.
+Should work on at least Python 2.7 and Python 3.3.
 
 
 Installation
@@ -28,7 +28,7 @@ Use
 
 .. code-block:: pycon
 
-    >>> from rundeckrun.client import Rundeck
+    >>> from rundeck.client import Rundeck
     >>> rd = Rundeck('rundeck.server.com', api_token='SECRET_API_TOKEN')
     >>> rd.list_projects()
     [{
@@ -42,8 +42,8 @@ Use
       'id': 'a6e1e0f7-ad32-4b93-ba2c-9387be06a146',
       'name': 'HelloWorld',
       'project': 'TestProject'}]
-    >>> rd.run_job('HelloWorld', 'TestProject', argString={'from':'rundeckrun'})
-    {'argstring': '-from rundeckrun',
+    >>> rd.run_job('a6e1e0f7-ad32-4b93-ba2c-9387be06a146', argString={'from':'RundeckRun'})
+    {'argstring': '-from RundeckRun',
      'date-started': datetime.datetime(2013, 7, 11, 18, 4, 24),
      'description': 'Plugin[localexec, nodeStep: true]',
      'href': 'http://rundeck.server.com/execution/follow/123',

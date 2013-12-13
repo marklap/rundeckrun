@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Jobs &mdash; RundeckRun 0.1.4 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:'../',
+        VERSION:'0.1.4',
+        COLLAPSE_INDEX:false,
+        FILE_SUFFIX:'.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+    <link rel="top" title="RundeckRun 0.1.4 documentation" href="../index.html"/>
+        <link rel="up" title="User Guide" href="index.html"/>
+        <link rel="next" title="Resources" href="resources.html"/>
+        <link rel="prev" title="Projects" href="projects.html"/> 
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../index.html" class="icon icon-home"> RundeckRun</a>
+        <form class="wy-form" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search docs" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix">
+        
+        
+            <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#interacting-with-rundeck">Interacting with Rundeck</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#projects">Projects</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#jobs">Jobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#resources">Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#importing-and-exporting">Importing and Exporting</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top">
+        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+        <a href="/">RundeckRun</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">Docs</a> &raquo;</li>
+  <li><a href="">Jobs</a></li>
+  
+</ul>
+<hr/>
+
+          
+  <div class="section" id="jobs">
+<h1>Jobs<a class="headerlink" href="#jobs" title="Permalink to this headline">¶</a></h1>
+<p>A guide to working with Rundeck Jobs.</p>
+<div class="section" id="listing">
+<h2>Listing<a class="headerlink" href="#listing" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">rd</span><span class="o">.</span><span class="n">list_jobs</span><span class="p">(</span><span class="s">&#39;TestProject&#39;</span><span class="p">)</span>
+<span class="go">[{&#39;description&#39;: &#39;Hello World!&#39;,</span>
+<span class="go">  &#39;group&#39;: None,</span>
+<span class="go">  &#39;id&#39;: &#39;a6e1e0f7-ad32-4b93-ba2c-9387be06a146&#39;,</span>
+<span class="go">  &#39;name&#39;: &#39;HelloWorld&#39;,</span>
+<span class="go">  &#39;project&#39;: &#39;TestProject&#39;}]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-a-job">
+<h2>Run a Job<a class="headerlink" href="#run-a-job" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">rd</span><span class="o">.</span><span class="n">run_job</span><span class="p">(</span><span class="s">&#39;a6e1e0f7-ad32-4b93-ba2c-9387be06a146&#39;</span><span class="p">,</span> <span class="n">argString</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;from&#39;</span><span class="p">:</span> <span class="s">&#39;RundeckRun&#39;</span><span class="p">})</span>
+<span class="go">{&#39;argstring&#39;: &#39;-from RundeckRun&#39;,</span>
+<span class="go"> &#39;date-started&#39;: datetime.datetime(2013, 7, 11, 18, 4, 24),</span>
+<span class="go"> &#39;description&#39;: &#39;Plugin[localexec, nodeStep: true]&#39;,</span>
+<span class="go"> &#39;href&#39;: &#39;http://rundeck.server.com/execution/follow/123&#39;,</span>
+<span class="go"> &#39;id&#39;: &#39;123&#39;,</span>
+<span class="go"> &#39;job&#39;: None,</span>
+<span class="go"> &#39;status&#39;: &#39;running&#39;,</span>
+<span class="go"> &#39;user&#39;: &#39;rundeckrun&#39;}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          <footer>
+  
+    <div class="rst-footer-buttons">
+      
+        <a href="resources.html" class="btn btn-neutral float-right" title="Resources"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="projects.html" class="btn btn-neutral" title="Projects"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <p>
+      &copy; Copyright 2013, Mark LaPerriere.
+  </p>
+
+  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+</body>
+</html>
