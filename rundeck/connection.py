@@ -114,6 +114,8 @@ class RundeckConnectionTolerant(object):
                 Rundeck user password (used in combo with usr)
             api_version : int
                 Rundeck API version
+            verify_cert : bool
+                Server certificate verification (HTTPS only)
         """
         self.protocol = protocol
         self.usr = usr = kwargs.get('usr', None)
