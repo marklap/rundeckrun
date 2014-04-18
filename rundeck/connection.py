@@ -121,6 +121,7 @@ class RundeckConnectionTolerant(object):
         self.server = server
         self.api_token = api_token
         self.api_version = kwargs.get('api_version', RUNDECK_API_VERSION)
+        self.verify_cert = kwargs.get('verify_cert', True)
 
         if (protocol == 'http' and port != 80) or (protocol == 'https' and port != 443):
             self.server = '{0}:{1}'.format(server, port)
@@ -210,7 +211,7 @@ class RundeckConnectionTolerant(object):
         :rtype: requests.Response
         """
         return requests.request(
-            method, url, params=params, data=data, headers=headers, files=files)
+            method, url, params=params, data=data, headers=headers, files=files, verify=self.verify_cert)
 
 
 class RundeckConnection(RundeckConnectionTolerant):
