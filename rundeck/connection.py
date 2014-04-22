@@ -132,7 +132,7 @@ class RundeckConnectionTolerant(object):
             raise InvalidAuthentication('Must supply either api_token or usr and pwd')
 
         self.http = requests.Session()
-        self.http.verify = verify_cert
+        self.http.verify = self.verify_cert
         if api_token is not None:
             self.http.headers['X-Rundeck-Auth-Token'] = api_token
         elif usr is not None and pwd is not None:
@@ -213,7 +213,7 @@ class RundeckConnectionTolerant(object):
 
         :rtype: requests.Response
         """
-        return requests.request(
+        return self.http.request(
             method, url, params=params, data=data, headers=headers, files=files)
 
 
