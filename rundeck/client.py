@@ -476,7 +476,7 @@ class Rundeck(object):
             try:
                 result = self.delete_job(id)
             except RundeckServerError as exc:
-                result = exc.rundecK_response
+                result = exc.rundeck_response
             results.append(result)
 
         return results

@@ -88,7 +88,7 @@ class RundeckResponse(object):
             msg = self.message
 
         if not self.success:
-            raise RundeckServerError(msg, rundecK_response=self)
+            raise RundeckServerError(msg, rundeck_response=self)
 
 
 class RundeckConnectionTolerant(object):
