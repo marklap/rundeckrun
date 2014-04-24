@@ -31,3 +31,25 @@ Run a Job
      'job': None,
      'status': 'running',
      'user': 'rundeckrun'}
+
+Export All Jobs
+---------------
+
+.. code-block:: pycon
+
+  >>> print(rd.jobs_export('TestProject', fmt='yaml'))
+  - id: cb973e3a-e682-4b45-9dbe-9e5301a4361e
+  project: TestProject
+  loglevel: INFO
+  sequence:
+    keepgoing: false
+    strategy: node-first
+    commands:
+    - type: localexec
+      nodeStep: true
+      configuration:
+        command: echo "Hello World!"
+  description: ''
+  name: TestJob
+  uuid: cb973e3a-e682-4b45-9dbe-9e5301a4361e
+  group: RundeckRun/Tests

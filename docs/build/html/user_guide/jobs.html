@@ -148,6 +148,27 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="export-all-jobs">
+<h2>Export All Jobs<a class="headerlink" href="#export-all-jobs" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">rd</span><span class="o">.</span><span class="n">jobs_export</span><span class="p">(</span><span class="s">&#39;TestProject&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;yaml&#39;</span><span class="p">))</span>
+<span class="go">- id: cb973e3a-e682-4b45-9dbe-9e5301a4361e</span>
+<span class="go">project: TestProject</span>
+<span class="go">loglevel: INFO</span>
+<span class="go">sequence:</span>
+<span class="go">  keepgoing: false</span>
+<span class="go">  strategy: node-first</span>
+<span class="go">  commands:</span>
+<span class="go">  - type: localexec</span>
+<span class="go">    nodeStep: true</span>
+<span class="go">    configuration:</span>
+<span class="go">      command: echo &quot;Hello World!&quot;</span>
+<span class="go">description: &#39;&#39;</span>
+<span class="go">name: TestJob</span>
+<span class="go">uuid: cb973e3a-e682-4b45-9dbe-9e5301a4361e</span>
+<span class="go">group: RundeckRun/Tests</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
