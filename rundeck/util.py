@@ -76,7 +76,11 @@ def dict2argstring(argString):
 
 
 try:
-    from types import StringType
-except ImportError:
+    if isinstance('', basestring):
+        pass
+except NameError:
     # python 3
     StringType = type('')
+else:
+    # python 2
+    StringType = basestring
