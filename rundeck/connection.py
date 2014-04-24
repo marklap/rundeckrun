@@ -88,7 +88,7 @@ class RundeckResponse(object):
             msg = self.message
 
         if not self.success:
-            raise RundeckServerError(msg, rundecK_response=self)
+            raise RundeckServerError(msg, rundeck_response=self)
 
 
 class RundeckConnectionTolerant(object):
@@ -114,6 +114,8 @@ class RundeckConnectionTolerant(object):
                 Rundeck user password (used in combo with usr)
             api_version : int
                 Rundeck API version
+            verify_cert : bool
+                Server certificate verification (HTTPS only)
         """
         self.protocol = protocol
         self.usr = usr = kwargs.get('usr', None)
@@ -121,6 +123,7 @@ class RundeckConnectionTolerant(object):
         self.server = server
         self.api_token = api_token
         self.api_version = kwargs.get('api_version', RUNDECK_API_VERSION)
+        self.verify_cert = kwargs.get('verify_cert', True)
 
         if (protocol == 'http' and port != 80) or (protocol == 'https' and port != 443):
             self.server = '{0}:{1}'.format(server, port)
@@ -129,6 +132,7 @@ class RundeckConnectionTolerant(object):
             raise InvalidAuthentication('Must supply either api_token or usr and pwd')
 
         self.http = requests.Session()
+        self.http.verify = self.verify_cert
         if api_token is not None:
             self.http.headers['X-Rundeck-Auth-Token'] = api_token
         elif usr is not None and pwd is not None:
@@ -209,7 +213,7 @@ class RundeckConnectionTolerant(object):
 
         :rtype: requests.Response
         """
-        return requests.request(
+        return self.http.request(
             method, url, params=params, data=data, headers=headers, files=files)
 
 

@@ -5,6 +5,7 @@
 0.1.7
 -----
 - Add switch for Rundeck server SSL certificate validation (thank you @shlomosh)
+- Fix silly typo exceptions.RundeckServerError
 
 0.1.6
 -----
