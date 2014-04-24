@@ -1,6 +1,7 @@
 0.1.8
 -----
 - Minor documentation changes: autodoc for all interesting modules and other misc changes
+- Fix api.jobs_export to actually call the Rundeck /jobs/export endpoint with proper params
 
 0.1.7
 -----
