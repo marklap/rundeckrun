@@ -1,3 +1,15 @@
+"""
+:summary: Test rundeck.api.RundeckApi
+
+:license: Creative Commons Attribution-ShareAlike 3.0 Unported
+:author: Mark LaPerriere
+:contact: rundeckrun@mindmind.com
+:copyright: Mark LaPerriere 2013
+
+:requires: requests
+"""
+__docformat__ = "restructuredtext en"
+
 import uuid
 import time
 import requests

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API &mdash; RundeckRun 0.1.6 documentation</title>
+  <title>API &mdash; RundeckRun 0.1.7 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'0.1.6',
+        VERSION:'0.1.7',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="RundeckRun 0.1.6 documentation" href="index.html"/>
+    <link rel="top" title="RundeckRun 0.1.7 documentation" href="index.html"/>
         <link rel="prev" title="Importing and Exporting" href="user_guide/import_export.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -80,7 +80,17 @@
 </li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-rundeck">rundeck</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-rundeck.api">rundeck.api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-rundeck.client">rundeck.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-rundeck.connection">rundeck.connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-rundeck.defaults">rundeck.defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-rundeck.exceptions">rundeck.exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-rundeck.transforms">rundeck.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-rundeck.util">rundeck.util</a></li>
+</ul>
+</li>
 </ul>
 
         
@@ -108,9 +118,30 @@
 <hr/>
 
           
-  <div class="section" id="module-rundeck">
-<span id="api"></span><h1>API<a class="headerlink" href="#module-rundeck" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-rundeck.api"></span><table class="docutils field-list" frame="void" rules="none">
+  <div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-rundeck">
+<span id="rundeck"></span><h2>rundeck<a class="headerlink" href="#module-rundeck" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">summary:</th><td class="field-body">rundeckrun package</td>
+</tr>
+<tr class="field-even field"><th class="field-name">license:</th><td class="field-body">Creative Commons Attribution-ShareAlike 3.0 Unported</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Mark LaPerriere</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body"><a class="reference external" href="mailto:rundeckrun&#37;&#52;&#48;mindmind&#46;com">rundeckrun<span>&#64;</span>mindmind<span>&#46;</span>com</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">copyright:</th><td class="field-body">Mark LaPerriere 2013</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-rundeck.api">
+<span id="rundeck-api"></span><h2>rundeck.api<a class="headerlink" href="#module-rundeck.api" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -143,14 +174,59 @@ when HTTP status codes are returned. Probably don&#8217;t want/need to use this.
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">IVariables:</th><td class="field-body"><dl class="first last docutils">
-<dt>connection <span class="classifier-delimiter">:</span> <span class="classifier">RundeckConnection</span></dt>
-<dd><p class="first last">a RundeckConnection instance</p>
+<dt>connection <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="#rundeck.connection.RundeckConnection" title="rundeck.connection.RundeckConnection"><tt class="xref py py-class docutils literal"><span class="pre">RundeckConnection</span></tt></a></span></dt>
+<dd><p class="first last">a <a class="reference internal" href="#rundeck.connection.RundeckConnection" title="rundeck.connection.RundeckConnection"><tt class="xref py py-class docutils literal"><span class="pre">RundeckConnection</span></tt></a> instance</p>
 </dd>
 </dl>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="rundeck.api.RundeckApiTolerant.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>server='localhost'</em>, <em>protocol='http'</em>, <em>port=4440</em>, <em>api_token=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a Rundeck API instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>server <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname of the Rundeck server (default: localhost)</p>
+</dd>
+<dt>protocol <span class="classifier-delimiter">:</span> <span class="classifier">str (&#8216;http&#8217;|&#8217;https&#8217;)</span></dt>
+<dd><p class="first last">(default: &#8216;http&#8217;)</p>
+</dd>
+<dt>port <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Rundeck server port (default: 4440)</p>
+</dd>
+<dt>api_token <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">valid Rundeck user API token</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first last docutils">
+<dt>usr <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck user name (used in place of api_token)</p>
+</dd>
+<dt>pwd <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck user password (used in combo with usr)</p>
+</dd>
+<dt>api_version <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Rundeck API version</p>
+</dd>
+<dt>connection <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="#rundeck.connection.RundeckConnection" title="rundeck.connection.RundeckConnection"><tt class="xref py py-class docutils literal"><span class="pre">RundeckConnection</span></tt></a></span></dt>
+<dd><p class="first last">an instance of a <a class="reference internal" href="#rundeck.connection.RundeckConnection" title="rundeck.connection.RundeckConnection"><tt class="xref py py-class docutils literal"><span class="pre">RundeckConnection</span></tt></a> or instance of a
+subclass of <a class="reference internal" href="#rundeck.connection.RundeckConnection" title="rundeck.connection.RundeckConnection"><tt class="xref py py-class docutils literal"><span class="pre">RundeckConnection</span></tt></a></p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="rundeck.api.RundeckApiTolerant.delete_job">
 <tt class="descname">delete_job</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckApiTolerant.delete_job" title="Permalink to this definition">¶</a></dt>
@@ -166,10 +242,10 @@ when HTTP status codes are returned. Probably don&#8217;t want/need to use this.
 </dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -191,10 +267,10 @@ when HTTP status codes are returned. Probably don&#8217;t want/need to use this.
 </dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -250,7 +326,8 @@ when HTTP status codes are returned. Probably don&#8217;t want/need to use this.
 </tr>
 <tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
 <dt>fmt <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">the format of the response one of ExecutionOutputFormat.values (default: &#8216;text&#8217;)</p>
+<dd><p class="first last">the format of the response one of <a class="reference internal" href="#rundeck.defaults.ExecutionOutputFormat" title="rundeck.defaults.ExecutionOutputFormat"><tt class="xref py py-class docutils literal"><span class="pre">ExecutionOutputFormat</span></tt></a>
+<tt class="docutils literal"><span class="pre">values</span></tt> (default: &#8216;text&#8217;)</p>
 </dd>
 <dt>offset <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">byte offset to read from in the file, 0 indicates the beginning</p>
@@ -294,7 +371,7 @@ when HTTP status codes are returned. Probably don&#8217;t want/need to use this.
 </tr>
 <tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
 <dt>statusFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">one of Status.values</p>
+<dd><p class="first last">one of <a class="reference internal" href="#rundeck.defaults.Status" title="rundeck.defaults.Status"><tt class="xref py py-class docutils literal"><span class="pre">Status</span></tt></a> <tt class="docutils literal"><span class="pre">values</span></tt></p>
 </dd>
 <dt>abortedbyFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">user name that aborted the execution</p>
@@ -366,10 +443,10 @@ jobs only</p>
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -391,10 +468,10 @@ jobs only</p>
 </dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -427,7 +504,7 @@ jobs only</p>
 <dd><p class="first last">include events created by user</p>
 </dd>
 <dt>statFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">one of Status.values</p>
+<dd><p class="first last">one of <a class="reference internal" href="#rundeck.defaults.Status" title="rundeck.defaults.Status"><tt class="xref py py-class docutils literal"><span class="pre">Status</span></tt></a> <tt class="docutils literal"><span class="pre">values</span></tt></p>
 </dd>
 <dt>jobListFilter <span class="classifier-delimiter">:</span> <span class="classifier">str | list</span></dt>
 <dd><p class="first last">one or more full job group/name to include</p>
@@ -464,10 +541,10 @@ time; the format is &#8220;XY&#8221; where &#8216;X&#8217; is an integer and &#8
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -491,7 +568,8 @@ time; the format is &#8220;XY&#8221; where &#8216;X&#8217; is an integer and &#8
 </tr>
 <tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
 <dt>fmt <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">the format of the response one of JobDefFormat.values (default: &#8216;xml&#8217;)</p>
+<dd><p class="first last">the format of the response one of <a class="reference internal" href="#rundeck.defaults.JobDefFormat" title="rundeck.defaults.JobDefFormat"><tt class="xref py py-class docutils literal"><span class="pre">JobDefFormat</span></tt></a> <tt class="docutils literal"><span class="pre">values</span></tt>
+(default: &#8216;xml&#8217;)</p>
 </dd>
 </dl>
 </td>
@@ -523,7 +601,7 @@ time; the format is &#8220;XY&#8221; where &#8216;X&#8217; is an integer and &#8
 </tr>
 <tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
 <dt>status <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">one of Status.values</p>
+<dd><p class="first last">one of <a class="reference internal" href="#rundeck.defaults.Status" title="rundeck.defaults.Status"><tt class="xref py py-class docutils literal"><span class="pre">Status</span></tt></a> <tt class="docutils literal"><span class="pre">values</span></tt></p>
 </dd>
 <dt>max <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">maximum number of results to include in response (default: 20)</p>
@@ -534,10 +612,10 @@ time; the format is &#8220;XY&#8221; where &#8216;X&#8217; is an integer and &#8
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -618,10 +696,10 @@ else if dict will be converted to compatible string</p>
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -663,10 +741,10 @@ or &#8220;*&#8221; for all groups or &#8220;-&#8221; to match top level jobs onl
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -688,10 +766,10 @@ or &#8220;*&#8221; for all groups or &#8220;-&#8221; to match top level jobs onl
 </dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -774,10 +852,10 @@ exists</p>
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -799,10 +877,10 @@ exists</p>
 </dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse`</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse`</span></tt></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -852,10 +930,10 @@ char &#8216;-&#8216;</p>
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -879,7 +957,8 @@ char &#8216;-&#8216;</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
 <dt>fmt <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">the format of the response one of ExecutionOutputFormat.values (default: &#8216;text&#8217;)</p>
+<dd><p class="first last">the format of the response one of <a class="reference internal" href="#rundeck.defaults.ExecutionOutputFormat" title="rundeck.defaults.ExecutionOutputFormat"><tt class="xref py py-class docutils literal"><span class="pre">ExecutionOutputFormat</span></tt></a>
+<tt class="docutils literal"><span class="pre">values</span></tt> (default: &#8216;text&#8217;)</p>
 </dd>
 <dt>hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">hostname inclusion filter</p>
@@ -926,10 +1005,10 @@ char &#8216;-&#8216;</p>
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -955,10 +1034,10 @@ the configured provider URL in the <cite>project.properties</cite> file will be 
 </dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -983,10 +1062,10 @@ the configured provider URL in the <cite>project.properties</cite> file will be 
 </dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -1001,9 +1080,9 @@ the configured provider URL in the <cite>project.properties</cite> file will be 
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A RundeckResponse</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">RundeckResponse</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></td>
 </tr>
 </tbody>
 </table>
@@ -1083,10 +1162,10 @@ permission</p>
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -1178,10 +1257,10 @@ scriptInterpreter (requires API version 8 or higher)</p>
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -1273,10 +1352,10 @@ scriptInterpreter (requires API version 8 or higher)</p>
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
 </td>
 </tr>
 </tbody>
@@ -1291,9 +1370,9 @@ scriptInterpreter (requires API version 8 or higher)</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A RundeckResponse</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">RundeckResponse</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></td>
 </tr>
 </tbody>
 </table>
@@ -1349,6 +1428,59 @@ scriptInterpreter (requires API version 8 or higher)</p>
 </tbody>
 </table>
 <dl class="method">
+<dt id="rundeck.api.RundeckNode.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>hostname</em>, <em>username</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.api.RundeckNode.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a RundeckNode instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the node</p>
+</dd>
+<dt>hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname of the node</p>
+</dd>
+<dt>username <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">username used for the remote connection</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first last docutils">
+<dt>description <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">node description</p>
+</dd>
+<dt>osArch <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the node&#8217;s operating system architecture</p>
+</dd>
+<dt>osFamily <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the node&#8217;s operating system system family</p>
+</dd>
+<dt>osName <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the node&#8217;s operating system name</p>
+</dd>
+<dt>tags <span class="classifier-delimiter">:</span> <span class="classifier">list(str, ...)</span></dt>
+<dd><p class="first last">a list of filtering tags</p>
+</dd>
+<dt>editUrl <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">URL to an external resource model editor service</p>
+</dd>
+<dt>remoteUrl <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">URL to an external resource model service</p>
+</dd>
+<dt>attributes <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first last">a dictionary of name/value pairs to be used as node attributes</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="rundeck.api.RundeckNode.serialize">
 <tt class="descname">serialize</tt><big>(</big><big>)</big><a class="headerlink" href="#rundeck.api.RundeckNode.serialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>serializes the instance to XML</p>
@@ -1364,6 +1496,11 @@ scriptInterpreter (requires API version 8 or higher)</p>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="rundeck.api.RundeckNode.xml">
+<tt class="descname">xml</tt><em class="property"> None</em><a class="headerlink" href="#rundeck.api.RundeckNode.xml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="function">
@@ -1372,7 +1509,10 @@ scriptInterpreter (requires API version 8 or higher)</p>
 <dd><p>Raises a NotImplementedError if the api_version of the connection isn&#8217;t sufficient</p>
 </dd></dl>
 
-<span class="target" id="module-rundeck.client"></span><table class="docutils field-list" frame="void" rules="none">
+</div>
+<div class="section" id="module-rundeck.client">
+<span id="rundeck-client"></span><h2>rundeck.client<a class="headerlink" href="#module-rundeck.client" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -1388,6 +1528,1272 @@ scriptInterpreter (requires API version 8 or higher)</p>
 </tr>
 </tbody>
 </table>
+<dl class="class">
+<dt id="rundeck.client.Rundeck">
+<em class="property">class </em><tt class="descclassname">rundeck.client.</tt><tt class="descname">Rundeck</tt><big>(</big><em>server='localhost'</em>, <em>protocol='http'</em>, <em>port=4440</em>, <em>api_token=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="rundeck.client.Rundeck.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>server='localhost'</em>, <em>protocol='http'</em>, <em>port=4440</em>, <em>api_token=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a Rundeck API Client</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>server <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname of the Rundeck server (default: localhost)</p>
+</dd>
+<dt>protocol <span class="classifier-delimiter">:</span> <span class="classifier">str (&#8216;http&#8217;|&#8217;https&#8217;)</span></dt>
+<dd><p class="first last">(default: &#8216;http&#8217;)</p>
+</dd>
+<dt>port <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Rundeck server port (default: 4440)</p>
+</dd>
+<dt>api_token <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">valid Rundeck user API token</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first last docutils">
+<dt>usr <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck user name (used in place of api_token)</p>
+</dd>
+<dt>pwd <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck user password (used in combo with usr)</p>
+</dd>
+<dt>api_version <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Rundeck API version</p>
+</dd>
+<dt>api <span class="classifier-delimiter">:</span> <span class="classifier">RundeckApi</span></dt>
+<dd><p class="first last">an instance of a RundeckApi or subclass of RundeckApi</p>
+</dd>
+<dt>connection <span class="classifier-delimiter">:</span> <span class="classifier">RundeckConnection</span></dt>
+<dd><p class="first last">an instance of a RundeckConnection or instance of a subclass of RundeckConnection</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.abort_execution">
+<tt class="descname">abort_execution</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.abort_execution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abort a running Job Execution</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>execution_id <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck Job Execution ID</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>asUser <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specifies a username identifying the user who aborted the execution</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">abort status information</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.delete_job">
+<tt class="descname">delete_job</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.delete_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a job</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>job_id <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck Job ID</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">success</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.delete_jobs">
+<tt class="descname">delete_jobs</tt><big>(</big><em>idlist</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.delete_jobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bulk Job delete</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>idlist <span class="classifier-delimiter">:</span> <span class="classifier">str | list(str, ...)</span></dt>
+<dd><p class="first last">a list of job ids or a string of comma seperated job ids to delete</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">results of the bulk delete with details</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example Response:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+<span class="s">&#39;requestCount&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+<span class="s">&#39;allsuccessful&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+<span class="s">&#39;succeeded&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="s">&#39;1234-123-123-12345&#39;</span><span class="p">,</span>
+    <span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="s">&#39;success&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="s">&#39;failed&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="s">&#39;9876-986-987-98765&#39;</span><span class="p">,</span>
+    <span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="s">&#39;Job ID 9876-986-987-98765 does not exist&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.execution_status">
+<tt class="descname">execution_status</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.execution_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the status of an execution</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>execution_id <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Rundeck Job Execution ID</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">an Execution</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.export_job">
+<tt class="descname">export_job</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.export_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export a job definition in XML or YAML format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>job_id <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck Job ID</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>fmt <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the format of the response one of JobDefFormat.values (default: &#8216;xml&#8217;)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a Job definition</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.get_execution_output">
+<tt class="descname">get_execution_output</tt><big>(</big><em>execution_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.get_execution_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the output for an execution in various formats</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>execution_id <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck Job Execution ID</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>fmt <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the format of the response one of ExecutionOutputFormat.values (default: &#8216;json&#8217;)</p>
+</dd>
+<dt>raw <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">return the results of the Execution output request unmodified (default: False)</p>
+</dd>
+<dt>offset <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">byte offset to read from in the file, 0 indicates the beginning</p>
+</dd>
+<dt>lastlines <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">number of lines to retrieve from the end of the available output, overrides offset</p>
+</dd>
+<dt>lastmod <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">a unix millisecond timestamp; return output data received after this timestamp</p>
+</dd>
+<dt>maxlines <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">maximum number of lines to retrieve forward from the specified offset</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Execution output</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str | dict | RundeckResponse</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.get_job_id">
+<tt class="descname">get_job_id</tt><big>(</big><em>project</em>, <em>name=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.get_job_id" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Fetch a Job ID that matches the filter criterea specified</dt>
+<dd><dl class="first last docutils">
+<dt><strong>WARNING</strong>: if there is more than one job that matches the specified criteria, this</dt>
+<dd>will return the first job that Rundeck server includes in the list of matches</dd>
+</dl>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the name of a project</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>idlist <span class="classifier-delimiter">:</span> <span class="classifier">str | list(str, ...)</span></dt>
+<dd><p class="first last">specify a comma-separated string or a list of Job IDs to include</p>
+</dd>
+<dt>groupPath <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify a group or partial group path to include all jobs within that group path
+or &#8220;*&#8221; for all groups or &#8220;-&#8221; to match top level jobs only (default: &#8220;*&#8221;)</p>
+</dd>
+<dt>jobFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify a job name filter; will match any job name that contains this string</p>
+</dd>
+<dt>jobExactFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify an exact job name to match</p>
+</dd>
+<dt>groupPathExact <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify an exact group path to match or &#8220;-&#8221; to match the top level jobs only</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a Rundeck Job ID</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.get_job_ids">
+<tt class="descname">get_job_ids</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.get_job_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch a list of Job IDs that match the filter criterea specified</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the name of a project</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>limit <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">limit the result set to 1 or more jobs</p>
+</dd>
+<dt>idlist <span class="classifier-delimiter">:</span> <span class="classifier">str | list(str, ...)</span></dt>
+<dd><p class="first last">specify a comma-separated string or a list of Job IDs to include</p>
+</dd>
+<dt>groupPath <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify a group or partial group path to include all jobs within that group path
+or &#8220;*&#8221; for all groups or &#8220;-&#8221; to match top level jobs only (default: &#8220;*&#8221;)</p>
+</dd>
+<dt>jobFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify a job name filter; will match any job name that contains this string</p>
+</dd>
+<dt>jobExactFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify an exact job name to match</p>
+</dd>
+<dt>groupPathExact <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify an exact group path to match or &#8220;-&#8221; to match the top level jobs only</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a list of Job IDs</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.get_project">
+<tt class="descname">get_project</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.get_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch a project details</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the name of a project</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">detailed information about a project</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.get_project_history">
+<tt class="descname">get_project_history</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.get_project_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>List history events for a project</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the project</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>jobIdFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">include event for a job ID</p>
+</dd>
+<dt>reportIdFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">include events for an event name</p>
+</dd>
+<dt>userFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">include events created by user</p>
+</dd>
+<dt>statFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">one of Status.values</p>
+</dd>
+<dt>jobListFilter <span class="classifier-delimiter">:</span> <span class="classifier">str | list</span></dt>
+<dd><p class="first last">one or more full job group/name to include</p>
+</dd>
+<dt>excludeJobListFilter <span class="classifier-delimiter">:</span> <span class="classifier">str | list</span></dt>
+<dd><p class="first last">one or more full job group/name to include</p>
+</dd>
+<dt>recentFilter | str</dt>
+<dd><p class="first">Use a simple text format to filter executions that completed within a period of
+time; the format is &#8220;XY&#8221; where &#8216;X&#8217; is an integer and &#8216;Y&#8217; is one of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><cite>h</cite>:hour</li>
+<li><cite>d</cite>:day</li>
+<li><cite>w</cite>:week</li>
+<li><cite>m</cite>:month</li>
+<li><cite>y</cite>:year</li>
+</ul>
+</div></blockquote>
+<p class="last">So a value of &#8220;2w&#8221; would return executions that completed within the last two weeks</p>
+</dd>
+<dt>begin <span class="classifier-delimiter">:</span> <span class="classifier">int | str</span></dt>
+<dd><p class="first last">either a unix millisecond timestamp or a W3C dateTime &#8220;yyyy-MM-ddTHH:mm:ssZ&#8221;</p>
+</dd>
+<dt>end <span class="classifier-delimiter">:</span> <span class="classifier">int | str</span></dt>
+<dd><p class="first last">either a unix millisecond timestamp or a W3C dateTime &#8220;yyyy-MM-ddTHH:mm:ssZ&#8221;</p>
+</dd>
+<dt>max <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">maximum number of results to include in response (default: 20)</p>
+</dd>
+<dt>offset <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">offset for result set (default: 0)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A RundeckResponse</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RundeckResponse</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.import_job">
+<tt class="descname">import_job</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.import_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import a job definition string in XML or YAML format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>definition <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">a string representing a job definition</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>fmt <span class="classifier-delimiter">:</span> <span class="classifier">str (&#8216;xml&#8217;|&#8217;yaml&#8217;)</span></dt>
+<dd><p class="first last">format of the definition string (default: &#8216;xml&#8217;)</p>
+</dd>
+<dt>dupeOption <span class="classifier-delimiter">:</span> <span class="classifier">str (&#8216;skip&#8217;|&#8217;create&#8217;|&#8217;update&#8217;)</span></dt>
+<dd><p class="first last">a value to indicate the behavior when importing jobs which already exist
+(default: &#8216;create&#8217;)</p>
+</dd>
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify the project that all job definitions should be imported to otherwise all
+job definitions must define a project</p>
+</dd>
+<dt>uuidOption <span class="classifier-delimiter">:</span> <span class="classifier">str (&#8216;preserve&#8217;|&#8217;remove&#8217;)</span></dt>
+<dd><p class="first last">preserve or remove UUIDs in imported jobs - preserve may fail if a UUID already
+exists</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the results of the job import</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.import_job_file">
+<tt class="descname">import_job_file</tt><big>(</big><em>file_path</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.import_job_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in the contents of a job definition file for import</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>file_path <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the path to a readable job definition file</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>file_format <span class="classifier-delimiter">:</span> <span class="classifier">str (&#8216;xml&#8217;|&#8217;yaml&#8217;)</span></dt>
+<dd><p class="first last">if not specified it will be derived from the file extension (default: &#8216;xml&#8217;)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises IOError:</th><td class="field-body"><p class="first">raised if job definition file can not be found or is not readable</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a dict object representing a set of Rundeck status messages</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.jobs_export">
+<tt class="descname">jobs_export</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.jobs_export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export a the job definitions for a project in XML or YAML format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the project</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>fmt <span class="classifier-delimiter">:</span> <span class="classifier">str (&#8216;xml&#8217;|&#8217;yaml&#8217;)</span></dt>
+<dd><p class="first last">format of the definition string (default: &#8216;xml&#8217;)</p>
+</dd>
+<dt>idlist <span class="classifier-delimiter">:</span> <span class="classifier">list(str, ...)</span></dt>
+<dd><p class="first last">a list of job ids to return</p>
+</dd>
+<dt>groupPath <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">a group path, partial group path or the special top level only
+char &#8216;-&#8216;</p>
+</dd>
+<dt>jobFilter: str</dt>
+<dd><p class="first last">find job names that include this string</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a job definition</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.list_job_executions">
+<tt class="descname">list_job_executions</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.list_job_executions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of executions of a Job</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>job <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">A Job ID</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>status <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">one of Status.values</p>
+</dd>
+<dt>max <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">maximum number of results to include in response (default: 20)</p>
+</dd>
+<dt>offset <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">offset for result set (default: 0)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a list of Job Executions</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list(dict, ...)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.list_jobs">
+<tt class="descname">list_jobs</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.list_jobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch a listing of jobs for a project</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the name of a project</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>limit <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">limit the result set to 1 or more jobs</p>
+</dd>
+<dt>idlist <span class="classifier-delimiter">:</span> <span class="classifier">str | list(str, ...)</span></dt>
+<dd><p class="first last">specify a comma-separated string or a list of Job IDs to include</p>
+</dd>
+<dt>groupPath <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify a group or partial group path to include all jobs within that group path
+or &#8220;*&#8221; for all groups or &#8220;-&#8221; to match top level jobs only (default: &#8220;*&#8221;)</p>
+</dd>
+<dt>jobFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify a job name filter; will match any job name that contains this string</p>
+</dd>
+<dt>jobExactFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify an exact job name to match</p>
+</dd>
+<dt>groupPathExact <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specify an exact group path to match or &#8220;-&#8221; to match the top level jobs only</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a list of Jobs</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list(dict, ...)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.list_project_resources">
+<tt class="descname">list_project_resources</tt><big>(</big><em>project</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.list_project_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the list of resources for a project. If <cite>fmt</cite> is unspecified, a python
+dictionary will be returned</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the project</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>fmt <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><dl class="first last docutils">
+<dt>the format of the response, either &#8216;python&#8217; (dict), &#8216;xml&#8217; or &#8216;yaml&#8217;</dt>
+<dd><p class="first last">(default: &#8216;python&#8217;)</p>
+</dd>
+</dl>
+</dd>
+<dt>hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname inclusion filter</p>
+</dd>
+<dt>tags <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">tags inclusion filter</p>
+</dd>
+<dt>os-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-name inclusion filter</p>
+</dd>
+<dt>os-family <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-family inclusion filter</p>
+</dd>
+<dt>os-arch <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-arch inclusion filter</p>
+</dd>
+<dt>os-version <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-version inclusion filter</p>
+</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name inclusion filter</p>
+</dd>
+<dt>exlude-hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname exclusion filter</p>
+</dd>
+<dt>exlude-tags <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">tags exclusion filter</p>
+</dd>
+<dt>exlude-os-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-name exclusion filter</p>
+</dd>
+<dt>exlude-os-family <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-family exclusion filter</p>
+</dd>
+<dt>exlude-os-arch <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-arch exclusion filter</p>
+</dd>
+<dt>exlude-os-version <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-version exclusion filter</p>
+</dd>
+<dt>exlude-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name exclusion filter</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of resources or a string representing the requested resources in the
+requested format</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list({&#8216;name&#8217;: str, &#8216;hostname&#8217;: str, &#8216;username&#8217;: str)) | str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.list_projects">
+<tt class="descname">list_projects</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.list_projects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of projects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of Rundeck projects</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list(dict, ...)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.list_running_executions">
+<tt class="descname">list_running_executions</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.list_running_executions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve running executions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the name of a project (use &#8220;*&#8221; for all projects - API v9+ required)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a list of Job Executions</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list(dict, ...)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.query_executions">
+<tt class="descname">query_executions</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.query_executions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execution query</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the project</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>statusFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">one of Status.values</p>
+</dd>
+<dt>abortedbyFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">user name that aborted the execution</p>
+</dd>
+<dt>userFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">user name that initiated the execution</p>
+</dd>
+<dt>recentFilter | str</dt>
+<dd><p class="first">Use a simple text format to filter executions that completed within a period of
+time; the format is &#8220;XY&#8221; where &#8216;X&#8217; is an integer and &#8216;Y&#8217; is one of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><cite>h</cite>:hour</li>
+<li><cite>d</cite>:day</li>
+<li><cite>w</cite>:week</li>
+<li><cite>m</cite>:month</li>
+<li><cite>y</cite>:year</li>
+</ul>
+</div></blockquote>
+<p class="last">So a value of &#8220;2w&#8221; would return executions that completed within the last two weeks</p>
+</dd>
+<dt>begin <span class="classifier-delimiter">:</span> <span class="classifier">int | str</span></dt>
+<dd><p class="first last">either a unix millisecond timestamp or a W3C dateTime &#8220;yyyy-MM-ddTHH:mm:ssZ&#8221;</p>
+</dd>
+<dt>end <span class="classifier-delimiter">:</span> <span class="classifier">int | str</span></dt>
+<dd><p class="first last">either a unix millisecond timestamp or a W3C dateTime &#8220;yyyy-MM-ddTHH:mm:ssZ&#8221;</p>
+</dd>
+<dt>adhoc <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">includes adhoc executions</p>
+</dd>
+<dt>jobIdListFilter <span class="classifier-delimiter">:</span> <span class="classifier">str | list</span></dt>
+<dd><p class="first last">one or more job ids to include</p>
+</dd>
+<dt>excludeJobIdListFilter <span class="classifier-delimiter">:</span> <span class="classifier">str | list</span></dt>
+<dd><p class="first last">one or more job ids to exclude</p>
+</dd>
+<dt>jobListFilter <span class="classifier-delimiter">:</span> <span class="classifier">str | list</span></dt>
+<dd><p class="first last">one or more full job group/name to include</p>
+</dd>
+<dt>excludeJobListFilter <span class="classifier-delimiter">:</span> <span class="classifier">str | list</span></dt>
+<dd><p class="first last">one or more full job group/name to include</p>
+</dd>
+<dt>groupPath <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">a group or partial group path to include, special &#8220;-&#8221; setting matches top level
+jobs only</p>
+</dd>
+<dt>groupPathExact <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">an exact group path to include, special &#8220;-&#8221; setting matches top level jobs only</p>
+</dd>
+<dt>excludeGroupPath <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">a group or partial group path to exclude, special &#8220;-&#8221; setting matches top level
+jobs only</p>
+</dd>
+<dt>excludeGroupPathExact <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">an exact group path to exclude, special &#8220;-&#8221; setting matches top level jobs only</p>
+</dd>
+<dt>jobExactFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">an exact job name</p>
+</dd>
+<dt>exludeJobExactFilter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">an exact job name to exclude</p>
+</dd>
+<dt>max <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">maximum number of results to include in response (default: 20)</p>
+</dd>
+<dt>offset <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">offset for result set (default: 0)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a list of Job Executions</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list(dict, ...)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.refresh_project_resources">
+<tt class="descname">refresh_project_resources</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.refresh_project_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the resources for a project via its Resource Model Provider URL</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the project</p>
+</dd>
+<dt>providerURL <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Specify the Resource Model Provider URL to refresh the resources from; otherwise
+the configured provider URL in the <cite>project.properties</cite> file will be used</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">success message</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.run_adhoc_command">
+<tt class="descname">run_adhoc_command</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.run_adhoc_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a command</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the project</p>
+</dd>
+<dt>command <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the shell command string to run</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>nodeThreadcount <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">the number of threads to use</p>
+</dd>
+<dt>nodeKeepgoing <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">if True, continue executing on other nodes even if some fail</p>
+</dd>
+<dt>asUser <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specifies a username identifying the user who ran the command; requires runAs
+permission</p>
+</dd>
+<dt>hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname inclusion filter</p>
+</dd>
+<dt>tags <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">tags inclusion filter</p>
+</dd>
+<dt>os-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-name inclusion filter</p>
+</dd>
+<dt>os-family <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-family inclusion filter</p>
+</dd>
+<dt>os-arch <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-arch inclusion filter</p>
+</dd>
+<dt>os-version <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-version inclusion filter</p>
+</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name inclusion filter</p>
+</dd>
+<dt>exlude-hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname exclusion filter</p>
+</dd>
+<dt>exlude-tags <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">tags exclusion filter</p>
+</dd>
+<dt>exlude-os-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-name exclusion filter</p>
+</dd>
+<dt>exlude-os-family <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-family exclusion filter</p>
+</dd>
+<dt>exlude-os-arch <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-arch exclusion filter</p>
+</dd>
+<dt>exlude-os-version <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-version exclusion filter</p>
+</dd>
+<dt>exlude-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name exclusion filter</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Execution ID</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.run_adhoc_script">
+<tt class="descname">run_adhoc_script</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.run_adhoc_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a script downloaded from a URL</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the project</p>
+</dd>
+<dt>scriptFile <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">a string containing the script file content</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>argString <span class="classifier-delimiter">:</span> <span class="classifier">str | dict</span></dt>
+<dd><p class="first last">argument string to pass to job - if str, will be passed as-is
+else if dict will be converted to compatible string</p>
+</dd>
+<dt>nodeThreadcount <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">the number of threads to use</p>
+</dd>
+<dt>nodeKeepgoing <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">if True, continue executing on other nodes even if some fail</p>
+</dd>
+<dt>asUser <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specifies a username identifying the user who ran the command; requires runAs
+permission</p>
+</dd>
+<dt>scriptInterpreter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">a command to use to run the script (requires API version 8 or higher)</p>
+</dd>
+<dt>interpreterArgsQuoted <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">if True the script file and arguments will be quoted as the last argument to the
+scriptInterpreter (requires API version 8 or higher)</p>
+</dd>
+<dt>hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname inclusion filter</p>
+</dd>
+<dt>tags <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">tags inclusion filter</p>
+</dd>
+<dt>os-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-name inclusion filter</p>
+</dd>
+<dt>os-family <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-family inclusion filter</p>
+</dd>
+<dt>os-arch <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-arch inclusion filter</p>
+</dd>
+<dt>os-version <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-version inclusion filter</p>
+</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name inclusion filter</p>
+</dd>
+<dt>exlude-hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname exclusion filter</p>
+</dd>
+<dt>exlude-tags <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">tags exclusion filter</p>
+</dd>
+<dt>exlude-os-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-name exclusion filter</p>
+</dd>
+<dt>exlude-os-family <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-family exclusion filter</p>
+</dd>
+<dt>exlude-os-arch <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-arch exclusion filter</p>
+</dd>
+<dt>exlude-os-version <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-version exclusion filter</p>
+</dd>
+<dt>exlude-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name exclusion filter</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Execution ID</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.run_adhoc_url">
+<tt class="descname">run_adhoc_url</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.run_adhoc_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a script downloaded from a URL</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the project</p>
+</dd>
+<dt>scriptUrl <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">a URL referencing a script to download and run</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>argString <span class="classifier-delimiter">:</span> <span class="classifier">str | dict</span></dt>
+<dd><p class="first last">argument string to pass to job - if str, will be passed as-is
+else if dict will be converted to compatible string</p>
+</dd>
+<dt>nodeThreadcount <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">the number of threads to use</p>
+</dd>
+<dt>nodeKeepgoing <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">if True, continue executing on other nodes even if some fail</p>
+</dd>
+<dt>asUser <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">specifies a username identifying the user who ran the command; requires runAs
+permission</p>
+</dd>
+<dt>scriptInterpreter <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">a command to use to run the script (requires API version 8 or higher)</p>
+</dd>
+<dt>interpreterArgsQuoted <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">if True the script file and arguments will be quoted as the last argument to the
+scriptInterpreter (requires API version 8 or higher)</p>
+</dd>
+<dt>hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname inclusion filter</p>
+</dd>
+<dt>tags <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">tags inclusion filter</p>
+</dd>
+<dt>os-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-name inclusion filter</p>
+</dd>
+<dt>os-family <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-family inclusion filter</p>
+</dd>
+<dt>os-arch <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-arch inclusion filter</p>
+</dd>
+<dt>os-version <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-version inclusion filter</p>
+</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name inclusion filter</p>
+</dd>
+<dt>exlude-hostname <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname exclusion filter</p>
+</dd>
+<dt>exlude-tags <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">tags exclusion filter</p>
+</dd>
+<dt>exlude-os-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-name exclusion filter</p>
+</dd>
+<dt>exlude-os-family <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-family exclusion filter</p>
+</dd>
+<dt>exlude-os-arch <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-arch exclusion filter</p>
+</dd>
+<dt>exlude-os-version <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">os-version exclusion filter</p>
+</dd>
+<dt>exlude-name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name exclusion filter</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Execution ID</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.run_job">
+<tt class="descname">run_job</tt><big>(</big><em>job_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.run_job" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Wraps job_run method and implements a blocking mechanism to wait for the job to</dt>
+<dd><p class="first">complete (within reason, i.e. timeout and interval)</p>
+<p class="last">See Rundeck.job_run docstring for additional keyword args</p>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>job_id <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck Job ID</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first docutils">
+<dt>timeout <span class="classifier-delimiter">:</span> <span class="classifier">int | float</span></dt>
+<dd><p class="first last">how many seconds to wait for a completed status (default: 60)</p>
+</dd>
+<dt>interval <span class="classifier-delimiter">:</span> <span class="classifier">int | float</span></dt>
+<dd><p class="first last">how many seconds to sleep between polling cycles (default: 3)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Details about the Job Execution</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.system_info">
+<tt class="descname">system_info</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.system_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Rundeck Server System Info</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a dict object representing the Rundeck system information</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.client.Rundeck.update_project_resources">
+<tt class="descname">update_project_resources</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.client.Rundeck.update_project_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the resources for a project</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>project <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">name of the project</p>
+</dd>
+<dt>nodes <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">a list of nodes in the form of a three tuple (<cite>(name, hostname, username)</cite>) or
+a dictionary at least the following keys &#8216;name&#8217;, &#8216;hostname&#8217; and &#8216;username&#8217;</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">success message</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="rundeck.client.is_job_id">
 <tt class="descclassname">rundeck.client.</tt><tt class="descname">is_job_id</tt><big>(</big><em>job_id</em><big>)</big><a class="headerlink" href="#rundeck.client.is_job_id" title="Permalink to this definition">¶</a></dt>
@@ -1414,7 +2820,10 @@ so be prepared for false negatives if you customize your job ids.</dd>
 </table>
 </dd></dl>
 
-<span class="target" id="module-rundeck.connection"></span><table class="docutils field-list" frame="void" rules="none">
+</div>
+<div class="section" id="module-rundeck.connection">
+<span id="rundeck-connection"></span><h2>rundeck.connection<a class="headerlink" href="#module-rundeck.connection" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -1432,7 +2841,264 @@ so be prepared for false negatives if you customize your job ids.</dd>
 </tr>
 </tbody>
 </table>
-<span class="target" id="module-rundeck.defaults"></span><table class="docutils field-list" frame="void" rules="none">
+<dl class="class">
+<dt id="rundeck.connection.RundeckConnection">
+<em class="property">class </em><tt class="descclassname">rundeck.connection.</tt><tt class="descname">RundeckConnection</tt><big>(</big><em>server='localhost'</em>, <em>protocol='http'</em>, <em>port=4440</em>, <em>api_token=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="rundeck.connection.RundeckConnection.request">
+<tt class="descname">request</tt><big>(</big><em>method</em>, <em>url</em>, <em>params=None</em>, <em>headers=None</em>, <em>data=None</em>, <em>files=None</em>, <em>quiet=False</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnection.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to call raise_for_status forcing non-successful HTTP responses to bubble up as
+as exceptions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>method <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the HTTP request method</p>
+</dd>
+<dt>url <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">API URL</p>
+</dd>
+<dt>params <span class="classifier-delimiter">:</span> <span class="classifier">dict({str: str, ...})</span></dt>
+<dd><p class="first last">a dict of query string params (default: None)</p>
+</dd>
+<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the url encoded payload necessary for some commands (default: None)</p>
+</dd>
+<dt>files <span class="classifier-delimiter">:</span> <span class="classifier">dict({str: str, ...})</span></dt>
+<dd><p class="first last">a dict of files to upload (default: None)</p>
+</dd>
+<dt>quiet <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">suppress calling raise_for_status (default: False)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rundeck.connection.RundeckConnectionTolerant">
+<em class="property">class </em><tt class="descclassname">rundeck.connection.</tt><tt class="descname">RundeckConnectionTolerant</tt><big>(</big><em>server='localhost'</em>, <em>protocol='http'</em>, <em>port=4440</em>, <em>api_token=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnectionTolerant" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="rundeck.connection.RundeckConnectionTolerant.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>server='localhost'</em>, <em>protocol='http'</em>, <em>port=4440</em>, <em>api_token=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnectionTolerant.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a Rundeck API client connection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>server <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">hostname of the Rundeck server (default: localhost)</p>
+</dd>
+<dt>protocol <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">either http or https (default: &#8216;http&#8217;)</p>
+</dd>
+<dt>port <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Rundeck server port (default: 4440)</p>
+</dd>
+<dt>api_token <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last"><em>**Preferred method of authentication</em> - valid Rundeck user API token
+(default: None)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first last docutils">
+<dt>usr <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck user name (used in place of api_token)</p>
+</dd>
+<dt>pwd <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Rundeck user password (used in combo with usr)</p>
+</dd>
+<dt>api_version <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Rundeck API version</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.connection.RundeckConnectionTolerant.call">
+<tt class="descname">call</tt><big>(</big><em>method</em>, <em>url</em>, <em>params=None</em>, <em>headers=None</em>, <em>data=None</em>, <em>files=None</em>, <em>parse_response=True</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnectionTolerant.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format the URL in preparation for making the HTTP request and return a
+RundeckResponse if requested/necessary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>method <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the HTTP request method</p>
+</dd>
+<dt>url <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">API URL</p>
+</dd>
+<dt>params <span class="classifier-delimiter">:</span> <span class="classifier">dict({str: str, ...})</span></dt>
+<dd><p class="first last">a dict of query string params (default: None)</p>
+</dd>
+<dt>headers <span class="classifier-delimiter">:</span> <span class="classifier">dict({str: str, ...})</span></dt>
+<dd><p class="first last">a dict of HTTP headers</p>
+</dd>
+<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the XML or YAML payload necessary for some commands
+(default: None)</p>
+</dd>
+<dt>files <span class="classifier-delimiter">:</span> <span class="classifier">dict({str: str, ...})</span></dt>
+<dd><p class="first last">a dict of files to upload</p>
+</dd>
+<dt>parse_response <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">parse the response as an xml message</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><p class="first"><strong>passed along to RundeckConnection.request</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.connection.RundeckConnectionTolerant.make_url">
+<tt class="descname">make_url</tt><big>(</big><em>api_url</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnectionTolerant.make_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a valid Rundeck URL based on the API and the base url of
+the RundeckConnection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>api_url <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the Rundeck API URL</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">full Rundeck API URL</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.connection.RundeckConnectionTolerant.request">
+<tt class="descname">request</tt><big>(</big><em>method</em>, <em>url</em>, <em>params=None</em>, <em>headers=None</em>, <em>data=None</em>, <em>files=None</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnectionTolerant.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the HTTP request to Rundeck</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>method <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the HTTP request method</p>
+</dd>
+<dt>url <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">API URL</p>
+</dd>
+<dt>params <span class="classifier-delimiter">:</span> <span class="classifier">dict({str: str, ...})</span></dt>
+<dd><p class="first last">a dict of query string params (default: None)</p>
+</dd>
+<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the url encoded payload necessary for some commands (default: None)</p>
+</dd>
+<dt>files <span class="classifier-delimiter">:</span> <span class="classifier">dict({str: str, ...})</span></dt>
+<dd><p class="first last">a dict of files to upload</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rundeck.connection.RundeckResponse">
+<em class="property">class </em><tt class="descclassname">rundeck.connection.</tt><tt class="descname">RundeckResponse</tt><big>(</big><em>response</em>, <em>as_dict_method=None</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckResponse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="rundeck.connection.RundeckResponse.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>response</em>, <em>as_dict_method=None</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckResponse.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses an XML string into a convenient Python object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt>response <span class="classifier-delimiter">:</span> <span class="classifier">requests.Response</span></dt>
+<dd><p class="first last">an instance of the requests.Response returned by the associated command request</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.connection.RundeckResponse.api_version">
+<tt class="descname">api_version</tt><em class="property"> None</em><a class="headerlink" href="#rundeck.connection.RundeckResponse.api_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.connection.RundeckResponse.as_dict">
+<tt class="descname">as_dict</tt><em class="property"> None</em><a class="headerlink" href="#rundeck.connection.RundeckResponse.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.connection.RundeckResponse.message">
+<tt class="descname">message</tt><em class="property"> None</em><a class="headerlink" href="#rundeck.connection.RundeckResponse.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rundeck.connection.RundeckResponse.pprint">
+<tt class="descname">pprint</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckResponse.pprint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rundeck.connection.RundeckResponse.raise_for_error">
+<tt class="descname">raise_for_error</tt><big>(</big><em>msg=None</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckResponse.raise_for_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.connection.RundeckResponse.success">
+<tt class="descname">success</tt><em class="property"> None</em><a class="headerlink" href="#rundeck.connection.RundeckResponse.success" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rundeck.connection.memoize">
+<tt class="descclassname">rundeck.connection.</tt><tt class="descname">memoize</tt><big>(</big><em>obj</em><big>)</big><a class="headerlink" href="#rundeck.connection.memoize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-rundeck.defaults">
+<span id="rundeck-defaults"></span><h2>rundeck.defaults<a class="headerlink" href="#module-rundeck.defaults" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -1448,7 +3114,170 @@ so be prepared for false negatives if you customize your job ids.</dd>
 </tr>
 </tbody>
 </table>
-<span class="target" id="module-rundeck.exceptions"></span><table class="docutils field-list" frame="void" rules="none">
+<dl class="class">
+<dt id="rundeck.defaults.DupeOption">
+<em class="property">class </em><tt class="descclassname">rundeck.defaults.</tt><tt class="descname">DupeOption</tt><a class="headerlink" href="#rundeck.defaults.DupeOption" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="rundeck.defaults.DupeOption.CREATE">
+<tt class="descname">CREATE</tt><em class="property"> = 'create'</em><a class="headerlink" href="#rundeck.defaults.DupeOption.CREATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.DupeOption.SKIP">
+<tt class="descname">SKIP</tt><em class="property"> = 'skip'</em><a class="headerlink" href="#rundeck.defaults.DupeOption.SKIP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.DupeOption.UPDATE">
+<tt class="descname">UPDATE</tt><em class="property"> = 'update'</em><a class="headerlink" href="#rundeck.defaults.DupeOption.UPDATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.DupeOption.keys">
+<tt class="descname">keys</tt><em class="property"> = ['SKIP', 'CREATE', 'values', 'UPDATE']</em><a class="headerlink" href="#rundeck.defaults.DupeOption.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.DupeOption.values">
+<tt class="descname">values</tt><em class="property"> = ['skip', 'create', 'update']</em><a class="headerlink" href="#rundeck.defaults.DupeOption.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rundeck.defaults.ExecutionOutputFormat">
+<em class="property">class </em><tt class="descclassname">rundeck.defaults.</tt><tt class="descname">ExecutionOutputFormat</tt><a class="headerlink" href="#rundeck.defaults.ExecutionOutputFormat" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="rundeck.defaults.ExecutionOutputFormat.TEXT">
+<tt class="descname">TEXT</tt><em class="property"> = 'text'</em><a class="headerlink" href="#rundeck.defaults.ExecutionOutputFormat.TEXT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.ExecutionOutputFormat.XML">
+<tt class="descname">XML</tt><em class="property"> = 'xml'</em><a class="headerlink" href="#rundeck.defaults.ExecutionOutputFormat.XML" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.ExecutionOutputFormat.YAML">
+<tt class="descname">YAML</tt><em class="property"> = 'yaml'</em><a class="headerlink" href="#rundeck.defaults.ExecutionOutputFormat.YAML" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.ExecutionOutputFormat.keys">
+<tt class="descname">keys</tt><em class="property"> = ['XML', 'YAML', 'values', 'TEXT']</em><a class="headerlink" href="#rundeck.defaults.ExecutionOutputFormat.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.ExecutionOutputFormat.values">
+<tt class="descname">values</tt><em class="property"> = ['xml', 'yaml', 'text']</em><a class="headerlink" href="#rundeck.defaults.ExecutionOutputFormat.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rundeck.defaults.JobDefFormat">
+<em class="property">class </em><tt class="descclassname">rundeck.defaults.</tt><tt class="descname">JobDefFormat</tt><a class="headerlink" href="#rundeck.defaults.JobDefFormat" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="rundeck.defaults.JobDefFormat.XML">
+<tt class="descname">XML</tt><em class="property"> = 'xml'</em><a class="headerlink" href="#rundeck.defaults.JobDefFormat.XML" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.JobDefFormat.YAML">
+<tt class="descname">YAML</tt><em class="property"> = 'yaml'</em><a class="headerlink" href="#rundeck.defaults.JobDefFormat.YAML" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.JobDefFormat.keys">
+<tt class="descname">keys</tt><em class="property"> = ['XML', 'YAML', 'values']</em><a class="headerlink" href="#rundeck.defaults.JobDefFormat.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.JobDefFormat.values">
+<tt class="descname">values</tt><em class="property"> = ['xml', 'yaml']</em><a class="headerlink" href="#rundeck.defaults.JobDefFormat.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rundeck.defaults.Status">
+<em class="property">class </em><tt class="descclassname">rundeck.defaults.</tt><tt class="descname">Status</tt><a class="headerlink" href="#rundeck.defaults.Status" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="rundeck.defaults.Status.ABORTED">
+<tt class="descname">ABORTED</tt><em class="property"> = 'aborted'</em><a class="headerlink" href="#rundeck.defaults.Status.ABORTED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.Status.FAILED">
+<tt class="descname">FAILED</tt><em class="property"> = 'failed'</em><a class="headerlink" href="#rundeck.defaults.Status.FAILED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.Status.PENDING">
+<tt class="descname">PENDING</tt><em class="property"> = 'pending'</em><a class="headerlink" href="#rundeck.defaults.Status.PENDING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.Status.RUNNING">
+<tt class="descname">RUNNING</tt><em class="property"> = 'running'</em><a class="headerlink" href="#rundeck.defaults.Status.RUNNING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.Status.SKIPPED">
+<tt class="descname">SKIPPED</tt><em class="property"> = 'skipped'</em><a class="headerlink" href="#rundeck.defaults.Status.SKIPPED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.Status.SUCCEEDED">
+<tt class="descname">SUCCEEDED</tt><em class="property"> = 'succeeded'</em><a class="headerlink" href="#rundeck.defaults.Status.SUCCEEDED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.Status.keys">
+<tt class="descname">keys</tt><em class="property"> = ['FAILED', 'RUNNING', 'SKIPPED', 'values', 'ABORTED', 'SUCCEEDED', 'PENDING']</em><a class="headerlink" href="#rundeck.defaults.Status.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.Status.values">
+<tt class="descname">values</tt><em class="property"> = ['failed', 'running', 'skipped', 'aborted', 'succeeded', 'pending']</em><a class="headerlink" href="#rundeck.defaults.Status.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rundeck.defaults.UuidOption">
+<em class="property">class </em><tt class="descclassname">rundeck.defaults.</tt><tt class="descname">UuidOption</tt><a class="headerlink" href="#rundeck.defaults.UuidOption" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="rundeck.defaults.UuidOption.PRESERVE">
+<tt class="descname">PRESERVE</tt><em class="property"> = 'preserve'</em><a class="headerlink" href="#rundeck.defaults.UuidOption.PRESERVE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.UuidOption.REMOVE">
+<tt class="descname">REMOVE</tt><em class="property"> = 'remove'</em><a class="headerlink" href="#rundeck.defaults.UuidOption.REMOVE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.UuidOption.keys">
+<tt class="descname">keys</tt><em class="property"> = ['PRESERVE', 'values', 'REMOVE']</em><a class="headerlink" href="#rundeck.defaults.UuidOption.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rundeck.defaults.UuidOption.values">
+<tt class="descname">values</tt><em class="property"> = ['preserve', 'remove']</em><a class="headerlink" href="#rundeck.defaults.UuidOption.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rundeck.defaults.enum">
+<tt class="descclassname">rundeck.defaults.</tt><tt class="descname">enum</tt><big>(</big><em>name</em>, <em>*sequential</em>, <em>**named</em><big>)</big><a class="headerlink" href="#rundeck.defaults.enum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-rundeck.exceptions">
+<span id="rundeck-exceptions"></span><h2>rundeck.exceptions<a class="headerlink" href="#module-rundeck.exceptions" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -1491,7 +3320,7 @@ so be prepared for false negatives if you customize your job ids.</dd>
 <dl class="exception">
 <dt id="rundeck.exceptions.InvalidResourceSpecification">
 <em class="property">exception </em><tt class="descclassname">rundeck.exceptions.</tt><tt class="descname">InvalidResourceSpecification</tt><a class="headerlink" href="#rundeck.exceptions.InvalidResourceSpecification" title="Permalink to this definition">¶</a></dt>
-<dd><p>The resource specified does not meet requirements</p>
+<dd><p>The resource specified does not meet requirements.</p>
 </dd></dl>
 
 <dl class="exception">
@@ -1522,9 +3351,17 @@ so be prepared for false negatives if you customize your job ids.</dd>
 <dt id="rundeck.exceptions.RundeckServerError">
 <em class="property">exception </em><tt class="descclassname">rundeck.exceptions.</tt><tt class="descname">RundeckServerError</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.exceptions.RundeckServerError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base exceptions generated by the Rundeck server</p>
+<dl class="method">
+<dt id="rundeck.exceptions.RundeckServerError.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#rundeck.exceptions.RundeckServerError.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
-<span class="target" id="module-rundeck.transforms"></span><table class="docutils field-list" frame="void" rules="none">
+</div>
+<div class="section" id="module-rundeck.transforms">
+<span id="rundeck-transforms"></span><h2>rundeck.transforms<a class="headerlink" href="#module-rundeck.transforms" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -1543,6 +3380,31 @@ so be prepared for false negatives if you customize your job ids.</dd>
 </tbody>
 </table>
 <dl class="function">
+<dt id="rundeck.transforms.events">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">events</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.events" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.execution">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">execution</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.execution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.execution_abort">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">execution_abort</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.execution_abort" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.execution_output">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">execution_output</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.execution_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.executions">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">executions</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.executions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="rundeck.transforms.is_transform">
 <tt class="descclassname">rundeck.transforms.</tt><tt class="descname">is_transform</tt><big>(</big><em>func</em><big>)</big><a class="headerlink" href="#rundeck.transforms.is_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>A simple decorator that marks a function as a &#8220;trasform&#8221; which allows the transform
@@ -1551,20 +3413,82 @@ method call responses.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="rundeck.transforms.job_import_status">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">job_import_status</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.job_import_status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.jobs">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">jobs</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.jobs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.jobs_delete">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">jobs_delete</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.jobs_delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.project">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">project</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.project" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.project_resources">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">project_resources</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.project_resources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.projects">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">projects</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.projects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.run_execution">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">run_execution</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.run_execution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.success_message">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">success_message</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.success_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rundeck.transforms.system_info">
+<tt class="descclassname">rundeck.transforms.</tt><tt class="descname">system_info</tt><big>(</big><em>resp</em><big>)</big><a class="headerlink" href="#rundeck.transforms.system_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="rundeck.transforms.transform">
 <tt class="descclassname">rundeck.transforms.</tt><tt class="descname">transform</tt><big>(</big><em>resp_type</em><big>)</big><a class="headerlink" href="#rundeck.transforms.transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>A decorator to take a RundeckResponse and pass it through one of the is_transform marked
 functions above</p>
 </dd></dl>
 
-<span class="target" id="module-rundeck.util"></span><dl class="function">
+</div>
+<div class="section" id="module-rundeck.util">
+<span id="rundeck-util"></span><h2>rundeck.util<a class="headerlink" href="#module-rundeck.util" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">summary:</th><td class="field-body">Utility functions for the package</td>
+</tr>
+<tr class="field-even field"><th class="field-name">license:</th><td class="field-body">Creative Commons Attribution-ShareAlike 3.0 Unported</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Mark LaPerriere</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body"><a class="reference external" href="mailto:rundeckrun&#37;&#52;&#48;mindmind&#46;com">rundeckrun<span>&#64;</span>mindmind<span>&#46;</span>com</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">copyright:</th><td class="field-body">Mark LaPerriere 2013</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
 <dt id="rundeck.util.attr2dict">
 <tt class="descclassname">rundeck.util.</tt><tt class="descname">attr2dict</tt><big>(</big><em>el</em><big>)</big><a class="headerlink" href="#rundeck.util.attr2dict" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Turns an elements attrib dict into... wait for it... a dict. Yea, it&#8217;s silly to me too.</dt>
-<dd>But, according to the ElementTree docs, using the Element.attrib attribute directly
-is not recommended - don&#8217;t look at me - I just work here.</dd>
-</dl>
+<dd><p>Turns an elements attrib dict into... wait for it... a dict. Yea, it&#8217;s silly to me too.
+But, according to the ElementTree docs, using the Element.attrib attribute directly
+is not recommended - don&#8217;t look at me - I just work here.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1582,10 +3506,8 @@ is not recommended - don&#8217;t look at me - I just work here.</dd>
 <dl class="function">
 <dt id="rundeck.util.child2dict">
 <tt class="descclassname">rundeck.util.</tt><tt class="descname">child2dict</tt><big>(</big><em>el</em><big>)</big><a class="headerlink" href="#rundeck.util.child2dict" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Turns an ElementTree.Element&#8217;s children into a dict using the node names as dict keys and</dt>
-<dd>and the node text as dict values</dd>
-</dl>
+<dd><p>Turns an ElementTree.Element&#8217;s children into a dict using the node names as dict keys and
+and the node text as dict values</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1661,6 +3583,7 @@ converted to compatible string</p>
 <dd><p>Combines both the attr2dict and child2dict functions</p>
 </dd></dl>
 
+</div>
 </div>
 
 

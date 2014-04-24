@@ -1,3 +1,15 @@
+"""
+:summary: Test rundeck.client.Rundeck
+
+:license: Creative Commons Attribution-ShareAlike 3.0 Unported
+:author: Mark LaPerriere
+:contact: rundeckrun@mindmind.com
+:copyright: Mark LaPerriere 2013
+
+:requires: nose
+"""
+__docformat__ = "restructuredtext en"
+
 from nose.tools import raises
 
 

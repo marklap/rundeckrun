@@ -1,3 +1,13 @@
+"""
+:summary: Testing setup
+
+:license: Creative Commons Attribution-ShareAlike 3.0 Unported
+:author: Mark LaPerriere
+:contact: rundeckrun@mindmind.com
+:copyright: Mark LaPerriere 2013
+"""
+__docformat__ = "restructuredtext en"
+
 import os
 import logging
 import uuid
