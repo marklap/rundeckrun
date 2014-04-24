@@ -344,7 +344,7 @@ class Rundeck(object):
         :return: a job definition
         :rtype: str
         """
-        return self.api.jobs_export(project, **kwargs)
+        return self.api.jobs_export(project, **kwargs).text
 
 
     @transform('job_import_status')

@@ -380,6 +380,7 @@ class RundeckApiTolerant(object):
         params = cull_kwargs(('fmt', 'idlist', 'groupPath', 'jobFilter'), kwargs)
         if 'fmt' in params:
             params['format'] = params.pop('fmt')
+        params['project'] = project
 
         return self._exec(GET, 'projects', params=params, parse_response=False, **kwargs)
 
