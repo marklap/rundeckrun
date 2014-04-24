@@ -204,7 +204,7 @@ class RundeckApiTolerant(object):
 
         :Parameters:
             method : str
-                either rundeck.defaults.GET or rundeck.defaults.POST
+                either :class:`~rundeck.defaults.GET` or :class:`~rundeck.defaults.POST`
             url : str
                 Rundeck API endpoint URL
             params : dict

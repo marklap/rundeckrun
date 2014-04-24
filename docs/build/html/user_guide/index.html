@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>User Guide &mdash; RundeckRun 0.1.7 documentation</title>
+  <title>User Guide &mdash; RundeckRun 0.1.8 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../',
-        VERSION:'0.1.7',
+        VERSION:'0.1.8',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="RundeckRun 0.1.7 documentation" href="../index.html"/>
+    <link rel="top" title="RundeckRun 0.1.8 documentation" href="../index.html"/>
         <link rel="next" title="Server" href="server.html"/>
         <link rel="prev" title="RundeckRun" href="../index.html"/> 
 
@@ -81,7 +81,17 @@
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-rundeck">rundeck</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-rundeck.api">rundeck.api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-rundeck.client">rundeck.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-rundeck.connection">rundeck.connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-rundeck.defaults">rundeck.defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-rundeck.exceptions">rundeck.exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-rundeck.transforms">rundeck.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-rundeck.util">rundeck.util</a></li>
+</ul>
+</li>
 </ul>
 
         
@@ -135,12 +145,12 @@
 </pre></div>
 </div>
 <p>From this point on in the documentation, assume the <tt class="docutils literal"><span class="pre">rd</span></tt> variable is an instance of the
-<tt class="xref py py-class docutils literal"><span class="pre">Rundeck</span></tt> class.</p>
+<a class="reference internal" href="../api.html#rundeck.client.Rundeck" title="rundeck.client.Rundeck"><tt class="xref py py-class docutils literal"><span class="pre">Rundeck</span></tt></a> class.</p>
 </div>
 </div>
 <div class="section" id="interacting-with-rundeck">
 <h2>Interacting with Rundeck<a class="headerlink" href="#interacting-with-rundeck" title="Permalink to this headline">¶</a></h2>
-<p>An instance of the <tt class="xref py py-class docutils literal"><span class="pre">Rundeck</span></tt> class is where you&#8217;ll spend most
+<p>An instance of the <a class="reference internal" href="../api.html#rundeck.client.Rundeck" title="rundeck.client.Rundeck"><tt class="xref py py-class docutils literal"><span class="pre">Rundeck</span></tt></a> class is where you&#8217;ll spend most
 with RundeckRun. If you want a more <em>raw</em> interface to the Rundeck API, check out the
 <a class="reference internal" href="../api.html#rundeck.api.RundeckApi" title="rundeck.api.RundeckApi"><tt class="xref py py-class docutils literal"><span class="pre">RundeckApi</span></tt></a> class. In this case, you&#8217;ll definitely want to
 check out the <a class="reference external" href="http://rundeck.org/docs/api/index.html">Rundeck API Reference</a>.</p>
