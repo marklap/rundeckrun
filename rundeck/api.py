@@ -357,7 +357,7 @@ class RundeckApiTolerant(object):
 
 
     def jobs_export(self, project, **kwargs):
-        """Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
+        """Wraps `Rundeck API GET /jobs/export <http://rundeck.org/docs/api/index.html#exporting-jobs>`_
 
         :Parameters:
             name : str
@@ -382,7 +382,7 @@ class RundeckApiTolerant(object):
             params['format'] = params.pop('fmt')
         params['project'] = project
 
-        return self._exec(GET, 'projects', params=params, parse_response=False, **kwargs)
+        return self._exec(GET, 'jobs/export', params=params, parse_response=False, **kwargs)
 
 
     def jobs_import(self, definition, **kwargs):
