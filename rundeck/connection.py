@@ -128,6 +128,8 @@ class RundeckConnectionTolerant(object):
         if (protocol == 'http' and port != 80) or (protocol == 'https' and port != 443):
             self.server = '{0}:{1}'.format(server, port)
 
+        self.base_url = '{0}://{1}/api'.format(self.protocol, self.server)
+
         if api_token is None and usr is None and pwd is None:
             raise InvalidAuthentication('Must supply either api_token or usr and pwd')
 
@@ -136,10 +138,19 @@ class RundeckConnectionTolerant(object):
         if api_token is not None:
             self.http.headers['X-Rundeck-Auth-Token'] = api_token
         elif usr is not None and pwd is not None:
-            # TODO: support username/password authentication (maybe)
-            raise NotImplementedError('Username/password authentication is not yet supported')
+            url = self.make_url("/j_security_check")
+            data = {
+                "j_username" : usr,
+                "j_password" : pwd
+            }
+            response = self.http.request('POST', url, data=data)
+            if (response.url.find('/user/error') != -1
+                    or response.url.find('/user/login') != -1
+                    or response.status_code != 200):
+                raise InvalidAuthentication("Bad Username or Password")
 
-        self.base_url = '{0}://{1}/api'.format(self.protocol, self.server)
+
+
 
     def make_url(self, api_url):
         """ Creates a valid Rundeck URL based on the API and the base url of
