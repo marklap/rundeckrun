@@ -872,7 +872,7 @@ class RundeckApiTolerant(object):
         :return: A :class:`~.rundeck.connection.RundeckResponse`
         :rtype: :class:`~.rundeck.connection.RundeckResponse`
         """
-        return self._exec(POST, 'projects', **kwargs)
+        return self._exec(GET, 'projects', **kwargs)
 
 
     def project(self, project, **kwargs):
