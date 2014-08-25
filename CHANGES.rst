@@ -1,3 +1,10 @@
+0.1.9
+-----
+- Add username/password authentication support (thanks to brendan-sterne)
+- Fix project API call - was using POST, should be GET (thanks to shawnchasse)
+- Various fixes to get tests to pass with a Rundeck 2.x version server
+- Last release before version 1
+
 0.1.8
 -----
 - Minor documentation changes: autodoc for all interesting modules and other misc changes

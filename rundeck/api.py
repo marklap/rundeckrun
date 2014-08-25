@@ -32,6 +32,7 @@ from .defaults import (
     UuidOption,
     JobDefFormat,
     ExecutionOutputFormat,
+    RUNDECK_API_VERSION,
     )
 
 def api_version_check(api_version, required_version):
@@ -446,10 +447,10 @@ class RundeckApiTolerant(object):
             job_id : str
                 Rundeck Job ID
 
-        :return: A :class:`~.rundeck.connection.RundeckResponse`
-        :rtype: :class:`~.rundeck.connection.RundeckResponse`
+        :return: A Requests response
+        :rtype: requests.models.Response
         """
-        return self._exec(DELETE, 'job/{0}'.format(job_id), **kwargs)
+        return self._exec(DELETE, 'job/{0}'.format(job_id), parse_response=False, **kwargs)
 
 
     def jobs_delete(self, idlist, **kwargs):
@@ -472,6 +473,7 @@ class RundeckApiTolerant(object):
         try:
             return self._exec(POST, 'jobs/delete', data=data, **kwargs)
         except Exception as exc:
+            # TODO: what on earth did I do there?!?! need to fix this
             raise
 
 
@@ -872,7 +874,7 @@ class RundeckApiTolerant(object):
         :return: A :class:`~.rundeck.connection.RundeckResponse`
         :rtype: :class:`~.rundeck.connection.RundeckResponse`
         """
-        return self._exec(POST, 'projects', **kwargs)
+        return self._exec(GET, 'projects', **kwargs)
 
 
     def project(self, project, **kwargs):

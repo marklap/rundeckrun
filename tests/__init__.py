@@ -22,6 +22,7 @@ _RUNDECK_PORT_VAR = 'RUNDECK_PORT'
 _RUNDECK_PROTOCOL_VAR = 'RUNDECK_PROTOCOL'
 _RUNDECK_USR_VAR = 'RUNDECK_USR'
 _RUNDECK_PWD_VAR = 'RUNDECK_PWD'
+_RUNDECK_API_VERSION_VAR = 'RUNDECK_API_VERSION'
 
 logger = logging.getLogger(__name__)
 # logger = logging.getLogger('')  # for debugging
@@ -38,6 +39,7 @@ port = os.environ.get(_RUNDECK_PORT_VAR, 4440)
 protocol = os.environ.get(_RUNDECK_PROTOCOL_VAR, 'http')
 usr = os.environ.get(_RUNDECK_USR_VAR, None)
 pwd = os.environ.get(_RUNDECK_PWD_VAR, None)
+api_version = os.environ.get(_RUNDECK_API_VERSION_VAR, 11)
 
 test_job_id = uuid.uuid4()
 test_job_name = 'TestJobTest'
@@ -76,11 +78,31 @@ test_job_def_tmpl = """<joblist>
 </joblist>"""
 test_job_def = test_job_def_tmpl.format(test_job_id, test_job_name, test_job_proj)
 
+if api_token is None and usr is None and pwd is None:
+    assert False, 'Must specify a Rundeck API token or username/password pair with ' + \
+        'the {0} environment variable or use both the {1}, and {2}  environment ' + \
+        'variables'.format(_RUNDECK_API_TOKEN_VAR, _RUNDECK_USR_VAR, _RUNDECK_PWD_VAR)
 
-assert api_token is not None, 'Must specify a Rundeck API token with ' + \
-    'the {0} environment variable'.format(_RUNDECK_API_TOKEN_VAR)
-rundeck_client = Rundeck(server=server, protocol=protocol, port=port, api_token=api_token)
-rundeck_api = RundeckApi(server=server, protocol=protocol, port=port, api_token=api_token)
+options = {
+    'server': server,
+    'protocol': protocol,
+    'port': port,
+    'verify_cert': False,
+    'api_version': api_version,
+}
+
+if api_token is not None:
+    options['api_token'] = api_token
+else:
+    if usr is not None and pwd is not None:
+        options['usr'] = usr
+        options['pwd'] = pwd
+    else:
+        assert False, 'Must specifiy username AND password with the {0} and {1} ' + \
+            'environment variables'.format(_RUNDECK_USR_VAR, _RUNDECK_PWD_VAR)
+
+rundeck_client = Rundeck(**options)
+rundeck_api = RundeckApi(**options)
 
 
 def setup():

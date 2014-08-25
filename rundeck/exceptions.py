@@ -10,6 +10,8 @@ __docformat__ = "restructuredtext en"
 
 import requests
 
+class ApiVersionNotSupported(Exception):
+    """This library does not support the version of the API requested"""
 
 class InvalidAuthentication(Exception):
     """The method of authentication is not valid"""

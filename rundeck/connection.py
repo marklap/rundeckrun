@@ -17,7 +17,7 @@ import requests
 
 from .transforms import ElementTree
 from .defaults import RUNDECK_API_VERSION
-from .exceptions import InvalidAuthentication, RundeckServerError
+from .exceptions import InvalidAuthentication, RundeckServerError, ApiVersionNotSupported
 
 
 def memoize(obj):
@@ -66,7 +66,10 @@ class RundeckResponse(object):
     @property
     @memoize
     def success(self):
-        return 'success' in self.etree.attrib
+        try:
+            return 'success' in self.etree.attrib
+        except Exception:
+            return False
 
     @property
     @memoize
@@ -122,27 +125,41 @@ class RundeckConnectionTolerant(object):
         self.pwd = pwd = kwargs.get('pwd', None)
         self.server = server
         self.api_token = api_token
-        self.api_version = kwargs.get('api_version', RUNDECK_API_VERSION)
+        self.api_version = int(kwargs.get('api_version', RUNDECK_API_VERSION))
         self.verify_cert = kwargs.get('verify_cert', True)
+
+        if self.api_version < 1 or self.api_version > RUNDECK_API_VERSION:
+            raise ApiVersionNotSupported(
+                'The requested Rundeck API version, {0}, '.format(self.api_version) + \
+                    'is not supported. Versions 1-{0} are supported.'.format(RUNDECK_API_VERSION))
 
         if (protocol == 'http' and port != 80) or (protocol == 'https' and port != 443):
             self.server = '{0}:{1}'.format(server, port)
 
-        self.base_url = '{0}://{1}/api'.format(self.protocol, self.server)
+        self.base_url = '{0}://{1}'.format(self.protocol, self.server)
+        self.base_api_url = '{0}://{1}/api'.format(self.protocol, self.server)
 
         if api_token is None and usr is None and pwd is None:
             raise InvalidAuthentication('Must supply either api_token or usr and pwd')
 
         self.http = requests.Session()
         self.http.verify = self.verify_cert
+        # API version >11 does not include the results node for xml responses
+        # would take some doing to get that to work for only version 11 requests
+        # so we're just going to use the workaround provided by rundeck - a header to specify
+        # that rundeck should include the result node in the response
+        # http://rundeck.org/docs/api/index.html#changes
+        self.http.headers.update({'X-Rundeck-API-XML-Response-Wrapper': 'true'})
+
         if api_token is not None:
             self.http.headers['X-Rundeck-Auth-Token'] = api_token
         elif usr is not None and pwd is not None:
-            url = self.make_url("/j_security_check")
+            url = self.make_url("j_security_check")
             data = {
                 "j_username" : usr,
                 "j_password" : pwd
             }
+
             response = self.http.request('POST', url, data=data)
             if (response.url.find('/user/error') != -1
                     or response.url.find('/user/login') != -1
@@ -152,7 +169,7 @@ class RundeckConnectionTolerant(object):
 
 
 
-    def make_url(self, api_url):
+    def make_api_url(self, api_url):
         """ Creates a valid Rundeck URL based on the API and the base url of
         the RundeckConnection
 
@@ -163,7 +180,19 @@ class RundeckConnectionTolerant(object):
         :rtype: str
         :return: full Rundeck API URL
         """
-        return '/'.join([self.base_url, str(self.api_version), api_url.lstrip('/')])
+        return '/'.join([self.base_api_url, str(self.api_version), api_url.lstrip('/')])
+
+    def make_url(self, path):
+        """ Creates a valid Rundeck URL based base url of the RundeckConnection
+
+        :Parameters:
+            path : str
+                the Rundeck http URL path
+
+        :rtype: str
+        :return: full Rundeck URL
+        """
+        return '/'.join([self.base_url, path.lstrip('/')])
 
     def call(self, method, url, params=None, headers=None, data=None, files=None,
         parse_response=True, **kwargs):
@@ -192,7 +221,7 @@ class RundeckConnectionTolerant(object):
 
         :rtype: requests.Response
         """
-        url = self.make_url(url)
+        url = self.make_api_url(url)
         auth_header = {'X-Rundeck-Auth-Token': self.api_token}
         if headers is None:
             headers = auth_header
