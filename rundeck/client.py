@@ -19,7 +19,7 @@ except ImportError:
     maketrans = str.maketrans
 
 from .api import RundeckApiTolerant, RundeckApi, RundeckNode
-from .connection import RundeckConnection
+from .connection import RundeckConnection, RundeckResponse
 from .transforms import transform
 from .util import child2dict, attr2dict, cull_kwargs, StringType
 from .exceptions import (
@@ -97,6 +97,7 @@ class Rundeck(object):
                 an instance of a RundeckConnection or instance of a subclass of RundeckConnection
         """
         api = kwargs.pop('api', None)
+
         if api is None:
             self.api = RundeckApi(
                 server, protocol=protocol, port=port, api_token=api_token, **kwargs)
@@ -435,7 +436,16 @@ class Rundeck(object):
         :return: success
         :rtype: bool
         """
-        return self.api.delete_job(job_id, **kwargs).success
+        result = self.api.delete_job(job_id, **kwargs)
+        # api version 11 wil respond with a 204 No Content; older version use the result xml node
+        if self.api_version >= 11:
+            if result.response.status_code == 204:
+                return True
+            else:
+                return False
+        else:
+            rd_msg = RundeckResponse(result)
+            return rd_msg.success
 
 
     def delete_jobs(self, idlist, **kwargs):

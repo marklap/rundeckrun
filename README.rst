@@ -7,9 +7,8 @@ library.
 
 Documentation is hosted on `Read the Docs`_
 
-*DISCLAIMER:* Still in active development, but most features have been tested and should work.
+*DISCLAIMER:* Test suite is not comprehensive, but most features have been tested and should work.
 Should work on at least Python 2.7 and Python 3.3.
-
 
 Installation
 ------------

@@ -1,6 +1,13 @@
+0.1.10
+------
+- Fixed `Issue #15 <https://github.com/marklap/rundeckrun/issues/15>`_: job_executions() in api.py should use GET not POST
+
 0.1.9
 -----
-- Fixed `Issue #15 <https://github.com/marklap/rundeckrun/issues/15>`_: job_executions() in api.py should use GET not POST
+- Add username/password authentication support (thanks to brendan-sterne)
+- Fix project API call - was using POST, should be GET (thanks to shawnchasse)
+- Various fixes to get tests to pass with a Rundeck 2.x version server
+- Last release before version 1
 
 0.1.8
 -----
