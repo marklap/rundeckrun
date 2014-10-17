@@ -192,7 +192,7 @@ class RundeckApiTolerant(object):
         if connection is None:
             self.connection = RundeckConnection(
                 server=server, protocol=protocol, port=port, api_token=api_token, **kwargs)
-        elif isinsance(connection, RundeckConnectionTolerant):
+        elif isinstance(connection, RundeckConnectionTolerant):
             self.connection = connection
         else:
             raise Exception('Supplied connection argument is not a valid RundeckConnection: {0}'.format(connection))

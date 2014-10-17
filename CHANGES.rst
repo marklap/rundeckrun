@@ -1,3 +1,7 @@
+0.1.11
+------
+- Merged `Issues #16 <https://github.com/marklap/rundeckrun/issues/16>`_: Fix typo in isinstance call (many thanks @boosh)
+
 0.1.10
 ------
 - Fixed `Issue #15 <https://github.com/marklap/rundeckrun/issues/15>`_: job_executions() in api.py should use GET not POST
