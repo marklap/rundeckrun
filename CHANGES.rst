@@ -1,6 +1,7 @@
 0.1.11
 ------
 - Merged `Issues #16 <https://github.com/marklap/rundeckrun/issues/16>`_: Fix typo in isinstance call (many thanks @boosh)
+- Fixed broken test init validation
 
 0.1.10
 ------
