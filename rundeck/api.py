@@ -496,7 +496,7 @@ class RundeckApiTolerant(object):
         :rtype: :class:`~.rundeck.connection.RundeckResponse`
         """
         params = cull_kwargs(('status', 'max', 'offset'), kwargs)
-        return self._exec(POST, 'job/{0}/executions'.format(job_id), params=params, **kwargs)
+        return self._exec(GET, 'job/{0}/executions'.format(job_id), params=params, **kwargs)
 
 
     def executions_running(self, project, **kwargs):

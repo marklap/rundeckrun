@@ -1,3 +1,7 @@
+0.1.10
+------
+- Fixed `Issue #15 <https://github.com/marklap/rundeckrun/issues/15>`_: job_executions() in api.py should use GET not POST
+
 0.1.9
 -----
 - Add username/password authentication support (thanks to brendan-sterne)
