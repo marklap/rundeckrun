@@ -78,10 +78,9 @@ test_job_def_tmpl = """<joblist>
 </joblist>"""
 test_job_def = test_job_def_tmpl.format(test_job_id, test_job_name, test_job_proj)
 
-if api_token is None and usr is None and pwd is None:
-    assert False, 'Must specify a Rundeck API token or username/password pair with ' + \
-        'the {0} environment variable or use both the {1}, and {2}  environment ' + \
-        'variables'.format(_RUNDECK_API_TOKEN_VAR, _RUNDECK_USR_VAR, _RUNDECK_PWD_VAR)
+assert any([api_token, all([usr, pwd])]), 'Must specify a Rundeck API token or username/' + \
+        'password pair with the {0} environment variable or use'.format(_RUNDECK_API_TOKEN_VAR) + \
+        ' both the {0}, and {1}  environment variables'.format(_RUNDECK_USR_VAR, _RUNDECK_PWD_VAR)
 
 options = {
     'server': server,
