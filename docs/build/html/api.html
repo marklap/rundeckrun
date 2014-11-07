@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API &mdash; RundeckRun 0.1.8 documentation</title>
+  <title>API &mdash; RundeckRun 0.1.11 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'0.1.8',
+        VERSION:'0.1.11',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="RundeckRun 0.1.8 documentation" href="index.html"/>
+    <link rel="top" title="RundeckRun 0.1.11 documentation" href="index.html"/>
         <link rel="prev" title="Importing and Exporting" href="user_guide/import_export.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -242,10 +242,10 @@ subclass of <a class="reference internal" href="#rundeck.connection.RundeckConne
 </dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A Requests response</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rundeck.connection.RundeckResponse" title="rundeck.connection.RundeckResponse"><tt class="xref py py-class docutils literal"><span class="pre">RundeckResponse</span></tt></a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.models.Response</p>
 </td>
 </tr>
 </tbody>
@@ -2978,8 +2978,8 @@ RundeckResponse if requested/necessary</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rundeck.connection.RundeckConnectionTolerant.make_url">
-<tt class="descname">make_url</tt><big>(</big><em>api_url</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnectionTolerant.make_url" title="Permalink to this definition">¶</a></dt>
+<dt id="rundeck.connection.RundeckConnectionTolerant.make_api_url">
+<tt class="descname">make_api_url</tt><big>(</big><em>api_url</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnectionTolerant.make_api_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a valid Rundeck URL based on the API and the base url of
 the RundeckConnection</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -2997,6 +2997,31 @@ the RundeckConnection</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">full Rundeck API URL</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rundeck.connection.RundeckConnectionTolerant.make_url">
+<tt class="descname">make_url</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#rundeck.connection.RundeckConnectionTolerant.make_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a valid Rundeck URL based base url of the RundeckConnection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt>path <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">the Rundeck http URL path</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">full Rundeck URL</p>
 </td>
 </tr>
 </tbody>
@@ -3296,6 +3321,12 @@ the RundeckConnection</p>
 </tr>
 </tbody>
 </table>
+<dl class="exception">
+<dt id="rundeck.exceptions.ApiVersionNotSupported">
+<em class="property">exception </em><tt class="descclassname">rundeck.exceptions.</tt><tt class="descname">ApiVersionNotSupported</tt><a class="headerlink" href="#rundeck.exceptions.ApiVersionNotSupported" title="Permalink to this definition">¶</a></dt>
+<dd><p>This library does not support the version of the API requested</p>
+</dd></dl>
+
 <dl class="exception">
 <dt id="rundeck.exceptions.InvalidAuthentication">
 <em class="property">exception </em><tt class="descclassname">rundeck.exceptions.</tt><tt class="descname">InvalidAuthentication</tt><a class="headerlink" href="#rundeck.exceptions.InvalidAuthentication" title="Permalink to this definition">¶</a></dt>

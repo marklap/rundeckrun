@@ -3,7 +3,6 @@ Jobs
 
 A guide to working with Rundeck Jobs.
 
-
 Listing
 -------
 
@@ -15,7 +14,6 @@ Listing
       'id': 'a6e1e0f7-ad32-4b93-ba2c-9387be06a146',
       'name': 'HelloWorld',
       'project': 'TestProject'}]
-
 
 Run a Job
 ---------
@@ -31,6 +29,25 @@ Run a Job
      'job': None,
      'status': 'running',
      'user': 'rundeckrun'}
+
+A Note on argString
+~~~~~~~~~~~~~~~~~~~
+
+Ensure the ``argString`` arguments' values are using the defined delimiter for any option that is
+designated as `Multi-valued`_.
+
+
+**Example:** For a job `Multi-valued`_ job option with a ``,`` (comma) delimiter use the following
+``argString``:
+
+.. code-block:: python
+
+  argString={'recipients':'admin@example.com,support@example.com'}
+
+.. note:: If you choose a space as your delimiter, you'll have to double quote the value like
+  so: ``argString={'recipients':'"admin@example.com support@example.com"'}``
+
+.. _Multi-valued: http://rundeck.org/docs/manual/jobs.html#defining-an-option
 
 Export All Jobs
 ---------------
