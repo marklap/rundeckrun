@@ -1,11 +1,19 @@
+0.1.12
+------
+- In response to `Issue #18 <https://github.com/marklap/rundeckrun/issues/18>`_
+  (many thanks @bobnelson0), update docs to provide information about
+  `Multi-valued <http://rundeck.org/docs/manual/jobs.html#defining-an-option>`_ job options.
+
 0.1.11
 ------
-- Merged `Issues #16 <https://github.com/marklap/rundeckrun/issues/16>`_: Fix typo in isinstance call (many thanks @boosh)
+- Merged `Issue #16 <https://github.com/marklap/rundeckrun/issues/16>`_: Fix typo in isinstance
+  call (many thanks @boosh)
 - Fixed broken test init validation
 
 0.1.10
 ------
-- Fixed `Issue #15 <https://github.com/marklap/rundeckrun/issues/15>`_: job_executions() in api.py should use GET not POST
+- Fixed `Issue #15 <https://github.com/marklap/rundeckrun/issues/15>`_: job_executions() in api.py
+  should use GET not POST
 
 0.1.9
 -----
