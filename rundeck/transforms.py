@@ -107,9 +107,28 @@ def jobs(resp):
     return jobs
 
 
+def _project(project_el):
+    project = {}
+
+    # an attempt to accomodate the "additional items" specified in the API docs but don't
+    #     seem to be included in the response
+    #     https://github.com/dtolabs/rundeck/issues/586
+    resources_el = project_el.find('resources')
+    if resources_el is not None:
+        project['resources'] = child2dict(resources_el)
+        project_el.remove(resources_el)
+
+    project.update(child2dict(project_el))
+
+    return project
+
+
 @is_transform
 def project(resp):
-    return projects(resp)[0]
+    if resp.client_api_version >= 11:
+        return _project(resp.etree.find('project'))
+    else:
+        return projects(resp)[0]
 
 
 @is_transform
@@ -120,18 +139,7 @@ def projects(resp):
     projects = []
     if project_count > 0:
         for project_el in base.iterfind('project'):
-            project = {}
-
-            # an attempt to accomodate the "additional items" specified in the API docs but don't
-            #     seem to be included in the response
-            #     https://github.com/dtolabs/rundeck/issues/586
-            resources_el = project_el.find('resources')
-            if resources_el is not None:
-                project['resources'] = child2dict(resources_el)
-                project_el.remove(resources_el)
-
-            project.update(child2dict(project_el))
-            projects.append(project)
+            projects.append(_project(project_el))
 
     return projects
 

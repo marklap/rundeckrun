@@ -22,7 +22,8 @@ from .exceptions import (
     InvalidResponseFormat,
     InvalidJobDefinitionFormat,
     InvalidDupeOption,
-    InvalidUuidOption
+    InvalidUuidOption,
+    HTTPError
     )
 from .defaults import (
     GET,
@@ -791,6 +792,7 @@ class RundeckApiTolerant(object):
 
     def run_url(self, project, scriptURL, **kwargs):
         """Wraps `Rundeck API POST /run/url <http://rundeck.org/docs/api/index.html#running-adhoc-script-urls>`_
+        Requires API version >4
 
         :Parameters:
             project : str
@@ -868,13 +870,70 @@ class RundeckApiTolerant(object):
         return self._exec(POST, 'run/url', data=data, **kwargs)
 
 
-    def projects(self, **kwargs):
+    def _post_projects(self, project, **kwargs):
+        """Wraps `Rundeck API POST /projects <http://rundeck.org/docs/api/index.html#project-creation>`_
+        Requires API version >11
+
+        :Parameters:
+            project : str
+                name of the project
+
+        :Keywords:
+            config : dict
+                a dictionary of key/value pairs for the project config
+
+        :return: A :class:`~.rundeck.connection.RundeckResponse`
+        :rtype: :class:`~.rundeck.connection.RundeckResponse`
+        """
+        self.requires_version(11)
+
+        config = kwargs.pop('config', None)
+
+        prop_tmpl = '<property key="{0}" value="{1}" />'
+        config_tmpl =  '  <config>\n' + \
+                       '    {0}\n' + \
+                       '  </config>\n'
+        project_tmpl = '<project>\n' + \
+                       '  <name>{0}</name>\n' + \
+                       '{1}</project>'
+
+        if config is not None:
+            props_xml = '    \n'.join([prop_tmpl.format(k, v) for k, v in config.items()])
+            config_xml = config_tmpl.format(props_xml)
+        else:
+            config_xml = ''
+
+        xml = project_tmpl.format(project, config_xml)
+        print(xml)
+
+        headers = {'Content-Type': 'application/xml'}
+
+        return self._exec(POST, 'projects', data=xml, headers=headers, **kwargs)
+
+
+    def _get_projects(self, **kwargs):
         """Wraps `Rundeck API GET /projects <http://rundeck.org/docs/api/index.html#listing-projects>`_
 
         :return: A :class:`~.rundeck.connection.RundeckResponse`
         :rtype: :class:`~.rundeck.connection.RundeckResponse`
         """
         return self._exec(GET, 'projects', **kwargs)
+
+
+    def projects(self, method=GET, **kwargs):
+        """An interface to the Rundeck `projects` API endpoint support
+
+        :Parameters:
+            method : str
+                GET will retrieve a project, POST will create a project
+
+        :return: A :class:`~.rundeck.connection.RundeckResponse`
+        :rtype: :class:`~.rundeck.connection.RundeckResponse`
+        """
+        if method == GET:
+            return self._get_projects(**kwargs)
+        elif method == POST:
+            return self._post_projects(**kwargs)
 
 
     def project(self, project, **kwargs):
@@ -884,10 +943,37 @@ class RundeckApiTolerant(object):
             project : str
                 name of Project
 
+        :Keywords:
+            create : bool
+                Create the project if it is not found (requires API version >11)
+                [default: True for API version >11 else False]
+
         :return: A :class:`~.rundeck.connection.RundeckResponse``
         :rtype: :class:`~.rundeck.connection.RundeckResponse`
         """
-        return self._exec(GET, 'project/{0}'.format(urlquote(project)), **kwargs)
+        # check if project creation is desired and apply defaults
+        create = kwargs.pop('create', None)
+        if create is None:
+            if self.connection.api_version >= 11:
+                create = True
+            else:
+                create = False
+        elif create == True:
+            self.requires_version(11)
+
+        rd_url = 'project/{0}'.format(urlquote(project))
+
+        # seed project var (seems cleaner than alternatives)
+        project = None
+        try:
+            project = self._exec(GET, rd_url, **kwargs)
+        except HTTPError as exc:
+            if create:
+                project = self._exec(POST, rd_url, **kwargs)
+            else:
+                raise
+
+        return project
 
 
     def project_resources(self, project, **kwargs):

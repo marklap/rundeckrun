@@ -859,7 +859,7 @@ class Rundeck(object):
         :return: a list of Rundeck projects
         :rtype: list(dict, ...)
         """
-        return self.api.projects(**kwargs)
+        return self.api.projects(GET, **kwargs)
 
 
     @transform('project')
@@ -874,6 +874,25 @@ class Rundeck(object):
         :rtype: dict
         """
         return self.api.project(project, **kwargs)
+
+
+    @transform('project')
+    def create_project(self, project, **kwargs):
+        """Create a project
+        Requires API version >11
+
+        :Parameters:
+            project : str
+                name of the project
+
+        :Keywords:
+            config : dict
+                a dictionary of key/value pairs for the project config
+
+        :return: detailed information about a project
+        :rtype: dict
+        """
+        return self.api.projects(POST, project=project, **kwargs)
 
 
     @transform('project_resources')
