@@ -1,10 +1,10 @@
 """
 :summary: Test rundeck.api.RundeckApi
 
-:license: Creative Commons Attribution-ShareAlike 3.0 Unported
+:license: Apache License, Version 2.0
 :author: Mark LaPerriere
 :contact: rundeckrun@mindmind.com
-:copyright: Mark LaPerriere 2013
+:copyright: Mark LaPerriere 2015
 
 :requires: requests
 """

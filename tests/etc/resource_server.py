@@ -1,10 +1,10 @@
 """
 :summary: A very simple HTTP server to serve a request from Rundeck server for a resource file
 
-:license: Creative Commons Attribution-ShareAlike 3.0 Unported
+:license: Apache License, Version 2.0
 :author: Mark LaPerriere
 :contact: rundeckrun@mindmind.com
-:copyright: Mark LaPerriere 2013
+:copyright: Mark LaPerriere 2015
 
 :requires: bottle
 """
