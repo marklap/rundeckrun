@@ -980,7 +980,7 @@ class Rundeck(object):
         required_keys = ('name', 'hostname', 'username')
         rundeck_nodes = []
         for node in nodes:
-            if isinstance(node, dict) and set(d.keys()).issuperset(required_keys):
+            if isinstance(node, dict) and set(node.keys()).issuperset(required_keys):
                 rundeck_nodes.append(
                     RundeckNode(
                         node.pop('name'),
