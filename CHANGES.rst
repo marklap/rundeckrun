@@ -1,3 +1,7 @@
+0.1.14
+------
+- Resolved bug `Issue #22 <https://github.com/marklap/rundeckrun/issues/23>`_
+
 0.1.13
 ------
 - In response to `Issue #23 <https://github.com/marklap/rundeckrun/issues/23>`_, change license to
