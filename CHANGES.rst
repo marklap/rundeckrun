@@ -1,3 +1,7 @@
+0.1.15
+------
+- Updated requirements.txt to reflect `requests>=1.2.3` (instead of previous `requests==1.2.3`)
+
 0.1.14
 ------
 - Resolved bug `Issue #22 <https://github.com/marklap/rundeckrun/issues/23>`_

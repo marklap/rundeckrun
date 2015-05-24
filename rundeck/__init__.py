@@ -8,5 +8,5 @@
 """
 __docformat__ = "restructuredtext en"
 
-__VERSION__ = (0, 1, 14)
+__VERSION__ = (0, 1, 15)
 VERSION = '.'.join(map(str, __VERSION__))
