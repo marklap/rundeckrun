@@ -112,6 +112,8 @@ class RundeckConnectionTolerant(object):
                 (default: None)
 
         :Keywords:
+            base_path : str
+                Custom base URL path for Rundeck server URLs [default: None]
             usr : str
                 Rundeck user name (used in place of api_token)
             pwd : str
@@ -128,6 +130,7 @@ class RundeckConnectionTolerant(object):
         self.api_token = api_token
         self.api_version = int(kwargs.get('api_version', RUNDECK_API_VERSION))
         self.verify_cert = kwargs.get('verify_cert', True)
+        self.base_path = kwargs.get('base_path', None)
 
         if self.api_version < 1 or self.api_version > RUNDECK_API_VERSION:
             raise ApiVersionNotSupported(
@@ -138,7 +141,9 @@ class RundeckConnectionTolerant(object):
             self.server = '{0}:{1}'.format(server, port)
 
         self.base_url = '{0}://{1}'.format(self.protocol, self.server)
-        self.base_api_url = '{0}://{1}/api'.format(self.protocol, self.server)
+        if self.base_path is not None:
+            self.base_url += '/' + self.base_path.strip('/')
+        self.base_api_url = self.base_url + '/api'
 
         if api_token is None and usr is None and pwd is None:
             raise InvalidAuthentication('Must supply either api_token or usr and pwd')
