@@ -21,7 +21,7 @@ setup(
     name=project,
     license='http://creativecommons.org/licenses/by-sa/3.0/',
     version=VERSION,
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests", "tests.*"]),
     description='Rundeck API Python client',
     long_description=long_description,
     url='https://github.com/marklap/{0}'.format(project),
