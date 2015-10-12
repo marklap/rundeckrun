@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API &mdash; RundeckRun 0.1.14 documentation</title>
+  <title>API &mdash; RundeckRun 0.2.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="RundeckRun 0.1.14 documentation" href="index.html"/>
+    <link rel="top" title="RundeckRun 0.2.0 documentation" href="index.html"/>
         <link rel="prev" title="Importing and Exporting" href="user_guide/import_export.html"/> 
 
   
@@ -44,17 +44,27 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
 
-        
-          <a href="index.html" class="icon icon-home"> RundeckRun
-        
+          
+            <a href="index.html" class="icon icon-home"> RundeckRun
+          
 
-        
-        </a>
+          
+          </a>
 
-        
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -63,50 +73,15 @@
   </form>
 </div>
 
-        
-      </div>
+          
+        </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
-          
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/index.html">User Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/index.html#getting-started">Getting Started</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/index.html#installation">Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/index.html#hello-world">&#8220;Hello World!&#8221;</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/index.html#interacting-with-rundeck">Interacting with Rundeck</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/server.html">Server</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/index.html#projects">Projects</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/projects.html">Projects</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="user_guide/projects.html#listing">Listing</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/index.html#jobs">Jobs</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/jobs.html">Jobs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="user_guide/jobs.html#listing">Listing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="user_guide/jobs.html#run-a-job">Run a Job</a></li>
-<li class="toctree-l4"><a class="reference internal" href="user_guide/jobs.html#export-all-jobs">Export All Jobs</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/index.html#resources">Resources</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/resources.html">Resources</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/index.html#importing-and-exporting">Importing and Exporting</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/import_export.html">Importing and Exporting</a></li>
-</ul>
-</li>
-</ul>
-</li>
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/index.html">User Guide</a></li>
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="">API</a><ul>
@@ -122,10 +97,10 @@
 </li>
 </ul>
 
+            
           
-        
+        </div>
       </div>
-      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -140,7 +115,13 @@
       
       <div class="wy-nav-content">
         <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
@@ -155,7 +136,8 @@
   </ul>
   <hr/>
 </div>
-          <div role="main" class="document">
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="api">
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
@@ -246,6 +228,9 @@ when HTTP status codes are returned. Probably don&#8217;t want/need to use this.
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first last docutils">
+<dt>base_path <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Custom base URL path for Rundeck server URLs [default: None]</p>
+</dd>
 <dt>usr <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">Rundeck user name (used in place of api_token)</p>
 </dd>
@@ -1613,6 +1598,9 @@ scriptInterpreter (requires API version 8 or higher)</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first last docutils">
+<dt>base_path <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Custom base URL path for Rundeck server URLs [default: None]</p>
+</dd>
 <dt>usr <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">Rundeck user name (used in place of api_token)</p>
 </dd>
@@ -3003,6 +2991,9 @@ as exceptions</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Keywords:</th><td class="field-body"><dl class="first last docutils">
+<dt>base_path <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Custom base URL path for Rundeck server URLs [default: None]</p>
+</dd>
 <dt>usr <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">Rundeck user name (used in place of api_token)</p>
 </dd>
@@ -3711,6 +3702,7 @@ converted to compatible string</p>
 </div>
 
 
+           </div>
           </div>
           <footer>
   
@@ -3727,9 +3719,10 @@ converted to compatible string</p>
   <div role="contentinfo">
     <p>
         &copy; Copyright 2013, Mark LaPerriere.
+
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -3747,7 +3740,7 @@ converted to compatible string</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.14',
+            VERSION:'0.2.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
