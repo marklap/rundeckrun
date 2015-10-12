@@ -1,3 +1,8 @@
+0.2.0
+-----
+- Merged `Pull Request #27 <https://github.com/marklap/rundeckrun/pull/27>`_
+- Included baseurl per `Issue #26 <https://github.com/marklap/rundeckrun/issues/26>`_
+
 0.1.15
 ------
 - Updated requirements.txt to reflect `requests>=1.2.3` (instead of previous `requests==1.2.3`)
