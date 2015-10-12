@@ -1,7 +1,8 @@
 0.2.0
 -----
-- Merged `Pull Request #27 <https://github.com/marklap/rundeckrun/pull/27>`_
-- Included baseurl per `Issue #26 <https://github.com/marklap/rundeckrun/issues/26>`_
+- Merged `Pull Request #27 <https://github.com/marklap/rundeckrun/pull/27>`_ (thank you @aodag)
+- Included baseurl per `Issue #26 <https://github.com/marklap/rundeckrun/issues/26>`_ (thank you
+  @DeathRitual)
 
 0.1.15
 ------
