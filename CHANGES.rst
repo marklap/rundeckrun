@@ -1,3 +1,8 @@
+0.2.1
+-----
+- Resolved bug `Issue #28 <https://github.com/marklap/rundeckrun/issues/28>`_ with
+  `Pull Request #29 <https://github.com/marklap/rundeckrun/pull/29>`_  (thank you @zyv)
+
 0.2.0
 -----
 - Merged `Pull Request #27 <https://github.com/marklap/rundeckrun/pull/27>`_ (thank you @aodag)
