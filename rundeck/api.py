@@ -178,6 +178,8 @@ class RundeckApiTolerant(object):
                 valid Rundeck user API token
 
         :Keywords:
+            base_path : str
+                Custom base URL path for Rundeck server URLs [default: None]
             usr : str
                 Rundeck user name (used in place of api_token)
             pwd : str
