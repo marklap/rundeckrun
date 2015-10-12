@@ -45,7 +45,7 @@ class RundeckResponse(object):
         self._as_dict_method = None
         self.response = response
         self.body = self.response.text
-        self.etree = ElementTree.fromstring(self.body)
+        self.etree = ElementTree.fromstring(self.body.encode('utf-8'))
 
     @memoize
     def pprint(self):
