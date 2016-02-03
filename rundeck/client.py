@@ -652,8 +652,7 @@ class Rundeck(object):
         if raw or fmt == 'text':
             return self.api.execution_output(execution_id, fmt=fmt, **kwargs).text
         elif fmt == 'json':
-            results = self._execution_output_json(execution_id, fmt=fmt, **kwargs)
-            return results._as_dict_method(results)
+            return self._execution_output_json(execution_id, fmt=fmt, **kwargs)
         elif fmt == 'xml':
             return self.api.execution_output(execution_id, fmt=fmt, parse_response=True, **kwargs)
 

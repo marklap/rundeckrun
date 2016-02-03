@@ -1,3 +1,8 @@
+0.2.2
+-----
+- Resolved bug `Issue #30 <https://github.com/marklap/rundeckrun/issues/30>`_ (thank you
+@mikkyornyx)
+
 0.2.1
 -----
 - Resolved bug `Issue #28 <https://github.com/marklap/rundeckrun/issues/28>`_ with

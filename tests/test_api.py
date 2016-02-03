@@ -83,10 +83,10 @@ def test_project_jobs():
 def test_job_run():
     time.sleep(3)
     assert rundeck_api.job_run(test_job_id).success, 'job_run call was unsuccessful'
-    time.sleep(1)
+    time.sleep(3)
     assert rundeck_api.job_run(test_job_id, argString={'from': 'test_job_run'}).success, \
         'job_run with argument dict call was unsuccessful'
-    time.sleep(1)
+    time.sleep(3)
     assert rundeck_api.job_run(test_job_id, argString='-from test_job_run').success, \
         'job_run with argument string call was unsuccessful'
 
