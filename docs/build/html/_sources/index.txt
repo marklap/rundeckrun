@@ -12,6 +12,14 @@ This is a lightweight wrapper written in Python to interact with the Rundeck
 API. It uses the awesome `requests <http://docs.python-requests.org/>`_
 library.
 
+**READ FIRST**
+    If you're new to RundeckRun and are interacting with newer versions of Rundeck (>=2.1.3),
+    you should consider using the `command line tools included with Rundeck
+    <http://rundeck.org/docs/man1/index.html>`_ (since at least Rundeck version 2.0.4). RundeckRun
+    should work well for the Rundeck API up to version 11 (Rundeck <=2.1.3). It currently does not
+    support Rundeck API versions greater than 11 for no other reason the project maintainer not
+    having enough time to put into making the necessary changes. Pull requests welcome!
+
 
 Installation
 ------------
